@@ -1,3 +1,4 @@
+package dewafer.java.homework;
 class Person{
 	public void eat(Apple apple){
 		Apple peeled = apple.getPeeled();

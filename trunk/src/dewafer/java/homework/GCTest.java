@@ -1,3 +1,4 @@
+package dewafer.java.homework;
 import java.util.Date;
 
 class BeTerminated {

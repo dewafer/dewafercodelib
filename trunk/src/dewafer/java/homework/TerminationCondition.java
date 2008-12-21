@@ -1,3 +1,5 @@
+package dewafer.java.homework;
+
 //class BeTerminated {
 //	private static long count = 0;
 //	private static long alive = 0;
