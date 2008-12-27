@@ -1,3 +1,6 @@
+/*
+ * java's Garbage Collection test 
+ */
 package dewafer.java.util;
 import java.util.Date;
 
