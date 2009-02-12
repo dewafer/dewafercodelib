@@ -1,0 +1,17 @@
+﻿#  该指令列表里展示了可以使用的指令
+#  注意！该文件很重要，请勿移除！
+#  指令表，指令不区分大小写
+0=setValue
+1=setObjValue
+2=getLink
+3=setTargetFrame
+4=waitDocToLoad
+5=waitAMoment
+6=Navigate
+7=InvokeMethod
+8=jump
+9=InvokeObjMethod
+
+#  以下指令暂时未实现
+#getValue
+#getObjValue
