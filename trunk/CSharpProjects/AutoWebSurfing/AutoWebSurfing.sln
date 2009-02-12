@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptRunner", "ScriptRunner\ScriptRunner.csproj", "{B6ED6715-5912-4E9E-9BC3-ECA4ABEFC509}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileOperator", "..\WhatINeedToLearn\FileOperator\FileOperator.csproj", "{F1DB26D7-5978-4DBD-B4AE-D59FBB3305BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestControl", "TestControl\TestControl.csproj", "{017249C8-995E-4895-9F06-F579C0496DFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstructionRealization", "InstructionRealization\InstructionRealization.csproj", "{3884E342-2FF9-4B83-9743-F272E9CD82AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptRunnerParameters", "ScriptRunnerParameters\ScriptRunnerParameters.csproj", "{8B219992-50E9-454E-8CBC-86DE064CED23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebBrowserController", "..\WhatINeedToLearn\WebBrowserControler\WebBrowserController.csproj", "{C7E2021F-4EEC-45E2-B13E-B83D5931CB7F}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6ED6715-5912-4E9E-9BC3-ECA4ABEFC509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6ED6715-5912-4E9E-9BC3-ECA4ABEFC509}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6ED6715-5912-4E9E-9BC3-ECA4ABEFC509}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6ED6715-5912-4E9E-9BC3-ECA4ABEFC509}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1DB26D7-5978-4DBD-B4AE-D59FBB3305BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1DB26D7-5978-4DBD-B4AE-D59FBB3305BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1DB26D7-5978-4DBD-B4AE-D59FBB3305BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1DB26D7-5978-4DBD-B4AE-D59FBB3305BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{017249C8-995E-4895-9F06-F579C0496DFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{017249C8-995E-4895-9F06-F579C0496DFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{017249C8-995E-4895-9F06-F579C0496DFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{017249C8-995E-4895-9F06-F579C0496DFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3884E342-2FF9-4B83-9743-F272E9CD82AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3884E342-2FF9-4B83-9743-F272E9CD82AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3884E342-2FF9-4B83-9743-F272E9CD82AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3884E342-2FF9-4B83-9743-F272E9CD82AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B219992-50E9-454E-8CBC-86DE064CED23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B219992-50E9-454E-8CBC-86DE064CED23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B219992-50E9-454E-8CBC-86DE064CED23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B219992-50E9-454E-8CBC-86DE064CED23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7E2021F-4EEC-45E2-B13E-B83D5931CB7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7E2021F-4EEC-45E2-B13E-B83D5931CB7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7E2021F-4EEC-45E2-B13E-B83D5931CB7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7E2021F-4EEC-45E2-B13E-B83D5931CB7F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

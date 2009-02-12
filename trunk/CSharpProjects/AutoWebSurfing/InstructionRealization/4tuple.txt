@@ -1,0 +1,66 @@
+﻿#  以#  打头的为注释，忽略
+#  如果元组中后面几位出现“-”表名内容为空
+#  指令不区分大小写
+#  脚本信息这样写：
+#  方括号括起来的指令标签不区分大小写
+#@blank line
+#@[author]dewafer
+#@[name]4tuple
+#@[description]
+#@it can cross muli-lines
+#@but must start with #@
+#@[description] also can start with the same tag
+#@[description] and should be consequent
+#@[version]1.0
+#@[data]2009/1/25
+#@2010/1/1
+#@[icon] icon file
+#@[enabled]true
+
+#  为object1的Attrib属性设置Value值
+100::setValue|object1|attrib|value
+#  以下命令使用系统参数中的第一位值
+#  为objec1的attrib属性赋值
+#  系统参数指令区分大小写
+#  100::setValue|object1|attrib|SYS_VALUE=1
+
+#  将object2的Attrib属性值暂存至Temp
+#  以下两条指令暂不实现
+#  101::getValue|object2|Attrib|Temp
+#  101::getObjValue|obj|attrib|temp
+
+#  将链接对象中中正文内容匹配MatchRegx的对象入栈
+#  如果有多个匹配则仅获取第一个
+#  MatchRegx是正则表达式
+102::getLink|MatchRegx|-|-
+
+#  将对象栈中的栈首元素的Attrib的属性设置为Value
+103::setObjValue|Attrib|-|Value
+#  以下命令使用系统参数中的第一位值
+#  为对象栈中的栈首元素的attrib属性赋值
+#  系统参数指令区分大小写
+#  103::setObjValue|Attrib|-|SYS_VALUE=1
+
+#  设置当前操作对象为当前页面内FrameId指定框架内的对象
+104::setTargetFrame|-|-|FrameId
+#  如果设置为空则操作当前页面内的物件
+#  105::setTargetFrame|-|-|-
+
+#  等待页面载入完成后在执行后面的语句
+106::waitDocToLoad|-|-|-
+
+#  等待1000毫秒
+107::waitAMoment|1000|-|-|-
+
+#  无条件跳转到编号100语句
+108::jump|-|-|100
+
+#  无条件导航到指定的URL
+#  如果使用此指令则隐含使用了waitAMoment指令
+109::Navigate|-|-|URL
+
+#  引发object3的method方法
+110::InvokeMethod|object3|method|-
+
+#  引发栈顶对象的method方法
+111::InvokeObjMethod|method|-|-
