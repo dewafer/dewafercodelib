@@ -1,0 +1,64 @@
+#  以#  打头的为注释，忽略
+#  如果元组中后面几位出现“-”表名内容为空
+#  指令不区分大小写
+#  脚本信息这样写：
+#  方括号括起来的指令标签不区分大小写
+#@[author]dewafer
+#@[name]一键查询当前学期成绩
+#@[description]一键查询当前学期成绩
+#@by dewafer
+#@[version]1.0
+#@[date]2009/1/27
+#@[icon]50.png
+#@[enabled]TRUE
+#  脚本正文
+#  导航到学校信息网站首页
+100::navigate|-|-|http://jwc1.usst.edu.cn
+
+#  等待浏览器加载完成
+110::waitdoctoload|-|-|-
+
+#  稍等一会儿
+120::waitamoment|-|-|-
+
+#  使用系统参数0为学号输入框设置值
+130::setvalue|TextBox1|value|SYS_VALUE=0
+
+#  使用系统参数1为密码输入框设置值
+140::setvalue|TextBox2|value|SYS_VALUE=1
+
+#  点击登陆按钮
+150::invokemethod|Button1|Click|-
+
+#  等待浏览器加载完成
+160::waitdoctoload|-|-|-
+
+#  稍等一会儿
+170::waitamoment|-|-|-
+
+#  找到成绩查询链接
+180::getlink|成绩查询|-|-
+
+#  点击该链接
+190::invokeobjmethod|Click|-|-
+
+#  等待浏览器加载完成
+200::waitdoctoload|-|-|-
+
+#  稍等一会儿
+210::waitamoment|-|-|-
+
+#  找到“zhuti”框架，查询的内容在该框架中
+220::setTargetFrame|-|-|zhuti
+
+#  使用系统参数2为学年下拉框设置值
+230::setvalue|ddlXN|value|SYS_VALUE=2
+
+#  使用系统参数3为学期下拉框设置值
+240::setvalue|ddlXQ|value|SYS_VALUE=3
+
+#  点击“查询学期成绩”按钮
+250::invokemethod|btn_xq|Click|-
+
+#  等待浏览器加载完成
+260::waitdoctoload|-|-|-

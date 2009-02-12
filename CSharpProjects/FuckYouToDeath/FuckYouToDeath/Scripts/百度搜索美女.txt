@@ -1,0 +1,41 @@
+﻿#  脚本示例
+#  以#@开头的为脚本注释
+#  脚本注释
+#@[name]脚本示例
+#  [enabled]表示脚本是否启用
+#           在窗口中默认是否加载
+#@[enabled]FALSE
+#@[author]作者为我
+#@[description]脚本介绍
+#@该脚本完成百度搜索美女动作
+#@如果108行会弹出窗口
+#@[version]公厕版
+#@[date]公元前一万年
+#@[icon]图标文件路径
+
+#  导航到百度
+100::navigate|-|-|http://www.baidu.com
+
+#  等待浏览器加载完成
+101::waitdoctoload|-|-|-
+
+#  在搜索框中输入“美女”
+102::setvalue|kw|value|美女
+
+#  稍等一会儿
+103::waitamoment|-|-|-
+
+#  递交表单，激活搜索按钮
+104::invokemethod|f|submit|-
+
+#  等到浏览器加载完成
+105::waitdoctoload|-|-|-
+
+#  找到文本内容为“美女—百度图片”的超链接
+106::getlink|美女—百度图片|-|-
+
+#  等待1秒钟
+107::waitamoment|1000|-|-
+
+#  点击该链接，会弹出新窗口
+108::invokeobjmethod|click|-|-
