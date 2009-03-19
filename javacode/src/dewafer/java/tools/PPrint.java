@@ -3,6 +3,11 @@ package dewafer.java.tools;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * @deprecated <i>PPrint</i> have been merged with <code> Print </code>. Use Print instead.
+ * @author AIR
+ *
+ */
 public class PPrint {
 
 	public static String pformat(Collection<?> c) {

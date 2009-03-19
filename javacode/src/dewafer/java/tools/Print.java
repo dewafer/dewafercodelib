@@ -1,6 +1,8 @@
 package dewafer.java.tools;
 
 import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * This Class helps print on the console easily.
@@ -43,4 +45,36 @@ public class Print {
 	  {
 		  System.out.println();
 	  }
+	  
+		public static String pformat(Collection<?> c) {
+
+			if (c.size() == 0)
+				return "[]";
+
+			StringBuilder result = new StringBuilder("[");
+
+			for (Object elem : c) {
+
+				if (c.size() != 1)
+					result.append("\n  ");
+
+				result.append(elem);
+
+			}
+
+			if (c.size() != 1)
+				result.append("\n");
+
+			result.append("]");
+
+			return result.toString();
+		}
+
+		public static void pprint(Collection<?> c) {
+			System.out.println(pformat(c));
+		}
+
+		public static void pprint(Object[] c) {
+			System.out.println(pformat(Arrays.asList(c)));
+		}
 }
