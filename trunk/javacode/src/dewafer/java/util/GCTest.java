@@ -30,7 +30,10 @@ class BeTerminated {
 
 
 /**
+ * 一个示例<br/>
+ * 垃圾收集器压力测试，非基准。
  * @author Dewafer
+ * @version 2010/3/7
  *
  */
 public class GCTest {
