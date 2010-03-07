@@ -5,6 +5,11 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * TimerµÄ¼òµ¥ÑÝÊ¾¡£
+ * @author dewafer
+ *
+ */
 public class TimerRunerII {
 
 	/**
