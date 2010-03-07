@@ -577,6 +577,9 @@ public class DocumentEditorView extends FrameView {
         setToolBar(toolBar);
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * reverse the text
+     */
     @Action
     public void reverseTxt() {
         String txt = this.textArea.getText();
