@@ -3,6 +3,12 @@ package dewafer.java.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 一个示例<br/>
+ * 测试正则表达式。
+ * @author dewafer
+ * @version 2010/3/7
+ */
 public class TestRegularExpression{
     private static void print(String str)
     {

@@ -4,6 +4,7 @@
 package dewafer.java.util;
 
 /**
+ * javaµÄHello Word
  * @author 
  *
  */
