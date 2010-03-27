@@ -1,0 +1,13 @@
+name=demo dictionary;
+author=wyq;
+description=this is a demo dictionary;
+wordA=good;
+wordB=bad;
+wordC=yes;
+wordD=hello;
+odjgoiwejgv=jbgreojioiwer;
+ioejboiqjer=fdvojevjifvoidafj;
+jsdifvjodfv=djfoivjwefoivj;
+djfvadfjvdoif=kdsfvjoidfjv;
+kjvosdifjvosdfv=dfbwfbwbf;
+ncvjwofjvoiwejfv=gfndtymetmu;
