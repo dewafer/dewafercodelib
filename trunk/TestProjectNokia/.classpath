@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="res"/>
+	<classpathentry kind="con" path="org.elipse.mtj.JavaMEContainer/S60 5th Edition SDK v1.0/S60Emulator"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

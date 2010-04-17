@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mtjMetadata jad="TestProject.jad" version="1.1.0.v200909181641">
+   <device group="S60 5th Edition SDK v1.0" name="S60Emulator"/>
+   <signing projectSpecific="false" signProject="false">
+      <alias/>
+   </signing>
+   <configurations>
+      <configuration active="false" name="S60Emulator">
+         <device group="S60 5th Edition SDK v1.0" name="S60Emulator"/>
+         <symbolSet name="S60Emulator">
+            <symbol name="screen.isColor" value="true"/>
+            <symbol name="screen.width" value="360"/>
+            <symbol name="screen.bitDepth" value="12"/>
+            <symbol name="ESWT" value="1.0"/>
+            <symbol name="screen.isTouch" value="true"/>
+            <symbol name="JSR135" value="1.2"/>
+            <symbol name="JSR82" value="1.1"/>
+            <symbol name="NOKIAUI" value="1.1"/>
+            <symbol name="JSR234" value="1.1"/>
+            <symbol name="JSR226" value="1.0"/>
+            <symbol name="JSR75" value="1.0"/>
+            <symbol name="MIDP" value="2.1"/>
+            <symbol name="CLDC" value="1.1"/>
+            <symbol name="JSR177" value="1.2"/>
+            <symbol name="IAPINFO" value="1.0"/>
+            <symbol name="JSR179" value="1.0"/>
+            <symbol name="JSR184" value="1.0"/>
+            <symbol name="WMA" value="2.0"/>
+            <symbol name="JSR172" value="1.0"/>
+            <symbol name="screen.height" value="640"/>
+         </symbolSet>
+      </configuration>
+      <configuration active="true" name="DefaultFxTouchPhone1">
+         <device group="Java(TM) Platform Micro Edition SDK 3.0" name="DefaultFxTouchPhone1"/>
+         <symbolSet name="DefaultFxTouchPhone1">
+            <symbol name="screen.isColor" value="true"/>
+            <symbol name="JSR256" value="1.1"/>
+            <symbol name="MMAPI" value="1.1"/>
+            <symbol name="screen.width" value="240"/>
+            <symbol name="descriptor" value="FX Emulator"/>
+            <symbol name="screen.bitDepth" value="16"/>
+            <symbol name="JSR238" value="1.0"/>
+            <symbol name="screen.isTouch" value="true"/>
+            <symbol name="JSR82" value="1.1"/>
+            <symbol name="JSR211" value="1.0"/>
+            <symbol name="JSR234" value="1.0"/>
+            <symbol name="JSR226" value="1.0"/>
+            <symbol name="JSR75" value="1.0"/>
+            <symbol name="MIDP" value="2.1"/>
+            <symbol name="SATSA" value="1.0"/>
+            <symbol name="CLDC" value="1.1"/>
+            <symbol name="JSR179" value="1.0"/>
+            <symbol name="JSR184" value="1.1"/>
+            <symbol name="version.configuration" value="CLDC-1.1"/>
+            <symbol name="WMA" value="2.0"/>
+            <symbol name="version.profile" value="MIDP-2.1"/>
+            <symbol name="JSR180" value="1.1"/>
+            <symbol name="J2ME-WS" value="1.0"/>
+            <symbol name="screen.height" value="320"/>
+         </symbolSet>
+      </configuration>
+   </configurations>
+</mtjMetadata>

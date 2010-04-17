@@ -1,0 +1,9 @@
+MIDlet-1: SystemInfoMIDlet2,,SystemInfoMIDlet2
+MIDlet-2: TestBackWordOnMobile,,TestBackWordOnMobile
+MIDlet-3: NULL,,NULL
+MIDlet-Jar-URL: Test1.jar
+MIDlet-Name: Test1
+MIDlet-Vendor: MIDlet Suite Vendor
+MIDlet-Version: 1.0.0
+MicroEdition-Configuration: CLDC-1.1
+MicroEdition-Profile: MIDP-2.1
