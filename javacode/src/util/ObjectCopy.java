@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier;
 public class ObjectCopy {
 
 	/**
-	 * 不拷贝static和final的fields
+	 * 不拷贝static和final的fields，只进行浅拷贝。
 	 * 
 	 * @param from
 	 * @param to
