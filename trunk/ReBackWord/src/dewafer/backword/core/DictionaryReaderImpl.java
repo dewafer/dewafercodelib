@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class DictionaryReaderImpl implements DictionaryReader {
 
-	private String path;
+	private File file;
 	private List<DictionaryWordEntity> words = new ArrayList<DictionaryWordEntity>();
 	private DictionaryInfoEntity info = new DictionaryInfoEntity();
 	private BufferedReader bufferedReader;
@@ -15,20 +15,23 @@ public class DictionaryReaderImpl implements DictionaryReader {
 	private int current = 0;
 
 	public DictionaryReaderImpl(String path) {
-		this.path = path;
+		this.file = new File(path);
+	}
+	
+	public DictionaryReaderImpl(File file){
+		this.file = file;
 	}
 
 	public boolean open() {
 		boolean result = false;
-		if (path == null)
+		if (file == null)
 			return result;
-		File f = new File(path);
-		if (f.isDirectory())
+		if (file.isDirectory())
 			return result;
-		if (!f.exists())
+		if (!file.exists())
 			return result;
 		try {
-			fileReader = new FileReader(f);
+			fileReader = new FileReader(file);
 			bufferedReader = new BufferedReader(fileReader);
 			String tmp;
 			String[] splited;
@@ -74,7 +77,7 @@ public class DictionaryReaderImpl implements DictionaryReader {
 			words = null;
 			info = null;
 			current = 0;
-			path = null;
+			file = null;
 		}
 	}
 
