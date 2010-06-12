@@ -11,6 +11,7 @@ import java.util.TimerTask;
 public class Quiz {
 
 	private Paper paper;
+	private String question;
 	private String[] answersList;
 	private int overtime = 0;
 	private int correctAnswerNumber = -1;
@@ -43,6 +44,21 @@ public class Quiz {
 		this.isCorrect = isCorrect;
 		this.isAbandoned = isAbandoned;
 		this.timeoutEvent = timeoutEvent;
+	}
+
+	/**
+	 * @return the question
+	 */
+	public String getQuestion() {
+		return question;
+	}
+
+	/**
+	 * @param question
+	 *            the question to set
+	 */
+	public void setQuestion(String question) {
+		this.question = question;
 	}
 
 	/**
