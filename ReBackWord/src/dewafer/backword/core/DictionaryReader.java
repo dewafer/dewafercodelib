@@ -2,28 +2,25 @@ package dewafer.backword.core;
 
 public interface DictionaryReader {
 
-	static final int WORD = 0;
-	static final int EXPLAIN = 1;
-	
-	static final int DICT_INFO_AUTHOR = 1;
-	static final int DICT_INFO_NAME = 0;
-	static final int DICT_INFO_DESC = 2;
-	
-	
+	static final String DICTINFO_AUTHOR = "#author";
+	static final String DICTINFO_NAME = "#name";
+	static final String DICTINFO_DESCRIPTION = "#description";
+	static final String DICT_SPLITER = ",";
+
 	int count();
-	
-	void open();
-	
+
+	boolean open();
+
 	void close();
-	
+
 	boolean hasNext();
-	
+
 	void reset();
-	
-	String[] read();
-	
-	String[] read(int line);
-	
-	String[] getDicInfo();
-	
+
+	DictionaryWordEntity readWord();
+
+	DictionaryWordEntity readWordAt(int line);
+
+	DictionaryInfoEntity getDicInfo();
+
 }

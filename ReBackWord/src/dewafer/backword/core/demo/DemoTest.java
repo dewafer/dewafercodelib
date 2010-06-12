@@ -2,6 +2,7 @@ package dewafer.backword.core.demo;
 
 import java.util.Scanner;
 
+import dewafer.backword.core.DictionaryReaderImpl;
 import dewafer.backword.core.Paper;
 import dewafer.backword.core.PaperFactory;
 import dewafer.backword.core.Quiz;
@@ -14,11 +15,14 @@ public class DemoTest {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		pntmemuseage();
+		PaperFactory.initialize(new DictionaryReaderImpl(
+				DictionaryReaderImpl.class.getResource("/demodict.csv")
+						.getFile()));
 		Paper p = PaperFactory.getPaper();
 		pntmemuseage();
 		for (Quiz q : p) {
 			pntmemuseage();
-			print("quiz:");
+			print("quiz:" + q.getQuestion());
 			String[] ansList = q.getAnswersList();
 			print("1." + ansList[0]);
 			print("2." + ansList[1]);
@@ -32,8 +36,8 @@ public class DemoTest {
 			} else {
 				q.answer(in - 1);
 			}
-			print("correct?"+q.isCorrect());
-			print("abandon?"+q.isAbandoned());
+			print("correct?" + q.isCorrect());
+			print("abandon?" + q.isAbandoned());
 			pntmemuseage();
 		}
 		pntmemuseage();
@@ -49,23 +53,22 @@ public class DemoTest {
 		return in.nextInt();
 
 	}
-	
-	private static void pntmemuseage()
-	{
-		long use = Runtime.getRuntime().totalMemory() - 
-		Runtime.getRuntime().freeMemory();
+
+	private static void pntmemuseage() {
+		long use = Runtime.getRuntime().totalMemory()
+				- Runtime.getRuntime().freeMemory();
 		print(toReadable(use));
-//		print(use);
+		// print(use);
 	}
-	
-	private static String toReadable(long n){
-		double kbyte = (double)n /1024;
+
+	private static String toReadable(long n) {
+		double kbyte = (double) n / 1024;
 		double mbyte = kbyte / 1024;
-		if(mbyte > 1)
+		if (mbyte > 1)
 			return mbyte + "m";
-		else if(kbyte > 1)
+		else if (kbyte > 1)
 			return kbyte + "k";
-		else 
+		else
 			return n + "b";
 	}
 
