@@ -189,7 +189,6 @@ public class BackWordGUIView extends FrameView {
         setMenuBar(menuBar);
         setStatusBar(statusPanel);
     }// </editor-fold>//GEN-END:initComponents
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private backwordgui.LoadDictJPanel loadDictJPanel1;
     private javax.swing.JMenuItem loadDictionaryMenuItem;
@@ -207,4 +206,14 @@ public class BackWordGUIView extends FrameView {
     private final Icon[] busyIcons = new Icon[15];
     private int busyIconIndex = 0;
     private JDialog aboutBox;
+
+    public void startGame() {
+        this.setComponent(workingJPanel1);
+        workingJPanel1.reload();
+    }
+
+    public void finishGame() {
+        BackWordGUIApp.getApplication().unloadDict();
+        this.setComponent(loadDictJPanel1);
+    }
 }

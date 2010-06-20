@@ -51,6 +51,7 @@ public class LoadDictJPanel extends javax.swing.JPanel implements PropertyChange
         loadDictButton.setAction(actionMap.get("loadDict")); // NOI18N
         loadDictButton.setName("loadDictButton"); // NOI18N
 
+        start.setAction(actionMap.get("StartGame")); // NOI18N
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(backwordgui.BackWordGUIApp.class).getContext().getResourceMap(LoadDictJPanel.class);
         start.setText(resourceMap.getString("start.text")); // NOI18N
         start.setEnabled(hasPaper());
@@ -125,6 +126,7 @@ public class LoadDictJPanel extends javax.swing.JPanel implements PropertyChange
                 .addContainerGap(116, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
