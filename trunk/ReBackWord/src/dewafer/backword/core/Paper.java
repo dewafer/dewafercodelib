@@ -2,7 +2,6 @@ package dewafer.backword.core;
 
 import java.util.Iterator;
 
-
 /**
  * @author dewafer
  * 
@@ -13,9 +12,13 @@ public class Paper implements Iterable<Quiz> {
 	private List<Quiz> unfinishedQuizList;
 	private List<Quiz> finishedQuizList;
 	private List<Quiz> finishedWrongQuizList;
+	private Quiz currentQuiz;
 	private String name;
 	private String author;
 	private String description;
+	private Iterator<Quiz> iterator;
+	private boolean finished = false;
+	private int allQuizCount;
 
 	protected Paper() {
 	}
@@ -38,10 +41,14 @@ public class Paper implements Iterable<Quiz> {
 		this.name = name;
 		this.author = author;
 		this.description = description;
+		this.allQuizCount = unfinishedQuizList.size();
 	}
 
 	protected void finishQuiz(Quiz q) {
-		if (!q.isFinished() || !unfinishedQuizList.contains(q)) {
+		// if (!q.isFinished() || !unfinishedQuizList.contains(q)) {
+		// return;
+		// }
+		if (!q.isFinished()) {
 			return;
 		}
 		if (q.isCorrect() && !q.isAbandoned()) {
@@ -51,7 +58,13 @@ public class Paper implements Iterable<Quiz> {
 			if (finishedWrongQuizList != null)
 				finishedWrongQuizList.add(q);
 		}
-		unfinishedQuizList.remove(q);
+		if (iterator.hasNext()) {
+			currentQuiz = iterator.next();
+			finished = false;
+		} else {
+			finished = true;
+			currentQuiz = null;
+		}
 	}
 
 	/**
@@ -100,26 +113,49 @@ public class Paper implements Iterable<Quiz> {
 	public Iterator<Quiz> iterator() {
 		return new Iterator<Quiz>() {
 
-			Iterator<Quiz> itr = unfinishedQuizList.iterator();
-
 			@Override
 			public boolean hasNext() {
-				return itr.hasNext();
+				return !finished;
 			}
 
 			@Override
 			public Quiz next() {
-				Quiz q = itr.next();
-				itr.remove();
-				return q;
+				return getCurrentQuiz();
 			}
 
 			@Override
 			public void remove() {
-				itr.remove();
 			}
 
 		};
+	}
+
+	protected Iterator<Quiz> getIterator() {
+		if (iterator == null) {
+			iterator = new Iterator<Quiz>() {
+
+				Iterator<Quiz> itr = unfinishedQuizList.iterator();
+
+				@Override
+				public boolean hasNext() {
+					return itr.hasNext();
+				}
+
+				@Override
+				public Quiz next() {
+					currentQuiz = itr.next();
+					itr.remove();
+					return currentQuiz;
+				}
+
+				@Override
+				public void remove() {
+					itr.remove();
+				}
+
+			};
+		}
+		return iterator;
 	}
 
 	/**
@@ -168,6 +204,47 @@ public class Paper implements Iterable<Quiz> {
 	 */
 	protected void setUnfinishedQuizList(List<Quiz> unfinishedQuizList) {
 		this.unfinishedQuizList = unfinishedQuizList;
+	}
+
+	/**
+	 * @return the currentQuiz
+	 */
+	public Quiz getCurrentQuiz() {
+		if (!finished && currentQuiz == null) {
+			iterator = getIterator();
+			currentQuiz = iterator.next();
+		}
+		return currentQuiz;
+	}
+
+	public boolean isFinished() {
+		return finished;
+	}
+
+	/**
+	 * @return the allQuizCount
+	 */
+	public int getAllQuizCount() {
+		return allQuizCount;
+	}
+
+	/**
+	 * @return the correctQuizCount
+	 */
+	public int getCorrectQuizCount() {
+		return finishedQuizList.size();
+	}
+
+	/**
+	 * @return the wrongQuizCount
+	 */
+	public int getWrongQuizCount() {
+		return finishedWrongQuizList.size();
+	}
+
+	public int getUnfinishedQuizCount() {
+		return allQuizCount
+				- (finishedQuizList.size() + finishedWrongQuizList.size());
 	}
 
 }
