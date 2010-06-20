@@ -20,7 +20,32 @@ public class DemoTest {
 						.getFile()));
 		Paper p = PaperFactory.getPaper();
 		pntmemuseage();
-		for (Quiz q : p) {
+//		for (Quiz q : p) {
+//			pntmemuseage();
+//			print("quiz:" + q.getQuestion());
+//			String[] ansList = q.getAnswersList();
+//			print("1." + ansList[0]);
+//			print("2." + ansList[1]);
+//			print("3." + ansList[2]);
+//			print("4." + ansList[3]);
+//			print("5.abort");
+//			print("what's your choice?");
+//			int in = input();
+//			if (in == 5) {
+//				q.abandon();
+//			} else {
+//				q.answer(in - 1);
+//			}
+//			print("correct?" + q.isCorrect());
+//			print("abandon?" + q.isAbandoned());
+//			print("finished:"+p.getFinishedQuizList().size());
+//			print("finishedwrong:"+p.getFinishedWrongQuizList().size());
+//			print("unfinshed:"+p.getUnfinishedQuizList().size());
+//			pntmemuseage();
+//			print("=================================");
+//		}
+		while(!p.isFinished()){
+			Quiz q = p.getCurrentQuiz();
 			pntmemuseage();
 			print("quiz:" + q.getQuestion());
 			String[] ansList = q.getAnswersList();
@@ -38,7 +63,11 @@ public class DemoTest {
 			}
 			print("correct?" + q.isCorrect());
 			print("abandon?" + q.isAbandoned());
+			print("finished:"+p.getFinishedQuizList().size());
+			print("finishedwrong:"+p.getFinishedWrongQuizList().size());
+			print("unfinshed:"+p.getUnfinishedQuizList().size());
 			pntmemuseage();
+			print("=================================");
 		}
 		pntmemuseage();
 		input();
