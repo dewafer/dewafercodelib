@@ -24,10 +24,19 @@
             <MenuItem class="javax.swing.JMenuItem" name="loadDictionaryMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="backwordgui.BackWordGUIView" id="loadDict" methodName="loadDict"/>
+                  <action class="backwordgui.BackWordGUIApp" id="loadDict" methodName="loadDict"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="loadDictionaryMenuItem.text"/>
                 <Property name="name" type="java.lang.String" value="loadDictionaryMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="unloadDictionaryMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="backwordgui.BackWordGUIApp" id="unloadDict" methodName="unloadDict"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="unloadDictionaryMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="unloadDictionaryMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="exitMenuItem">

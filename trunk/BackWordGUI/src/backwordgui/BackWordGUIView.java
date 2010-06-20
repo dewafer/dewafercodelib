@@ -105,6 +105,7 @@ public class BackWordGUIView extends FrameView {
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         loadDictionaryMenuItem = new javax.swing.JMenuItem();
+        unloadDictionaryMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
@@ -126,6 +127,11 @@ public class BackWordGUIView extends FrameView {
         loadDictionaryMenuItem.setText(resourceMap.getString("loadDictionaryMenuItem.text")); // NOI18N
         loadDictionaryMenuItem.setName("loadDictionaryMenuItem"); // NOI18N
         fileMenu.add(loadDictionaryMenuItem);
+
+        unloadDictionaryMenuItem.setAction(actionMap.get("unloadDict")); // NOI18N
+        unloadDictionaryMenuItem.setText(resourceMap.getString("unloadDictionaryMenuItem.text")); // NOI18N
+        unloadDictionaryMenuItem.setName("unloadDictionaryMenuItem"); // NOI18N
+        fileMenu.add(unloadDictionaryMenuItem);
 
         exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
@@ -192,6 +198,7 @@ public class BackWordGUIView extends FrameView {
     private javax.swing.JLabel statusAnimationLabel;
     private javax.swing.JLabel statusMessageLabel;
     private javax.swing.JPanel statusPanel;
+    private javax.swing.JMenuItem unloadDictionaryMenuItem;
     private backwordgui.WorkingJPanel workingJPanel1;
     // End of variables declaration//GEN-END:variables
     private final Timer messageTimer;
