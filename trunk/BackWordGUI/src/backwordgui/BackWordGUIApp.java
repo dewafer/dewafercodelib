@@ -97,7 +97,7 @@ public class BackWordGUIApp extends SingleFrameApplication {
             // Runs on the EDT.  Update the GUI based on
             // the result computed by doInBackground().
             if (result != null && result instanceof Paper) {
-                BackWordGUIApp.getApplication().setPaper((Paper)result);
+                BackWordGUIApp.getApplication().setPaper((Paper) result);
             }
         }
     }
@@ -108,13 +108,16 @@ public class BackWordGUIApp extends SingleFrameApplication {
     }
 
     private class UnloadDictTask extends org.jdesktop.application.Task<Object, Void> {
+
         UnloadDictTask(org.jdesktop.application.Application app) {
             // Runs on the EDT.  Copy GUI state that
             // doInBackground() depends on from parameters
             // to UnloadDictTask fields, here.
             super(app);
         }
-        @Override protected Object doInBackground() {
+
+        @Override
+        protected Object doInBackground() {
             // Your Task's code here.  This method runs
             // on a background thread, so don't reference
             // the Swing GUI from here.
@@ -122,10 +125,63 @@ public class BackWordGUIApp extends SingleFrameApplication {
             System.gc();
             return null;  // return your result
         }
-        @Override protected void succeeded(Object result) {
+
+        @Override
+        protected void succeeded(Object result) {
             // Runs on the EDT.  Update the GUI based on
             // the result computed by doInBackground().
         }
     }
 
+    @Action
+    public Task StartGame() {
+        return new StartGameTask(org.jdesktop.application.Application.getInstance(backwordgui.BackWordGUIApp.class));
+    }
+
+    private class StartGameTask extends org.jdesktop.application.Task<Object, Void> {
+        StartGameTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to StartGameTask fields, here.
+            super(app);
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+            BackWordGUIView view = (BackWordGUIView) BackWordGUIApp.getApplication().getMainView();
+            view.startGame();
+        }
+    }
+
+    @Action
+    public Task FinishGame() {
+        return new FinishGameTask(org.jdesktop.application.Application.getInstance(backwordgui.BackWordGUIApp.class));
+    }
+
+    private class FinishGameTask extends org.jdesktop.application.Task<Object, Void> {
+        FinishGameTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to StartGameTask fields, here.
+            super(app);
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+            BackWordGUIView view = (BackWordGUIView) BackWordGUIApp.getApplication().getMainView();
+            view.finishGame();
+        }
+    }
 }
