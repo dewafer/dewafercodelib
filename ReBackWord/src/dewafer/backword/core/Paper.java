@@ -18,7 +18,6 @@ public class Paper implements Iterable<Quiz> {
 	private String description;
 	private Iterator<Quiz> iterator;
 	private boolean finished = false;
-	private int allQuizCount;
 
 	protected Paper() {
 	}
@@ -41,7 +40,6 @@ public class Paper implements Iterable<Quiz> {
 		this.name = name;
 		this.author = author;
 		this.description = description;
-		this.allQuizCount = unfinishedQuizList.size();
 	}
 
 	protected void finishQuiz(Quiz q) {
@@ -225,26 +223,29 @@ public class Paper implements Iterable<Quiz> {
 	 * @return the allQuizCount
 	 */
 	public int getAllQuizCount() {
-		return allQuizCount;
+		return getUnfinishedQuizCount() + getFinishedQuizCount();
 	}
 
 	/**
 	 * @return the correctQuizCount
 	 */
-	public int getCorrectQuizCount() {
+	public int getFinishedCorrectQuizCount() {
 		return finishedQuizList.size();
 	}
 
 	/**
 	 * @return the wrongQuizCount
 	 */
-	public int getWrongQuizCount() {
+	public int getFinishedWrongQuizCount() {
 		return finishedWrongQuizList.size();
 	}
 
 	public int getUnfinishedQuizCount() {
-		return allQuizCount
-				- (finishedQuizList.size() + finishedWrongQuizList.size());
+		return this.unfinishedQuizList.size() + ((currentQuiz != null) ? 1 : 0);
+	}
+
+	public int getFinishedQuizCount() {
+		return finishedQuizList.size() + finishedWrongQuizList.size();
 	}
 
 }
