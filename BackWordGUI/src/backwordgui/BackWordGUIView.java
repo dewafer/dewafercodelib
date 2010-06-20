@@ -3,22 +3,16 @@
  */
 package backwordgui;
 
-import dewafer.backword.core.DictionaryReaderImpl;
-import dewafer.backword.core.Paper;
-import dewafer.backword.core.PaperFactory;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
-import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
 /**
@@ -108,16 +102,6 @@ public class BackWordGUIView extends FrameView {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        mainPanel = new javax.swing.JPanel();
-        loadDictButton = new javax.swing.JButton();
-        actionPanel = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
-        jRadioButton4 = new javax.swing.JRadioButton();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         loadDictionaryMenuItem = new javax.swing.JMenuItem();
@@ -128,123 +112,16 @@ public class BackWordGUIView extends FrameView {
         statusMessageLabel = new javax.swing.JLabel();
         statusAnimationLabel = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
-        buttonGroup1 = new javax.swing.ButtonGroup();
-
-        mainPanel.setEnabled(false);
-        mainPanel.setMinimumSize(new java.awt.Dimension(365, 288));
-        mainPanel.setName("mainPanel"); // NOI18N
-        mainPanel.setPreferredSize(new java.awt.Dimension(365, 288));
-
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(backwordgui.BackWordGUIApp.class).getContext().getActionMap(BackWordGUIView.class, this);
-        loadDictButton.setAction(actionMap.get("loadDict")); // NOI18N
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(backwordgui.BackWordGUIApp.class).getContext().getResourceMap(BackWordGUIView.class);
-        loadDictButton.setText(resourceMap.getString("loadDictButton.text")); // NOI18N
-        loadDictButton.setName("loadDictButton"); // NOI18N
-
-        actionPanel.setName("actionPanel"); // NOI18N
-        actionPanel.setVisible(false);
-
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
-        jLabel1.setName("jLabel1"); // NOI18N
-
-        buttonGroup1.add(jRadioButton1);
-        jRadioButton1.setText(resourceMap.getString("jRadioButton1.text")); // NOI18N
-        jRadioButton1.setName("jRadioButton1"); // NOI18N
-
-        buttonGroup1.add(jRadioButton2);
-        jRadioButton2.setText(resourceMap.getString("jRadioButton2.text")); // NOI18N
-        jRadioButton2.setName("jRadioButton2"); // NOI18N
-
-        buttonGroup1.add(jRadioButton3);
-        jRadioButton3.setText(resourceMap.getString("jRadioButton3.text")); // NOI18N
-        jRadioButton3.setName("jRadioButton3"); // NOI18N
-
-        buttonGroup1.add(jRadioButton4);
-        jRadioButton4.setText(resourceMap.getString("jRadioButton4.text")); // NOI18N
-        jRadioButton4.setName("jRadioButton4"); // NOI18N
-
-        jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
-        jButton1.setName("jButton1"); // NOI18N
-        jButton1.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-
-        jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
-        jButton2.setName("jButton2"); // NOI18N
-        jButton2.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-
-        javax.swing.GroupLayout actionPanelLayout = new javax.swing.GroupLayout(actionPanel);
-        actionPanel.setLayout(actionPanelLayout);
-        actionPanelLayout.setHorizontalGroup(
-            actionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(actionPanelLayout.createSequentialGroup()
-                .addGroup(actionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(actionPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1))
-                    .addGroup(actionPanelLayout.createSequentialGroup()
-                        .addGap(60, 60, 60)
-                        .addGroup(actionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jRadioButton2)
-                            .addComponent(jRadioButton3)
-                            .addComponent(jRadioButton4)
-                            .addComponent(jRadioButton1)))
-                    .addGroup(actionPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton2)))
-                .addContainerGap(168, Short.MAX_VALUE))
-        );
-        actionPanelLayout.setVerticalGroup(
-            actionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(actionPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addGap(38, 38, 38)
-                .addComponent(jRadioButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton2)
-                .addGap(39, 39, 39)
-                .addComponent(jRadioButton3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
-                .addGroup(actionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
-        mainPanel.setLayout(mainPanelLayout);
-        mainPanelLayout.setHorizontalGroup(
-            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(actionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(mainPanelLayout.createSequentialGroup()
-                    .addGap(64, 64, 64)
-                    .addComponent(loadDictButton, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(65, Short.MAX_VALUE)))
-        );
-        mainPanelLayout.setVerticalGroup(
-            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(actionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(mainPanelLayout.createSequentialGroup()
-                    .addGap(74, 74, 74)
-                    .addComponent(loadDictButton, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(75, Short.MAX_VALUE)))
-        );
+        loadDictJPanel1 = new backwordgui.LoadDictJPanel();
+        workingJPanel1 = new backwordgui.WorkingJPanel();
 
         menuBar.setName("menuBar"); // NOI18N
 
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(backwordgui.BackWordGUIApp.class).getContext().getResourceMap(BackWordGUIView.class);
         fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
 
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(backwordgui.BackWordGUIApp.class).getContext().getActionMap(BackWordGUIView.class, this);
         loadDictionaryMenuItem.setAction(actionMap.get("loadDict")); // NOI18N
         loadDictionaryMenuItem.setText(resourceMap.getString("loadDictionaryMenuItem.text")); // NOI18N
         loadDictionaryMenuItem.setName("loadDictionaryMenuItem"); // NOI18N
@@ -298,42 +175,24 @@ public class BackWordGUIView extends FrameView {
                 .addGap(3, 3, 3))
         );
 
-        setComponent(mainPanel);
+        loadDictJPanel1.setName("loadDictJPanel1"); // NOI18N
+
+        workingJPanel1.setName("workingJPanel1"); // NOI18N
+
+        setComponent(loadDictJPanel1);
         setMenuBar(menuBar);
         setStatusBar(statusPanel);
     }// </editor-fold>//GEN-END:initComponents
 
-    @Action
-    public void loadDict() {
-        JFrame mainFrame = BackWordGUIApp.getApplication().getMainFrame();
-        JFileChooser filechooser = new JFileChooser();
-        int result = filechooser.showOpenDialog(mainFrame);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File dict = filechooser.getSelectedFile();
-            paper = PaperFactory.getPaper(new DictionaryReaderImpl(dict));
-            if (paper != null) {
-                actionPanel.setVisible(true);
-            }
-        }
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel actionPanel;
-    private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
-    private javax.swing.JRadioButton jRadioButton4;
-    private javax.swing.JButton loadDictButton;
+    private backwordgui.LoadDictJPanel loadDictJPanel1;
     private javax.swing.JMenuItem loadDictionaryMenuItem;
-    private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JLabel statusAnimationLabel;
     private javax.swing.JLabel statusMessageLabel;
     private javax.swing.JPanel statusPanel;
+    private backwordgui.WorkingJPanel workingJPanel1;
     // End of variables declaration//GEN-END:variables
     private final Timer messageTimer;
     private final Timer busyIconTimer;
@@ -341,5 +200,4 @@ public class BackWordGUIView extends FrameView {
     private final Icon[] busyIcons = new Icon[15];
     private int busyIconIndex = 0;
     private JDialog aboutBox;
-    private Paper paper;
 }
