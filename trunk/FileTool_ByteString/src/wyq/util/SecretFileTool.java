@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * @author dewafer
- * @version 2010/6/21 v1.0
+ * @version 2010/6/21 v1.1
  */
 public class SecretFileTool {
 
