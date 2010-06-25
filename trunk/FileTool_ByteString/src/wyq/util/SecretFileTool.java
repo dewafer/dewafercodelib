@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,7 +18,7 @@ import java.util.List;
 
 /**
  * @author dewafer
- * @version 2010/6/21 v1.1
+ * @version 2010/6/25 v1.2
  */
 public class SecretFileTool {
 
@@ -26,57 +27,9 @@ public class SecretFileTool {
 	public static final long DEFAULT_SPLIT = 100000L;
 	private File f;
 	private File[] fs;
-	private Compressor compressor = new Compressor() {
-
-		private final String[][] compressMap = { { "00", "g" }, { "11", "h" },
-				{ "22", "i" }, { "33", "j" }, { "44", "k" }, { "55", "l" },
-				{ "66", "m" }, { "77", "n" }, { "88", "o" }, { "99", "p" },
-				{ "aa", "q" }, { "bb", "r" }, { "cc", "s" }, { "dd", "t" },
-				{ "ee", "u" }, { "ff", "v" }, { "gg", "w" }, { "vv", "x" } };
-
-		// default compressor do nothing
-		@Override
-		public String compress(String pInput) {
-			if (pInput == null)
-				return "";
-			for (int i = 0; i < compressMap.length; i++) {
-				pInput = pInput.replace(compressMap[i][0], compressMap[i][1]);
-			}
-			return pInput;
-		}
-
-		@Override
-		public String decompress(String pInput) {
-			if (pInput == null)
-				return "";
-			for (int i = compressMap.length - 1; i >= 0; i--) {
-				pInput = pInput.replace(compressMap[i][1], compressMap[i][0]);
-			}
-			return pInput;
-		}
-	};
+	private Compressor compressor = new FileCompressor();
 
 	private Comparator<File> comparator;
-
-	// public static void main(String[] args) throws IOException {
-	// toTextFile("/home/dewafer/reBackWordCore_1.0.jar","/home/dewafer/test.txt");
-	// SecretFileTool t = new SecretFileTool("");
-	// BufferedReader r = new BufferedReader(new FileReader(new File(
-	// "/home/dewafer/test.txt")));
-	// StringBuilder sb = new StringBuilder();
-	// String tmp;
-	// while ((tmp = r.readLine()) != null) {
-	// sb.append(tmp);
-	// sb.append(System.getProperty("line.separator"));
-	// }
-	// String txt = sb.toString();
-	// String result = t.comp.compress(txt);
-	// String deres = t.comp.decompress(result);
-	// System.out.println(result);
-	// System.out.println(deres);
-	// System.out.println(txt);
-	// System.out.println(txt.equals(deres));
-	// }
 
 	public void sortFs(Comparator<File> comp) {
 		setComparator(comp);
@@ -120,19 +73,53 @@ public class SecretFileTool {
 		}
 	}
 
-	public void toTextFile(long split) throws IOException {
+	public void toTextFile(long split) throws Exception {
 
+		// file split count
 		long current = 0L;
 		int i = 0;
 
+		// input stream
 		BufferedInputStream bis = new BufferedInputStream(
 				new FileInputStream(f));
+
+		// output stream
 		File toFile = new File(f.getAbsolutePath() + getDefaultFileName(i));
 		BufferedWriter writer = new BufferedWriter(new FileWriter(toFile));
-		byte[] inbuff = new byte[INBUFF_LENGTH];
 
+		// file buffer
+		StringBuilder outputBuff = new StringBuilder();
+
+		// buff length count
+		long f_length = f.length();
+		int inbuff_length;
+		if (f_length < INBUFF_LENGTH) {
+			inbuff_length = (int) f_length;
+		} else {
+			inbuff_length = INBUFF_LENGTH;
+		}
+		byte[] inbuff = new byte[inbuff_length];
+
+		// read and compress
 		while ((bis.read(inbuff) != -1)) {
-			writer.write(compressor.compress(bytesToHexString(inbuff)));
+			outputBuff
+					.append(compressor.compressLine(bytesToHexString(inbuff)));
+			outputBuff.append(System.getProperty("line.separator"));
+			f_length -= inbuff.length;
+			if (f_length < INBUFF_LENGTH && f_length > 0) {
+				inbuff_length = (int) (f_length);
+				inbuff = new byte[inbuff_length];
+			}
+		}
+
+		// compress whole file
+		String compressed = compressor.compressFile(outputBuff.toString());
+
+		// write file and split
+		BufferedReader reader = new BufferedReader(new StringReader(compressed));
+		String tmp;
+		while ((tmp = reader.readLine()) != null) {
+			writer.write(tmp);
 			writer.newLine();
 			current += inbuff.length;
 			if (current >= split) {
@@ -144,25 +131,40 @@ public class SecretFileTool {
 			}
 		}
 
+		// close stream and reader
+		reader.close();
 		bis.close();
 		writer.close();
 
 	}
 
 	public void toByteFile() throws IOException {
-		byte[] outbuff;
+		// buff
+		String outbuffStr;
 		BufferedReader reader;
+		StringBuilder sbBuff = new StringBuilder();
+
+		// output stream
 		BufferedOutputStream bos = new BufferedOutputStream(
 				new FileOutputStream(f));
+
+		// read all file
 		for (File from : fs) {
-
 			reader = new BufferedReader(new FileReader(from));
-			while ((outbuff = hexStringToBytes(compressor.decompress(reader
-					.readLine()))) != null) {
-				bos.write(outbuff);
+			while ((outbuffStr = compressor.decompressLine(reader.readLine())) != null) {
+				sbBuff.append(outbuffStr);
+				sbBuff.append(System.getProperty("line.separator"));
 			}
-
 			reader.close();
+		}
+
+		// decompress all file
+		outbuffStr = compressor.decompressFile(sbBuff.toString());
+
+		// out put file
+		reader = new BufferedReader(new StringReader(outbuffStr));
+		while ((outbuffStr = reader.readLine()) != null) {
+			bos.write(hexStringToBytes(outbuffStr));
 		}
 		bos.close();
 	}

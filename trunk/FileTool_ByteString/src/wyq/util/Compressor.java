@@ -1,9 +1,14 @@
-
 package wyq.util;
+
+import java.io.IOException;
 
 public interface Compressor {
 
-    public String compress(String input);
+	public String compressFile(String input) throws IOException;
 
-    public String decompress(String input);
+	public String decompressFile(String input) throws IOException;
+
+	public String compressLine(String input) throws IOException;
+
+	public String decompressLine(String input) throws IOException;
 }
