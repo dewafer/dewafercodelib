@@ -213,7 +213,11 @@ public class BackWordGUIView extends FrameView {
     }
 
     public void finishGame() {
-        BackWordGUIApp.getApplication().unloadDict();
+        BackWordGUIApp app = BackWordGUIApp.getApplication();
+        if (app.getPaper() != null) {
+            app.unloadDict().execute();
+        }
         this.setComponent(loadDictJPanel1);
+        this.getComponent().repaint();
     }
 }

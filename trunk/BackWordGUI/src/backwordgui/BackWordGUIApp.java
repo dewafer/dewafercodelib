@@ -130,6 +130,7 @@ public class BackWordGUIApp extends SingleFrameApplication {
         protected void succeeded(Object result) {
             // Runs on the EDT.  Update the GUI based on
             // the result computed by doInBackground().
+            BackWordGUIApp.getApplication().FinishGame().execute();
         }
     }
 
