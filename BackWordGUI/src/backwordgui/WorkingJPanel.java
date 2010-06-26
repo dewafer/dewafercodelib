@@ -44,6 +44,7 @@ public class WorkingJPanel extends javax.swing.JPanel implements PropertyChangeL
             this.addPropertyChangeListener(QUIZ_PROPERTY, this);
             setCurrent(paper.getCurrentQuiz());
         }
+        this.repaint();
     }
 
     /** This method is called from within the constructor to
@@ -83,16 +84,31 @@ public class WorkingJPanel extends javax.swing.JPanel implements PropertyChangeL
         jRadioButton2.setText(getAnswer(1));
         jRadioButton2.setActionCommand("1");
         jRadioButton2.setName("jRadioButton2"); // NOI18N
+        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton2ActionPerformed(evt);
+            }
+        });
 
         buttonGroup_answers.add(jRadioButton3);
         jRadioButton3.setText(getAnswer(2));
         jRadioButton3.setActionCommand("2");
         jRadioButton3.setName("jRadioButton3"); // NOI18N
+        jRadioButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton3ActionPerformed(evt);
+            }
+        });
 
         buttonGroup_answers.add(jRadioButton4);
         jRadioButton4.setText(getAnswer(3));
         jRadioButton4.setActionCommand("3");
         jRadioButton4.setName("jRadioButton4"); // NOI18N
+        jRadioButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton4ActionPerformed(evt);
+            }
+        });
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(backwordgui.BackWordGUIApp.class).getContext().getResourceMap(WorkingJPanel.class);
         jButton_answer.setText(resourceMap.getString("jButton_answer.text")); // NOI18N
@@ -168,11 +184,20 @@ public class WorkingJPanel extends javax.swing.JPanel implements PropertyChangeL
     }//GEN-LAST:event_jButton_abandonActionPerformed
 
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
-        // TODO add your handling code here:
+        setAnswerButtonEnable();
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
-    private void selectAction() {
-    }
+    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+        setAnswerButtonEnable();
+    }//GEN-LAST:event_jRadioButton2ActionPerformed
+
+    private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
+        setAnswerButtonEnable();
+    }//GEN-LAST:event_jRadioButton3ActionPerformed
+
+    private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
+        setAnswerButtonEnable();
+    }//GEN-LAST:event_jRadioButton4ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup_answers;
     private javax.swing.JButton jButton_abandon;
@@ -183,6 +208,10 @@ public class WorkingJPanel extends javax.swing.JPanel implements PropertyChangeL
     private javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JRadioButton jRadioButton4;
     // End of variables declaration//GEN-END:variables
+
+    private void setAnswerButtonEnable() {
+        jButton_answer.setEnabled(buttonGroup_answers.getSelection() != null);
+    }
 
     private String getQuestion() {
         if (current != null) {
@@ -201,6 +230,7 @@ public class WorkingJPanel extends javax.swing.JPanel implements PropertyChangeL
     private void answer(int i) {
         if (current != null) {
             current.answer(i);
+            answered();
 
             if (isFinished()) {
                 finishedGo();
@@ -213,12 +243,28 @@ public class WorkingJPanel extends javax.swing.JPanel implements PropertyChangeL
     private void abandon() {
         if (current != null) {
             current.abandon();
+            answered();
 
             if (isFinished()) {
                 finishedGo();
             } else {
                 setCurrent(paper.getCurrentQuiz());
             }
+        }
+    }
+
+    private void answered() {
+        if (current != null) {
+            int msgType = current.isCorrect() ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.WARNING_MESSAGE;
+            String title = current.isCorrect() ? "correct" : "wrong";
+            String msg = "correct? " + (current.isCorrect() ? "yes" : "no!");
+            msg += "\n\rcorrect answer:" + current.getAnswersList()[current.getCorrentAnswerNumber()];
+            if (!current.isAbandoned()) {
+                msg += "\n\ryour selection:" + current.getAnswersList()[current.getUserSelectedAnswerNumber()];
+            } else {
+                msg += "\n\rquestion abandoned.";
+            }
+            JOptionPane.showMessageDialog(this, msg, title, msgType);
         }
     }
 
@@ -233,7 +279,7 @@ public class WorkingJPanel extends javax.swing.JPanel implements PropertyChangeL
         this.jRadioButton3.setText(getAnswer(2));
         this.jRadioButton4.setText(getAnswer(3));
         this.jButton_abandon.setEnabled(paper == null ? false : !isFinished());
-        this.jButton_answer.setEnabled(paper == null ? false : !isFinished());
+        this.jButton_answer.setEnabled(false);
         this.buttonGroup_answers.clearSelection();
     }
 
@@ -249,14 +295,9 @@ public class WorkingJPanel extends javax.swing.JPanel implements PropertyChangeL
 
     private void finishedGo() {
         String result = "correct:" + paper.getFinishedCorrectQuizCount() + " wrong:" + paper.getFinishedWrongQuizCount();
-//                + "\r\n again?";
 
-//        int dialogResult = JOptionPane.showConfirmDialog(this, result);
         JOptionPane.showMessageDialog(this, result);
-        BackWordGUIApp.getApplication().FinishGame();
-//        if(dialogResult == JOptionPane.YES_OPTION){
-//            paper.reset();
-//        }
+        BackWordGUIApp.getApplication().FinishGame().execute();
 
     }
 }
