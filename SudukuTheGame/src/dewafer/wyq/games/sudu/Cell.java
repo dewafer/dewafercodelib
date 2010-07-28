@@ -15,6 +15,7 @@ public class Cell extends IdObject {
 	private boolean isEmpty = true;
 	private Row containingRow;
 	private Column containingColumn;
+	private SquareGroup containingSquareGroup;
 	private List<NumberEnum> possibleValues;
 
 	public Cell(NumberEnum empty) {
@@ -53,6 +54,14 @@ public class Cell extends IdObject {
 		this.containingColumn = containingColumn;
 	}
 
+	public SquareGroup getContainingSquareGroup() {
+		return containingSquareGroup;
+	}
+
+	public void setContainingSquareGroup(SquareGroup containingSquareGroup) {
+		this.containingSquareGroup = containingSquareGroup;
+	}
+
 	public List<NumberEnum> getPossibleValues() {
 		return possibleValues;
 	}
@@ -60,5 +69,10 @@ public class Cell extends IdObject {
 	public void setPossibleValues(List<NumberEnum> possibleValues) {
 		this.possibleValues = possibleValues;
 	}
-	
+
+	@Override
+	public String toString() {
+		return String.valueOf(value.value());
+	}
+
 }

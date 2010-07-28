@@ -13,4 +13,9 @@ public abstract class CellsContainer extends IdObject {
 	public void setCells(List<Cell> cells) {
 		this.cells = cells;
 	}
+	
+	@Override
+	public String toString(){
+		return cells.toString();
+	}
 }
