@@ -41,9 +41,15 @@ public class TheGame extends EventDispatcher {
 
 			// initialize rows, columns and squareGroups
 			if (i < 9) {
-				rows.add(new Row());
-				columns.add(new Column());
-				squareGroups.add(new SquareGroup());
+				row = new Row();
+				row.setId(i);
+				col = new Column();
+				col.setId(i);
+				sqGrp = new SquareGroup();
+				sqGrp.setId(i);
+				rows.add(row);
+				columns.add(col);
+				squareGroups.add(sqGrp);
 			}
 
 			// set row
