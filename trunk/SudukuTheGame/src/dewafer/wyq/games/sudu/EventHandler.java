@@ -1,6 +1,8 @@
 package dewafer.wyq.games.sudu;
 
-public interface EventHandler<T> {
 
-    public abstract void eventHandler(Event<T> e);
+public interface EventHandler {
+
+	public abstract void eventHandler(Event e);
+
 }

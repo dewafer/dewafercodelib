@@ -18,7 +18,7 @@ public class EventDispatcher {
 		lists.add(handler);
 	}
 
-	public void dispatchEvent(String eventType, Event<?> e) {
+	public void dispatchEvent(String eventType, Event e) {
 		List<EventHandler> lists = eventHandlers.get(eventType);
 		if (lists != null) {
 			for (EventHandler handler : lists) {

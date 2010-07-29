@@ -83,7 +83,7 @@ public class TheGame extends EventDispatcher {
 		}
 		// initialize finished
 		final TheGame theGame = this;
-		this.dispatchEvent(EVENT_GAME_INITIALIZED, new Event<TheGame>() {
+		this.dispatchEvent(EVENT_GAME_INITIALIZED, new Event() {
 
 			@Override
 			public Object[] arguments() {
