@@ -1,8 +1,8 @@
 package dewafer.wyq.games.sudu;
 
-public interface Event<T> {
+public interface Event {
 
-	T invoker();
-	
-	Object[] arguments(); 
+	Object invoker();
+
+	Object[] arguments();
 }

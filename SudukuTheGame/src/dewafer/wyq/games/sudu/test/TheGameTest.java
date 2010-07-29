@@ -4,7 +4,7 @@ import dewafer.wyq.games.sudu.Event;
 import dewafer.wyq.games.sudu.EventHandler;
 import dewafer.wyq.games.sudu.TheGame;
 
-public class TheGameTest implements EventHandler<TheGame> {
+public class TheGameTest implements EventHandler {
 
 	/**
 	 * @param args
@@ -17,7 +17,7 @@ public class TheGameTest implements EventHandler<TheGame> {
 	}
 
 	@Override
-	public void eventHandler(Event<TheGame> e) {
+	public void eventHandler(Event e) {
 		println("game initialize...");
 		println("e:" + e);
 		println("e.invoker:" + e.invoker());
