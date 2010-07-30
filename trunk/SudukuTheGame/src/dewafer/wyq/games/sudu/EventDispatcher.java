@@ -18,11 +18,12 @@ public class EventDispatcher {
 		lists.add(handler);
 	}
 
-	public void dispatchEvent(String eventType, Event e) {
+	public void dispatchEvent(String eventType, Object invoker,
+			Object[] arguments) {
 		List<EventHandler> lists = eventHandlers.get(eventType);
 		if (lists != null) {
 			for (EventHandler handler : lists) {
-				handler.eventHandler(e);
+				handler.eventHandler(invoker, arguments);
 			}
 		}
 	}
