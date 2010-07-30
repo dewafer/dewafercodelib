@@ -88,19 +88,7 @@ public class TheGame extends EventDispatcher {
 			cells.add(c);
 		}
 		// initialize finished
-		final TheGame theGame = this;
-		this.dispatchEvent(EVENT_GAME_INITIALIZED, new Event() {
-
-			@Override
-			public Object[] arguments() {
-				return null;
-			}
-
-			@Override
-			public TheGame invoker() {
-				return theGame;
-			}
-		});
+		this.dispatchEvent(EVENT_GAME_INITIALIZED, this, null);
 	}
 
 	@Override
