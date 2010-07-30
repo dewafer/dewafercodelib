@@ -90,6 +90,11 @@ public class TheGame extends EventDispatcher {
 		// initialize finished
 		this.dispatchEvent(EVENT_GAME_INITIALIZED, this, null);
 	}
+	
+	public void validate() throws InvalidatedException{
+		// TODO implements this
+		throw new InvalidatedException();
+	}
 
 	@Override
 	public String toString() {
