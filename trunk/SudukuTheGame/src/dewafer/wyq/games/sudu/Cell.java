@@ -75,4 +75,14 @@ public class Cell extends IdObject {
 		return String.valueOf(value.value());
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof Cell) {
+			Cell c = (Cell) o;
+			return this.value == c.value;
+		} else {
+			return super.equals(o);
+		}
+	}
+
 }

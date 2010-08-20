@@ -1,6 +1,7 @@
 package dewafer.wyq.games.sudu;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TheGame extends EventDispatcher {
@@ -94,6 +95,11 @@ public class TheGame extends EventDispatcher {
 	public void validate() throws InvalidatedException{
 		// TODO implements this
 		throw new InvalidatedException();
+	}
+	
+	private void validateRows() throws InvalidatedException{
+		for(Row row : rows){
+		}
 	}
 
 	@Override
