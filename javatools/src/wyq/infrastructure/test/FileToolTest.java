@@ -12,8 +12,8 @@ public class FileToolTest extends FileTool {
 	 */
 	public static void main(String[] args) throws IOException {
 		setWorkspace("D:\\test");
-		copyFile(("AIO_CDB_NonNet_Full_Win_WW_130_141.exe"),
-				("tarFileName.exe"));
+//		copyFile(("AIO_CDB_NonNet_Full_Win_WW_130_141.exe"),
+//				("tarFileName.exe"));
 		copyResFileToWorkspace(FileToolTest.class, "VBA_.pdf");
 	}
 
