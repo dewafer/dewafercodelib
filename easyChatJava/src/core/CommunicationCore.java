@@ -201,7 +201,7 @@ public class CommunicationCore {
 							output = otherClient.getOutputStream();
 						} catch (IOException e) {
 							e.printStackTrace();
-							diedClients.add(client);
+							diedClients.add(otherClient);
 						}
 
 						if (output == null)
@@ -212,7 +212,7 @@ public class CommunicationCore {
 							output.flush();
 						} catch (IOException e) {
 							e.printStackTrace();
-							diedClients.add(client);
+							diedClients.add(otherClient);
 						}
 
 					}
