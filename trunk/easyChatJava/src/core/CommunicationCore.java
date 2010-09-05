@@ -163,6 +163,7 @@ public class CommunicationCore {
 							output = otherClient.getOutputStream();
 						} catch (IOException e) {
 							e.printStackTrace();
+							clients.remove(otherClient);
 						}
 						if (output == null)
 							continue;
