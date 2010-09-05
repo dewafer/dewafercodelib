@@ -88,7 +88,15 @@ public class CommunicationCore {
 	public void sendMsg(String msg) {
 		if (!started || clients.size() == 0)
 			return;
+
+		removeDiedClients();
+
 		for (Socket client : clients) {
+			if (client.isClosed() || client.isInputShutdown()
+					|| client.isOutputShutdown() || !client.isConnected()) {
+				diedClients.add(client);
+				continue;
+			}
 			try {
 				OutputStream output = client.getOutputStream();
 				byte[] buff = msg.getBytes();
@@ -106,6 +114,13 @@ public class CommunicationCore {
 		String msg = new String(receivedMsgBuff.toByteArray());
 		receivedMsgBuff.reset();
 		return msg;
+	}
+
+	private synchronized void removeDiedClients() {
+		for (Socket s : diedClients) {
+			clients.remove(s);
+		}
+		diedClients.clear();
 	}
 
 	private class ServerListenerDaemon extends Thread {
@@ -211,10 +226,7 @@ public class CommunicationCore {
 
 				}
 
-				for (Socket s : diedClients) {
-					clients.remove(s);
-				}
-				diedClients.clear();
+				removeDiedClients();
 
 				try {
 					Thread.sleep(SLEEP);
@@ -224,6 +236,8 @@ public class CommunicationCore {
 			}
 			for (Socket c : clients) {
 				try {
+					c.shutdownInput();
+					c.shutdownOutput();
 					c.close();
 				} catch (IOException e) {
 					e.printStackTrace();
