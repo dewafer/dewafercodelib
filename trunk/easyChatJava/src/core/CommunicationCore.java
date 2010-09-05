@@ -89,14 +89,7 @@ public class CommunicationCore {
 		if (!started || clients.size() == 0)
 			return;
 
-		removeDiedClients();
-
 		for (Socket client : clients) {
-			if (client.isClosed() || client.isInputShutdown()
-					|| client.isOutputShutdown() || !client.isConnected()) {
-				diedClients.add(client);
-				continue;
-			}
 			try {
 				OutputStream output = client.getOutputStream();
 				byte[] buff = msg.getBytes();
@@ -116,7 +109,7 @@ public class CommunicationCore {
 		return msg;
 	}
 
-	private synchronized void removeDiedClients() {
+	private void removeDiedClients() {
 		for (Socket s : diedClients) {
 			clients.remove(s);
 		}
