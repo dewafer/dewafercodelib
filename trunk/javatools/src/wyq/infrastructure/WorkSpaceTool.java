@@ -56,6 +56,11 @@ public class WorkSpaceTool extends PrintTool {
 		}
 	}
 
+	public static boolean existsFile(String fileName) {
+		File f = getFileFromWorkspace(fileName);
+		return f.exists();
+	}
+
 	public static File getFile(String fileName) {
 		return getFile(fileName, false);
 	}
