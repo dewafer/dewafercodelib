@@ -10,9 +10,10 @@ public class CommunicationCoreTest {
 	/**
 	 * @param args
 	 * @throws IOException
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) throws IOException, InterruptedException {
+	public static void main(String[] args) throws IOException,
+			InterruptedException {
 		// TODO Auto-generated method stub
 		CommunicationCore server = CommunicationCore.getInstance();
 		server.startAsServer(9988);
@@ -34,15 +35,12 @@ public class CommunicationCoreTest {
 					try {
 						client.sendMsg("sending..." + i);
 						Thread.sleep(250);
-					} catch (IOException e) {
-						e.printStackTrace();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
 			}
 		}.start();
-
 
 		for (int i = 0; i < 200; i++) {
 			System.out.println(client.receiveMsg());

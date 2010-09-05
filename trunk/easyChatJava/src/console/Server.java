@@ -22,11 +22,11 @@ public class Server {
 
 		if (args.length < 1) {
 
-			println("port to listen?");
-			port = s.nextInt();
-
 			println("host to bind?");
 			host = s.next();
+
+			println("port to listen?");
+			port = s.nextInt();
 
 		} else if (args.length == 1) {
 
