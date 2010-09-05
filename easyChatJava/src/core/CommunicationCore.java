@@ -10,11 +10,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CommunicationCore {
 
 	private List<Socket> clients = new ArrayList<Socket>();
+	private Set<Socket> diedClients = new HashSet<Socket>();
 	private ServerSocket server;
 	private ServerListenerDaemon listenerDaemon;
 	private MsgTransportDaemon msgDaemon;
@@ -82,18 +85,24 @@ public class CommunicationCore {
 		msgDaemon.start();
 	}
 
-	public void sendMsg(String msg) throws IOException {
-		if (clients.size() == 0)
+	public void sendMsg(String msg) {
+		if (!started || clients.size() == 0)
 			return;
 		for (Socket client : clients) {
-			OutputStream output = client.getOutputStream();
-			byte[] buff = msg.getBytes();
-			output.write(buff);
-			output.flush();
+			try {
+				OutputStream output = client.getOutputStream();
+				byte[] buff = msg.getBytes();
+				output.write(buff);
+				output.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+				diedClients.add(client);
+			}
+
 		}
 	}
 
-	public String receiveMsg() throws IOException {
+	public String receiveMsg() {
 		String msg = new String(receivedMsgBuff.toByteArray());
 		receivedMsgBuff.reset();
 		return msg;
@@ -118,6 +127,12 @@ public class CommunicationCore {
 					e.printStackTrace();
 				}
 			}
+
+			try {
+				server.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -128,12 +143,21 @@ public class CommunicationCore {
 		public void run() {
 			while (started) {
 				for (Socket client : clients) {
+					if (client.isClosed() || client.isInputShutdown()
+							|| client.isOutputShutdown()
+							|| !client.isConnected()) {
+						diedClients.add(client);
+						continue;
+					}
+
 					InputStream input = null;
 					byte[] buff = null;
+
 					try {
 						input = client.getInputStream();
 					} catch (IOException e) {
 						e.printStackTrace();
+						diedClients.add(client);
 					}
 					if (input == null)
 						continue;
@@ -144,27 +168,34 @@ public class CommunicationCore {
 
 						buff = new byte[input.available()];
 						input.read(buff);
+
 						if (msgHandler != null) {
 							msgHandler.msgReceived(new String(buff));
 						} else {
 							receivedMsgBuff.write(buff);
 						}
+
 					} catch (IOException e) {
 						e.printStackTrace();
+						diedClients.add(client);
 					}
+
 					if (buff == null)
 						continue;
 
 					for (Socket otherClient : clients) {
+
 						if (otherClient.equals(client))
 							continue;
+
 						OutputStream output = null;
 						try {
 							output = otherClient.getOutputStream();
 						} catch (IOException e) {
 							e.printStackTrace();
-							clients.remove(otherClient);
+							diedClients.add(client);
 						}
+
 						if (output == null)
 							continue;
 
@@ -173,14 +204,28 @@ public class CommunicationCore {
 							output.flush();
 						} catch (IOException e) {
 							e.printStackTrace();
+							diedClients.add(client);
 						}
 
 					}
 
 				}
+
+				for (Socket s : diedClients) {
+					clients.remove(s);
+				}
+				diedClients.clear();
+
 				try {
 					Thread.sleep(SLEEP);
 				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			for (Socket c : clients) {
+				try {
+					c.close();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
