@@ -15,7 +15,7 @@ import java.net.URL;
 
 public class FileTool extends WorkSpaceTool {
 
-	public static void copyFile(File srcFile, File tarFile) throws IOException {
+	public void copyFile(File srcFile, File tarFile) throws IOException {
 		BufferedInputStream in = getBufferedInputStream(srcFile);
 		BufferedOutputStream out = getBufferedOutputStream(tarFile);
 		int buff = -1;
@@ -27,13 +27,13 @@ public class FileTool extends WorkSpaceTool {
 		out.close();
 	}
 
-	public static void copyFile(String srcFileName, String tarFileName)
+	public void copyFile(String srcFileName, String tarFileName)
 			throws IOException {
 		copyFile(getFileFromWorkspace(srcFileName),
 				getFileFromWorkspace(tarFileName));
 	}
 
-	public static void copyResFileToWorkspace(Class<?> rootClz,
+	public void copyResFileToWorkspace(Class<?> rootClz,
 			String rscFileName) throws IOException {
 		URL res = rootClz.getResource(rscFileName);
 		if (res == null) {
@@ -42,27 +42,27 @@ public class FileTool extends WorkSpaceTool {
 		copyFile(getFile(res.getFile()), getFileFromWorkspace(rscFileName));
 	}
 
-	public static void copyResFileToWorkspace(String srcFileName)
+	public void copyResFileToWorkspace(String srcFileName)
 			throws IOException {
 		copyResFileToWorkspace(FileTool.class, srcFileName);
 	}
 
-	public static BufferedReader getBufferedReader(File txtFile)
+	public BufferedReader getBufferedReader(File txtFile)
 			throws FileNotFoundException {
 		return new BufferedReader(new FileReader(txtFile));
 	}
 
-	public static BufferedInputStream getBufferedInputStream(File byteFile)
+	public BufferedInputStream getBufferedInputStream(File byteFile)
 			throws FileNotFoundException {
 		return new BufferedInputStream(new FileInputStream(byteFile));
 	}
 
-	public static BufferedWriter getBufferedWriter(File txtFile)
+	public BufferedWriter getBufferedWriter(File txtFile)
 			throws IOException {
 		return new BufferedWriter(new FileWriter(txtFile));
 	}
 
-	public static BufferedOutputStream getBufferedOutputStream(File byteFile)
+	public BufferedOutputStream getBufferedOutputStream(File byteFile)
 			throws FileNotFoundException {
 		return new BufferedOutputStream(new FileOutputStream(byteFile));
 	}
