@@ -11,10 +11,11 @@ public class FileToolTest extends FileTool {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		setWorkspace("D:\\test");
+		FileToolTest test = new FileToolTest();
+		test.setWorkspace("D:\\test");
 //		copyFile(("AIO_CDB_NonNet_Full_Win_WW_130_141.exe"),
 //				("tarFileName.exe"));
-		copyResFileToWorkspace(FileToolTest.class, "VBA_.pdf");
+		test.copyResFileToWorkspace(FileToolTest.class, "VBA_.pdf");
 	}
 
 }
