@@ -17,7 +17,7 @@ import java.util.Properties;
  * converting.
  * 
  * @author dewafer
- * @version 0.2 2011/10/21
+ * @version 0.3 2011/10/21
  * 
  */
 public class PropertySupporter {
@@ -32,11 +32,22 @@ public class PropertySupporter {
 	}
 
 	protected <T> PropertySupporter(T target, String pfile) {
-		inject(target, new File(pfile));
+		inject(target, getPropFile(target, pfile));
 	}
 
 	protected <T> PropertySupporter(String pfile) {
-		inject(this, new File(pfile));
+		inject(this, getPropFile(this, pfile));
+	}
+
+	protected <T> File getPropFile(T target, String pfile) {
+		File f = new File(pfile);
+		if (!f.isAbsolute()) {
+			URL url = target.getClass().getResource(pfile);
+			if (url != null) {
+				f = new File(url.getFile());
+			}
+		}
+		return f;
 	}
 
 	protected <T> PropertySupporter(T target, File pfile) {
