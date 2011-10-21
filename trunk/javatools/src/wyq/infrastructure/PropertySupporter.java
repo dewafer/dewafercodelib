@@ -17,7 +17,7 @@ import java.util.Properties;
  * converting.
  * 
  * @author dewafer
- * @version 0.1 2011/10/21
+ * @version 0.2 2011/10/21
  * 
  */
 public class PropertySupporter {
@@ -70,33 +70,30 @@ public class PropertySupporter {
 			pFile = new FileInputStream(pfile);
 			p.load(pFile);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			handleException(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			handleException(e);
 		}
 
 		Class<?> clz = target.getClass();
 		Field[] declaredFields = clz.getDeclaredFields();
 		for (Field f : declaredFields) {
+			String propValue = null;
+			Object origValue = null;
 			try {
 				String fieldName = f.getName();
-				String propValue = p.getProperty(fieldName);
+				propValue = p.getProperty(fieldName);
 				f.setAccessible(true);
-				Object origValue = f.get(target);
+				origValue = f.get(target);
 				Object convertedValue = convert(propValue, origValue,
 						f.getType());
 				f.set(target, convertedValue);
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				handleException(e);
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				handleException(e);
 			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
+				handleException(e);
 			}
 		}
 
@@ -139,6 +136,10 @@ public class PropertySupporter {
 			}
 			return origValue;
 		}
+	}
+
+	protected void handleException(Exception e) {
+		e.printStackTrace();
 	}
 
 }
