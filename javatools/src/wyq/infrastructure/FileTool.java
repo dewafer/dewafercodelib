@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URL;
 
 public class FileTool extends WorkSpaceTool {
@@ -33,8 +34,8 @@ public class FileTool extends WorkSpaceTool {
 				getFileFromWorkspace(tarFileName));
 	}
 
-	public void copyResFileToWorkspace(Class<?> rootClz,
-			String rscFileName) throws IOException {
+	public void copyResFileToWorkspace(Class<?> rootClz, String rscFileName)
+			throws IOException {
 		URL res = rootClz.getResource(rscFileName);
 		if (res == null) {
 			throw new FileNotFoundException();
@@ -42,8 +43,7 @@ public class FileTool extends WorkSpaceTool {
 		copyFile(getFile(res.getFile()), getFileFromWorkspace(rscFileName));
 	}
 
-	public void copyResFileToWorkspace(String srcFileName)
-			throws IOException {
+	public void copyResFileToWorkspace(String srcFileName) throws IOException {
 		copyResFileToWorkspace(FileTool.class, srcFileName);
 	}
 
@@ -57,14 +57,23 @@ public class FileTool extends WorkSpaceTool {
 		return new BufferedInputStream(new FileInputStream(byteFile));
 	}
 
-	public BufferedWriter getBufferedWriter(File txtFile)
-			throws IOException {
+	public BufferedWriter getBufferedWriter(File txtFile) throws IOException {
 		return new BufferedWriter(new FileWriter(txtFile));
 	}
 
 	public BufferedOutputStream getBufferedOutputStream(File byteFile)
 			throws FileNotFoundException {
 		return new BufferedOutputStream(new FileOutputStream(byteFile));
+	}
+
+	public void writeTxtFile(String content, String file) throws IOException {
+		Writer writer = new FileWriter(file);
+		BufferedWriter bw = new BufferedWriter(writer);
+		bw.write(content);
+		bw.flush();
+		writer.flush();
+		bw.close();
+		writer.close();
 	}
 
 }
