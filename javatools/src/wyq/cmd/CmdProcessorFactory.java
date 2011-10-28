@@ -1,6 +1,8 @@
 package wyq.cmd;
 
-public class CmdProcessorFactory {
+import wyq.infrastructure.PropertySupporter;
+
+public class CmdProcessorFactory extends PropertySupporter {
 
     private String default_cmdProcessor_name;
     private CmdProcessor processor;
