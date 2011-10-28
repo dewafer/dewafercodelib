@@ -22,135 +22,143 @@ import java.util.Properties;
  */
 public class PropertySupporter {
 
-	private static final String PROPERTIES_SUFFIX = ".properties";
+    private static final String PROPERTIES_PREFIX = "";
 
-	protected PropertySupporter() {
-		Class<?> clz = this.getClass();
-		if (!PropertySupporter.class.equals(clz)) {
-			inject(this);
-		}
+    private static final String PROPERTIES_SUFFIX = ".properties";
+
+    protected PropertySupporter() {
+	Class<?> clz = this.getClass();
+	if (!PropertySupporter.class.equals(clz)) {
+	    inject(this);
 	}
+    }
 
-	protected <T> PropertySupporter(T target, String pfile) {
-		inject(target, getPropFile(target, pfile));
-	}
+    protected <T> PropertySupporter(T target, String pfile) {
+	inject(target, getPropFileInputStream(target, pfile));
+    }
 
-	protected <T> PropertySupporter(String pfile) {
-		inject(this, getPropFile(this, pfile));
-	}
+    protected <T> PropertySupporter(String pfile) {
+	inject(this, getPropFileInputStream(this, pfile));
+    }
 
-	protected <T> File getPropFile(T target, String pfile) {
-		File f = new File(pfile);
-		if (!f.isAbsolute()) {
-			URL url = target.getClass().getResource(pfile);
-			if (url != null) {
-				f = new File(url.getFile());
-			}
-		}
-		return f;
-	}
-
-	protected <T> PropertySupporter(T target, File pfile) {
-		inject(target, pfile);
-	}
-
-	protected <T> PropertySupporter(T target) {
-		inject(target);
-	}
-
-	public static <T> T inject(T target, File pfile) {
-		PropertySupporter ps = new PropertySupporter();
-		return ps.doInject(target, pfile);
-	}
-
-	public static <T> T inject(T target) {
-		Class<?> clz = target.getClass();
-		String clzName = clz.getSimpleName();
-		URL strPfile = clz.getResource(clzName + PROPERTIES_SUFFIX);
-		if (strPfile != null) {
-			File pfile = new File(strPfile.getFile());
-			target = inject(target, pfile);
-		}
-		return target;
-	}
-
-	private <T> T doInject(T target, File pfile) {
-		Properties p = new Properties();
-		InputStream pFile = null;
-		try {
-			pFile = new FileInputStream(pfile);
-			p.load(pFile);
-		} catch (FileNotFoundException e) {
-			handleException(e);
-		} catch (IOException e) {
-			handleException(e);
-		}
-
-		Class<?> clz = target.getClass();
-		Field[] declaredFields = clz.getDeclaredFields();
-		for (Field f : declaredFields) {
-			String propValue = null;
-			Object origValue = null;
-			try {
-				String fieldName = f.getName();
-				propValue = p.getProperty(fieldName);
-				f.setAccessible(true);
-				origValue = f.get(target);
-				Object convertedValue = convert(propValue, origValue,
-						f.getType());
-				f.set(target, convertedValue);
-			} catch (IllegalArgumentException e) {
-				handleException(e);
-			} catch (IllegalAccessException e) {
-				handleException(e);
-			} catch (Exception e) {
-				handleException(e);
-			}
-		}
-
-		return target;
-	}
-
-	protected Object convert(String propValue, Object origValue,
-			Class<?> requiredType) {
-		if (String.class.equals(requiredType)) {
-			return propValue;
-		} else if (!requiredType.isPrimitive()) {
-			return origValue;
-		} else {
-			// 8 elements
-			// Boolean.TYPE, Character.TYPE, Byte.TYPE, Short.TYPE,
-			// Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE
-			if (Boolean.TYPE.equals(requiredType)) {
-				return Boolean.parseBoolean(propValue);
-			}
-			if (Character.TYPE.equals(requiredType)) {
-				return propValue.toCharArray()[0];
-			}
-			if (Byte.TYPE.equals(requiredType)) {
-				return Byte.parseByte(propValue);
-			}
-			if (Short.TYPE.equals(requiredType)) {
-				return Short.parseShort(propValue);
-			}
-			if (Integer.TYPE.equals(requiredType)) {
-				return Integer.parseInt(propValue);
-			}
-			if (Long.TYPE.equals(requiredType)) {
-				return Long.parseLong(propValue);
-			}
-			if (Float.TYPE.equals(requiredType)) {
-				return Float.parseFloat(propValue);
-			}
-			if (Double.TYPE.equals(requiredType)) {
-				return Double.parseDouble(propValue);
-			}
-			return origValue;
-		}
-	}
-
-	protected void handleException(Exception e) {
+    protected <T> InputStream getPropFileInputStream(T target, String pfile) {
+	File f = new File(pfile);
+	if (!f.isAbsolute()) {
+	    return target.getClass().getResourceAsStream(pfile);
+	} else {
+	    try {
+		return new FileInputStream(f);
+	    } catch (FileNotFoundException e) {
 		e.printStackTrace();
+		throw new RuntimeException(e);
+	    }
 	}
+    }
+
+    protected <T> PropertySupporter(T target, File pfile) {
+	try {
+	    inject(target, new FileInputStream(pfile));
+	} catch (FileNotFoundException e) {
+	    e.printStackTrace();
+	    throw new RuntimeException(e);
+	}
+    }
+
+    protected <T> PropertySupporter(T target) {
+	inject(target);
+    }
+
+    public static <T> T inject(T target, InputStream in) {
+	PropertySupporter ps = new PropertySupporter();
+	return ps.doInject(target, in);
+    }
+
+    public static <T> T inject(T target) {
+	Class<?> clz = target.getClass();
+	String clzName = clz.getSimpleName();
+	InputStream is = clz.getResourceAsStream(PROPERTIES_PREFIX + clzName
+		+ PROPERTIES_SUFFIX);
+	if (is != null) {
+	    target = inject(target, is);
+	}
+	return target;
+    }
+
+    private <T> T doInject(T target, InputStream inStream) {
+	Properties p = new Properties();
+	try {
+	    p.load(inStream);
+	} catch (FileNotFoundException e) {
+	    handleException(e);
+	} catch (IOException e) {
+	    handleException(e);
+	}
+
+	Class<?> clz = target.getClass();
+	Field[] declaredFields = clz.getDeclaredFields();
+	for (Field f : declaredFields) {
+	    String propValue = null;
+	    Object origValue = null;
+	    try {
+		String fieldName = f.getName();
+		propValue = p.getProperty(fieldName);
+		f.setAccessible(true);
+		origValue = f.get(target);
+		Object convertedValue = convert(propValue, origValue,
+			f.getType());
+		f.set(target, convertedValue);
+	    } catch (IllegalArgumentException e) {
+		handleException(e);
+	    } catch (IllegalAccessException e) {
+		handleException(e);
+	    } catch (Exception e) {
+		handleException(e);
+	    }
+	}
+
+	return target;
+    }
+
+    protected Object convert(String propValue, Object origValue,
+	    Class<?> requiredType) {
+	if (String.class.equals(requiredType)) {
+	    return propValue;
+	} else if (!requiredType.isPrimitive()) {
+	    return origValue;
+	} else {
+	    // 8 elements
+	    // Boolean.TYPE, Character.TYPE, Byte.TYPE, Short.TYPE,
+	    // Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE
+	    if (Boolean.TYPE.equals(requiredType)) {
+		return Boolean.parseBoolean(propValue);
+	    }
+	    if (Character.TYPE.equals(requiredType)) {
+		return propValue.toCharArray()[0];
+	    }
+	    if (Byte.TYPE.equals(requiredType)) {
+		return Byte.parseByte(propValue);
+	    }
+	    if (Short.TYPE.equals(requiredType)) {
+		return Short.parseShort(propValue);
+	    }
+	    if (Integer.TYPE.equals(requiredType)) {
+		return Integer.parseInt(propValue);
+	    }
+	    if (Long.TYPE.equals(requiredType)) {
+		return Long.parseLong(propValue);
+	    }
+	    if (Float.TYPE.equals(requiredType)) {
+		return Float.parseFloat(propValue);
+	    }
+	    if (Double.TYPE.equals(requiredType)) {
+		return Double.parseDouble(propValue);
+	    }
+	    return origValue;
+	}
+    }
+
+    protected void handleException(Exception e) {
+	e.printStackTrace();
+    }
 
 }

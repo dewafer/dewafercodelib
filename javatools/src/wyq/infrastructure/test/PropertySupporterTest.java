@@ -13,16 +13,16 @@ public class PropertySupporterTest {
 	private char testD;
 	private long testE;
 
-	// public PropertySupporterTest() {
-	// super("C:\\test.properties");
-	// }
+//	 public PropertySupporterTest() {
+//	 super("C:\\test.properties");
+//	 }
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		// System.out.println(new PropertySupporterTest().toString());
+//		 System.out.println(new PropertySupporterTest().toString());
 		System.out.println(PropertySupporter
 				.inject(new PropertySupporterTest()).toString());
 	}
