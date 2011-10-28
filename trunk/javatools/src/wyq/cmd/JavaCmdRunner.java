@@ -4,29 +4,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import wyq.infrastructure.PropertySupporter;
 import wyq.tool.util.Processor;
 import wyq.tool.util.ProcessorRunner;
 
-public class JavaCmdRunner implements CmdProcessor {
-    public class Cmd {
+public class JavaCmdRunner extends PropertySupporter implements CmdProcessor {
 
+    public class Cmd {
 	private String cmdName;
 	private String args[];
     }
 
-    public JavaCmdRunner() {
-    }
+    private String default_package;
 
     public boolean process(String cmd) {
 	if ("exit".equalsIgnoreCase(cmd))
 	    return false;
+	if (cmd == null || cmd.length() == 0 || "help".equalsIgnoreCase(cmd)) {
+	    println(getCmdProcessorHelp());
+	    return true;
+	}
 	Cmd c = getCmd(cmd);
 	try {
-	    Class<?> clz = Class.forName(c.cmdName);
+	    String clzName = c.cmdName;
+	    if (default_package != null && default_package.length() > 0
+		    && !clzName.contains(".")) {
+		clzName = default_package + "." + clzName;
+	    }
+	    Class<?> clz = Class.forName(clzName);
 	    if (Processor.class.isAssignableFrom(clz)) {
 		Class<? extends Processor> pclz = clz
 			.asSubclass(Processor.class);
 		ProcessorRunner.run(pclz, c.args);
+		println("Cmd Finished.");
+		println(getCmdProcessorHelp());
 	    } else {
 		println((new StringBuilder("Can't run the cmd:")).append(cmd)
 			.toString());
@@ -53,5 +64,10 @@ public class JavaCmdRunner implements CmdProcessor {
 	    c.args = args.toArray(new String[0]);
 	}
 	return c;
+    }
+
+    @Override
+    public String getCmdProcessorHelp() {
+	return "Enter class name to run the class.";
     }
 }
