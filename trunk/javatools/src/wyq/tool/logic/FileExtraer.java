@@ -14,6 +14,7 @@ public class FileExtraer extends AbstractPropertyProcessor {
     private String targetFolder;
     private String workspace;
     private FileTool tool = new FileTool();
+    private String[] args ;
 
     /**
      * @param args
@@ -23,6 +24,7 @@ public class FileExtraer extends AbstractPropertyProcessor {
     }
 
     public void process(String[] args) {
+	this.args = args;
 	String[] strOrgFiles = openFile();
 	for (String f : strOrgFiles) {
 	    File tarFile = getTargetFile(f);
@@ -52,7 +54,12 @@ public class FileExtraer extends AbstractPropertyProcessor {
     }
 
     private String getContentFile() {
-	File cf = new File(contentFile);
+	String cfile = contentFile;
+	if(args!= null && args.length > 0){
+	    cfile = args[0];
+	    log("using arg:" + cfile);
+	}
+	File cf = new File(cfile);
 	if (cf.exists()) {
 	    return cf.getAbsolutePath();
 	} else {
