@@ -93,4 +93,13 @@ public class FileTool extends WorkSpaceTool {
 	return lines.toArray(new String[0]);
     }
 
+    public void openExplorer(String path) {
+	Runtime r = Runtime.getRuntime();
+	try {
+	    r.exec("explorer.exe " + path);
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
+    }
+
 }
