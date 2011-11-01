@@ -16,7 +16,7 @@ public class FileExtraer extends AbstractPropertyProcessor {
     private FileTool tool = new FileTool();
     private String[] args;
 
-    private static final String[] IGNORE_LINE_PREFIX = { "#", "/", "-" };
+    private static final String[] IGNORE_LINE_PREFIX = { "#", "/", "-", "=" };
 
     /**
      * @param args
@@ -29,8 +29,15 @@ public class FileExtraer extends AbstractPropertyProcessor {
 	this.args = args;
 	String[] strOrgFiles = openFile();
 	for (String f : strOrgFiles) {
+	    if (f.isEmpty()) {
+		continue;
+	    }
 	    File tarFile = getTargetFile(f);
 	    File orgFile = getOriginalFile(f);
+	    if (!orgFile.exists()) {
+		log("file not found, skipped:" + orgFile);
+		continue;
+	    }
 	    try {
 		if (!tarFile.exists()) {
 		    tarFile.getParentFile().mkdirs();
