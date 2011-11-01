@@ -19,6 +19,14 @@ import java.util.List;
 
 public class FileTool extends WorkSpaceTool {
 
+    /**
+     * @author wyq
+     * 
+     */
+    public interface TextLineAccepter {
+	public abstract boolean accept(String line);
+    }
+
     public void copyFile(File srcFile, File tarFile) throws IOException {
 	BufferedInputStream in = getBufferedInputStream(srcFile);
 	BufferedOutputStream out = getBufferedOutputStream(tarFile);
@@ -80,13 +88,46 @@ public class FileTool extends WorkSpaceTool {
     }
 
     public String[] readTxtFileLines(String file) throws IOException {
+	return readTxtFileLines(file, new TextLineAccepter() {
+
+	    @Override
+	    public boolean accept(String line) {
+		return true;
+	    }
+	});
+    }
+
+    public String[] readTxtFileLines(String file, final String... ignorePrefix)
+	    throws IOException {
+	return readTxtFileLines(file, new TextLineAccepter() {
+
+	    @Override
+	    public boolean accept(String line) {
+		if (ignorePrefix == null || ignorePrefix.length == 0) {
+		    return true;
+		} else {
+		    for (String ignPfx : ignorePrefix) {
+			if (line.startsWith(ignPfx)) {
+			    return false;
+			}
+		    }
+		    return true;
+		}
+	    }
+	});
+    }
+
+    public String[] readTxtFileLines(String file, TextLineAccepter accepter)
+	    throws IOException {
 	List<String> lines = new ArrayList<String>();
 	File f = new File(file);
 	Reader reader = new FileReader(f);
 	BufferedReader br = new BufferedReader(reader);
 	String line = null;
 	while ((line = br.readLine()) != null) {
-	    lines.add(line);
+	    if (accepter == null || accepter.accept(line)) {
+		lines.add(line);
+	    }
 	}
 	br.close();
 	reader.close();

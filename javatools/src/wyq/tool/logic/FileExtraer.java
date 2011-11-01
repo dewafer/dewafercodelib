@@ -14,7 +14,9 @@ public class FileExtraer extends AbstractPropertyProcessor {
     private String targetFolder;
     private String workspace;
     private FileTool tool = new FileTool();
-    private String[] args ;
+    private String[] args;
+
+    private static final String[] IGNORE_LINE_PREFIX = { "#", "/", "-" };
 
     /**
      * @param args
@@ -46,7 +48,7 @@ public class FileExtraer extends AbstractPropertyProcessor {
     private String[] openFile() {
 	String[] lines = null;
 	try {
-	    lines = tool.readTxtFileLines(getContentFile());
+	    lines = tool.readTxtFileLines(getContentFile(), IGNORE_LINE_PREFIX);
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
@@ -55,7 +57,7 @@ public class FileExtraer extends AbstractPropertyProcessor {
 
     private String getContentFile() {
 	String cfile = contentFile;
-	if(args!= null && args.length > 0){
+	if (args != null && args.length > 0) {
 	    cfile = args[0];
 	    log("using arg:" + cfile);
 	}
