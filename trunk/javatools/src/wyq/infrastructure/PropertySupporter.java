@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Properties;
 
 /**
@@ -108,7 +109,10 @@ public class PropertySupporter {
 		origValue = f.get(target);
 		Object convertedValue = convert(propValue, origValue,
 			f.getType());
-		f.set(target, convertedValue);
+		if (f.isAccessible() && !Modifier.isStatic(f.getModifiers())
+			&& !Modifier.isFinal(f.getModifiers())) {
+		    f.set(target, convertedValue);
+		}
 	    } catch (IllegalArgumentException e) {
 		handleException(e);
 	    } catch (IllegalAccessException e) {
