@@ -16,7 +16,8 @@ public class FileExtraer extends AbstractPropertyProcessor {
     private FileTool tool = new FileTool();
     private String[] args;
 
-    private static final String[] IGNORE_LINE_PREFIX = { "#", "/", "-", "=" };
+    private static final String[] IGNORE_LINE_PREFIX = { "#", "//", "/*", "-",
+	    "=" };
 
     /**
      * @param args
