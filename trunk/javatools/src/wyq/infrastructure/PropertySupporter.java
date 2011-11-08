@@ -13,11 +13,11 @@ import java.util.Properties;
  * A properties auto inject supporter. Extend this class or use
  * <code>PropertySupporter.inject</code> method.
  * 
- * Override <code>PropertySupporter.convert</code> to customize property
- * converting.
+ * Override <code>PropertySupporter.getConvertor</code> and implements
+ * <code>Convertor</code> to customize property converting.
  * 
  * @author dewafer
- * @version 0.3 2011/10/21
+ * @version 0.5 2011/11/8
  * 
  */
 public class PropertySupporter {
@@ -29,22 +29,68 @@ public class PropertySupporter {
     protected PropertySupporter() {
 	Class<?> clz = this.getClass();
 	if (!PropertySupporter.class.equals(clz)) {
-	    inject(this);
+	    inject(this, getConvertor());
 	}
     }
 
     protected <T> PropertySupporter(T target, String pfile) {
-	inject(target, getPropFileInputStream(target, pfile));
+	inject(target, getPropFileInputStream(target, pfile), getConvertor());
     }
 
     protected <T> PropertySupporter(String pfile) {
-	inject(this, getPropFileInputStream(this, pfile));
+	inject(this, getPropFileInputStream(this, pfile), getConvertor());
     }
 
-    protected <T> InputStream getPropFileInputStream(T target, String pfile) {
+    protected <T> PropertySupporter(T target, File pfile) {
+	try {
+	    inject(target, new FileInputStream(pfile), getConvertor());
+	} catch (FileNotFoundException e) {
+	    e.printStackTrace();
+	    throw new RuntimeException(e);
+	}
+    }
+
+    protected <T> PropertySupporter(T target) {
+	inject(target, getConvertor());
+    }
+
+    public static <T> T inject(T target, InputStream in) {
+	return inject(target, in, new DefaultConvertor());
+    }
+
+    public static <T> T inject(T target, InputStream in, Convertor convertor) {
+	PropertySupporter ps = new PropertySupporter();
+	return ps.doInject(target, in, convertor);
+    }
+
+    public static <T> T inject(T target) {
+	return inject(target, getDefaultSource(target), new DefaultConvertor());
+    }
+
+    public static <T> T inject(T target, Convertor convertor) {
+	return inject(target, getDefaultSource(target), convertor);
+    }
+
+    public static <T> InputStream getDefaultSource(T target) {
+	Class<?> clz = target.getClass();
+	String clzName = clz.getSimpleName();
+	InputStream is = clz.getResourceAsStream(PROPERTIES_PREFIX + clzName
+		+ PROPERTIES_SUFFIX);
+	if (is == null) {
+	    is = clz.getResourceAsStream(clzName + PROPERTIES_SUFFIX);
+	}
+	return is;
+    }
+
+    public static <T> InputStream getPropFileInputStream(T target, String pfile) {
 	File f = new File(pfile);
 	if (!f.isAbsolute()) {
-	    return target.getClass().getResourceAsStream(pfile);
+	    InputStream is = target.getClass().getResourceAsStream(pfile);
+	    if (is == null) {
+		is = target.getClass().getResourceAsStream(
+			PROPERTIES_PREFIX + pfile);
+	    }
+	    return is;
 	} else {
 	    try {
 		return new FileInputStream(f);
@@ -55,39 +101,11 @@ public class PropertySupporter {
 	}
     }
 
-    protected <T> PropertySupporter(T target, File pfile) {
-	try {
-	    inject(target, new FileInputStream(pfile));
-	} catch (FileNotFoundException e) {
-	    e.printStackTrace();
-	    throw new RuntimeException(e);
-	}
+    protected Convertor getConvertor() {
+	return new DefaultConvertor();
     }
 
-    protected <T> PropertySupporter(T target) {
-	inject(target);
-    }
-
-    public static <T> T inject(T target, InputStream in) {
-	PropertySupporter ps = new PropertySupporter();
-	return ps.doInject(target, in);
-    }
-
-    public static <T> T inject(T target) {
-	Class<?> clz = target.getClass();
-	String clzName = clz.getSimpleName();
-	InputStream is = clz.getResourceAsStream(PROPERTIES_PREFIX + clzName
-		+ PROPERTIES_SUFFIX);
-	if (is == null) {
-	    is = clz.getResourceAsStream(clzName + PROPERTIES_SUFFIX);
-	}
-	if (is != null) {
-	    target = inject(target, is);
-	}
-	return target;
-    }
-
-    private <T> T doInject(T target, InputStream inStream) {
+    protected <T> T doInject(T target, InputStream inStream, Convertor convertor) {
 	Properties p = new Properties();
 	try {
 	    p.load(inStream);
@@ -107,7 +125,7 @@ public class PropertySupporter {
 		propValue = p.getProperty(fieldName);
 		f.setAccessible(true);
 		origValue = f.get(target);
-		Object convertedValue = convert(propValue, origValue,
+		Object convertedValue = convertor.convert(propValue, origValue,
 			f.getType());
 		if (f.isAccessible() && !Modifier.isStatic(f.getModifiers())
 			&& !Modifier.isFinal(f.getModifiers())) {
@@ -123,44 +141,6 @@ public class PropertySupporter {
 	}
 
 	return target;
-    }
-
-    protected Object convert(String propValue, Object origValue,
-	    Class<?> requiredType) {
-	if (String.class.equals(requiredType)) {
-	    return propValue;
-	} else if (!requiredType.isPrimitive()) {
-	    return origValue;
-	} else {
-	    // 8 elements
-	    // Boolean.TYPE, Character.TYPE, Byte.TYPE, Short.TYPE,
-	    // Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE
-	    if (Boolean.TYPE.equals(requiredType)) {
-		return Boolean.parseBoolean(propValue);
-	    }
-	    if (Character.TYPE.equals(requiredType)) {
-		return propValue.toCharArray()[0];
-	    }
-	    if (Byte.TYPE.equals(requiredType)) {
-		return Byte.parseByte(propValue);
-	    }
-	    if (Short.TYPE.equals(requiredType)) {
-		return Short.parseShort(propValue);
-	    }
-	    if (Integer.TYPE.equals(requiredType)) {
-		return Integer.parseInt(propValue);
-	    }
-	    if (Long.TYPE.equals(requiredType)) {
-		return Long.parseLong(propValue);
-	    }
-	    if (Float.TYPE.equals(requiredType)) {
-		return Float.parseFloat(propValue);
-	    }
-	    if (Double.TYPE.equals(requiredType)) {
-		return Double.parseDouble(propValue);
-	    }
-	    return origValue;
-	}
     }
 
     protected void handleException(Exception e) {

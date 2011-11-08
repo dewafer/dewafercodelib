@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.net.URL;
 
 import wyq.infrastructure.FileTool;
-import wyq.tool.util.AbstractPropertyProcessor;
+import wyq.tool.util.AbstractProcessor;
 import wyq.tool.util.ProcessorRunner;
 
-public class FileExtraer extends AbstractPropertyProcessor {
+public class FileExtraer extends AbstractProcessor {
 
     private String contentFile;
     private String targetFolder;
