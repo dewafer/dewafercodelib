@@ -7,8 +7,8 @@ import wyq.tool.util.Processor;
 import wyq.tool.util.Processor.InjectProperty;
 import wyq.tool.util.ProcessorRunner;
 
-@InjectProperty
-public class TestProcessor extends AbstractProcessor implements Processor {
+@InjectProperty("test4.properties")
+public class TestProcessor4 extends AbstractProcessor implements Processor {
 
     private String a1;
     private String a2;
@@ -31,7 +31,7 @@ public class TestProcessor extends AbstractProcessor implements Processor {
     }
 
     public static void main(String[] args) {
-	ProcessorRunner.run(TestProcessor.class, args);
+	ProcessorRunner.run(TestProcessor4.class, args);
     }
 
 }

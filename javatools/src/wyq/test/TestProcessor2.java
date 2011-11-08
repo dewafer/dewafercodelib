@@ -2,13 +2,18 @@ package wyq.test;
 
 import java.util.Arrays;
 
-import wyq.tool.util.AbstractProcessor;
+import wyq.infrastructure.Convertor;
+import wyq.infrastructure.PropertySupporter;
 import wyq.tool.util.Processor;
-import wyq.tool.util.Processor.InjectProperty;
 import wyq.tool.util.ProcessorRunner;
+import wyq.tool.util.PropertyInjector;
 
-@InjectProperty
-public class TestProcessor extends AbstractProcessor implements Processor {
+public class TestProcessor2 extends PropertySupporter implements Processor {
+
+    @Override
+    protected Convertor getConvertor() {
+	return new PropertyInjector();
+    };
 
     private String a1;
     private String a2;
@@ -31,7 +36,7 @@ public class TestProcessor extends AbstractProcessor implements Processor {
     }
 
     public static void main(String[] args) {
-	ProcessorRunner.run(TestProcessor.class, args);
+	ProcessorRunner.run(TestProcessor2.class, args);
     }
 
 }

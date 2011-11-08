@@ -2,6 +2,7 @@ package wyq.tool.util;
 
 import java.util.Arrays;
 
+import wyq.tool.util.Processor.InjectProperty;
 
 public abstract class ProcessorRunner implements Runnable {
 
@@ -54,8 +55,20 @@ public abstract class ProcessorRunner implements Runnable {
 		log("Init failed, exit.");
 		return;
 	    }
-	    log("start process with args:[" + Arrays.toString(args) + "]");
+	    InjectProperty ano = clz.getAnnotation(InjectProperty.class);
+	    if (ano != null) {
+		String propFile = ano.value();
+		if (propFile.length() > 0) {
+		    log("inject process with properties file:[" + propFile
+			    + "]");
+		    PropertyInjector.doPropInject(target, propFile);
+		} else {
+		    log("inject process with default properties file");
+		    PropertyInjector.doPropInject(target);
+		}
+	    }
 	    try {
+		log("start process with args:[" + Arrays.toString(args) + "]");
 		target.process(args);
 	    } catch (Exception e) {
 		// TODO Auto-generated catch block
