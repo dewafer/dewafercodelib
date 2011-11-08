@@ -15,7 +15,8 @@ public class PropertyInjector implements Convertor {
     public Object convert(String propValue, Object origValue,
 	    Class<?> requiredType) throws IllegalAccessException,
 	    InstantiationException {
-	if (requiredType.isArray()) {
+	if (requiredType.isArray() && propValue != null
+		&& propValue.length() > 0) {
 	    Class<?> compType = requiredType.getComponentType();
 	    String[] splitedPropValue = propValue.split(SPLIT_REGEX);
 	    int length = splitedPropValue.length;
