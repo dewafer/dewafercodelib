@@ -6,8 +6,10 @@ import java.net.URL;
 
 import wyq.infrastructure.FileTool;
 import wyq.tool.util.AbstractProcessor;
+import wyq.tool.util.Processor.InjectProperty;
 import wyq.tool.util.ProcessorRunner;
 
+@InjectProperty
 public class FileExtraer extends AbstractProcessor {
 
     private String contentFile;
