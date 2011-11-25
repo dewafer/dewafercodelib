@@ -120,12 +120,7 @@ public class SmartExtClasspathLoader {
 	if (filter.accept(packageName, className, entry.isInJar,
 		entry.jarFileName)) {
 	    try {
-		String fullName;
-		if (packageName.length() > 0) {
-		    fullName = packageName + "." + className;
-		} else {
-		    fullName = className;
-		}
+		String fullName = entry.getFullName();
 		loadedClass = classloader.loadClass(fullName);
 	    } catch (ClassNotFoundException e) {
 		e.printStackTrace();
@@ -168,8 +163,10 @@ public class SmartExtClasspathLoader {
 		    // 如果是一个.class文件 而且不是目录
 		    if (name.endsWith(".class") && !entry.isDirectory()) {
 			// 去掉后面的".class" 获取真正的类名
-			String className = name.substring(
-				packageName.length() + 1, name.length() - 6);
+			int startPos = packageName.length() + 1;
+			int endPos = name.length() - 6;
+			String className = (startPos < endPos) ? name
+				.substring(startPos, endPos) : "";
 			Entry e = new Entry(packageName, className, true,
 				jar.getName());
 			classes.add(e);
@@ -183,9 +180,8 @@ public class SmartExtClasspathLoader {
     }
 
     public static Set<Class<?>> loadClasspath(String path,
-	    ClassLoaderFilter filter) {
+	    ClassLoaderFilter filter, List<String> nameList) {
 	File file = new File(path);
-	Set<Class<?>> clzzSet = new LinkedHashSet<Class<?>>();
 	Set<Entry> clzzNameSet = new LinkedHashSet<Entry>();
 	if (file.isDirectory()) {
 	    List<File> classFile = getSubClassFile(file);
@@ -218,10 +214,18 @@ public class SmartExtClasspathLoader {
 	    clzzNameSet.addAll(getClassNamesInJar(file));
 	}
 	// lazy load
+	Set<Class<?>> clzzSet = null;
 	for (Entry clzzName : clzzNameSet) {
-	    if (filter.accept(clzzName.packageName, clzzName.className,
-		    clzzName.isInJar, clzzName.jarFileName)) {
-		System.out.println(clzzName.toString());
+	    System.out.println(clzzName.toString());
+	    if (nameList != null) {
+		nameList.add(clzzName.getFullName());
+	    }
+	    if (filter != null
+		    && filter.accept(clzzName.packageName, clzzName.className,
+			    clzzName.isInJar, clzzName.jarFileName)) {
+		if (clzzSet == null) {
+		    clzzSet = new LinkedHashSet<Class<?>>();
+		}
 		Class<?> loadedClass = null;
 		loadedClass = loadClass(clzzName, filter);
 		if (loadedClass != null && filter.accept(loadedClass)) {
@@ -233,7 +237,15 @@ public class SmartExtClasspathLoader {
     }
 
     public static Set<Class<?>> loadClasspath(String path) {
-	return loadClasspath(path, new ClassLoaderFilter() {
+	return loadClasspath(path, getDefaultClassLoaderFilter(), null);
+    }
+
+    public static void loadClasspath(String path, List<String> nameList) {
+	loadClasspath(path, null, nameList);
+    }
+
+    private static ClassLoaderFilter getDefaultClassLoaderFilter() {
+	return new ClassLoaderFilter() {
 
 	    @Override
 	    public boolean accept(String packageName, String className,
@@ -247,7 +259,7 @@ public class SmartExtClasspathLoader {
 		// accept all
 		return true;
 	    }
-	});
+	};
     }
 
     public static void main(String[] args) {
