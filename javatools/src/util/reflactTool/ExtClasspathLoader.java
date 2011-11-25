@@ -1,4 +1,4 @@
-package wyq.infrastructure;
+package util.reflactTool;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -391,7 +391,6 @@ public final class ExtClasspathLoader {
 	Package[] packages = Package.getPackages();
 	for (Package p : packages) {
 	    System.out.println(p);
-	    System.out.println(p.getImplementationTitle());
 	    if (p.getName().equals("test")) {
 		Set<Class<?>> classes = loader.getClasses(p);
 		for (Class<?> c : classes) {
