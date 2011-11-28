@@ -6,5 +6,7 @@
     <string name="startButtonText">Start</string>
     <string name="stopButtonText">Stop</string>
     <string name="svc_name">MyService</string>
+    <string name="bindButtonText">bind</string>
+    <string name="unbindButtonText">unbind</string>
 
 </resources>

@@ -28,6 +28,21 @@
             android:layout_height="wrap_content"
             android:onClick="stopService"
             android:text="@string/stopButtonText" />
+
+        <Button
+            android:id="@+id/bindButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="bindOnClick"
+            android:text="@string/bindButtonText" />
+
+        <Button
+            android:id="@+id/unbindButtion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="unbindOnClick"
+            android:text="@string/unbindButtonText" />
+
     </LinearLayout>
 
 </LinearLayout>
