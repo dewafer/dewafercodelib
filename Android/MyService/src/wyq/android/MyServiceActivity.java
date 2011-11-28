@@ -42,19 +42,37 @@ public class MyServiceActivity extends Activity {
 	showSvcSts();
     }
 
+    @Override
+    protected void onResume() {
+	super.onResume();
+	bindService();
+	showSvcSts();
+    }
+
+    @Override
+    protected void onPause() {
+	unbindService();
+	super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+	// unbind service before destroy
+	unbindService();
+	super.onDestroy();
+    }
+
     private void bindService() {
 	bindService(new Intent(this, MyService.class), mySvcConn,
 		BIND_NOT_FOREGROUND);
     }
 
     private void unbindService() {
-	unbindService(mySvcConn);
-    }
-
-    @Override
-    protected void onResume() {
-	super.onResume();
-	showSvcSts();
+	try {
+	    unbindService(mySvcConn);
+	} catch (Exception e) {
+	    toast(e.getMessage());
+	}
     }
 
     private void showSvcSts() {
@@ -63,13 +81,6 @@ public class MyServiceActivity extends Activity {
 	} else {
 	    textView1.setText(getLog(myService.toString()));
 	}
-    }
-
-    @Override
-    protected void onDestroy() {
-	super.onDestroy();
-	// unbind service
-	unbindService();
     }
 
     public void startService(View view) {
@@ -81,6 +92,16 @@ public class MyServiceActivity extends Activity {
     public void stopService(View view) {
 	toast("stopService(" + view + ")");
 	stopService(new Intent(this, MyService.class));
+	showSvcSts();
+    }
+
+    public void bindOnClick(View view) {
+	bindService();
+	showSvcSts();
+    }
+
+    public void unbindOnClick(View view) {
+	unbindService();
 	showSvcSts();
     }
 
