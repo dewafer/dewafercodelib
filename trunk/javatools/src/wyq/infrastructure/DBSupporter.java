@@ -15,8 +15,8 @@ public abstract class DBSupporter {
 
     private Connection conn;
 
-    protected void connect() throws ClassNotFoundException, SQLException {
-	Class.forName(getSqlConnProviderClass());
+    protected void connect() throws ClassNotFoundException, SQLException, IllegalAccessException, InstantiationException {
+	Class.forName(getSqlConnProviderClass()).newInstance();
 	conn = DriverManager.getConnection(getConnStr());
     }
 
