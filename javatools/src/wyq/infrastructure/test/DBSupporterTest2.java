@@ -2,12 +2,11 @@ package wyq.infrastructure.test;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import wyq.infrastructure.DBSupporter;
 
-public class DBSupporterTest extends DBSupporter {
+public class DBSupporterTest2 extends DBSupporter {
 
     @Override
     protected String getSqlConnProviderClass() {
@@ -27,15 +26,8 @@ public class DBSupporterTest extends DBSupporter {
     @Override
     protected void processResult(ResultSet rs) {
 	try {
-	    ResultSetMetaData metaData = rs.getMetaData();
 	    while (rs.next()) {
-		for (int i = 1; i <= metaData.getColumnCount(); i++) {
-		    String strColLabel = metaData.getColumnLabel(i);
-		    print(strColLabel + ":");
-		    print(rs.getObject(i));
-		    print(" ");
-		}
-		println("");
+		println(rs.getString("INFO"));
 	    }
 	} catch (SQLException e) {
 	    e.printStackTrace();
@@ -44,7 +36,7 @@ public class DBSupporterTest extends DBSupporter {
 
     @Override
     protected void afterSqlExecuted(int updateCount) {
-	// It won't go here.
+	println(updateCount + " row(s) affected");
     }
 
     /**
@@ -55,20 +47,17 @@ public class DBSupporterTest extends DBSupporter {
     public static void main(String[] args) throws SQLException,
 	    ClassNotFoundException {
 	println("start");
-	DBSupporterTest test = new DBSupporterTest();
+	DBSupporterTest2 test = new DBSupporterTest2();
 	println("connect");
 	test.connect();
 	println("exe sql");
-	test.executeSQL("Select * from dataInfo");
+	test.executeSQL("INSERT INTO dataInfo VALUES('8','5','6')");
+	test.executeSQL("INSERT INTO dataInfo VALUES('7','b','c')");
 	println("close");
 	test.close();
     }
 
     public static void println(Object o) {
 	System.out.println(o);
-    }
-
-    public static void print(Object o) {
-	System.out.print(o);
     }
 }

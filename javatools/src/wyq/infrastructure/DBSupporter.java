@@ -33,7 +33,12 @@ public abstract class DBSupporter {
 	}
 	boolean hasResult;
 	try {
-	    hasResult = stmt.execute(sql);
+	    if (stmt instanceof PreparedStatement) {
+		PreparedStatement pstmt = (PreparedStatement) stmt;
+		hasResult = pstmt.execute();
+	    } else {
+		hasResult = stmt.execute(sql);
+	    }
 	    if (hasResult) {
 		ResultSet resultSet = stmt.getResultSet();
 		processResult(resultSet);
@@ -55,9 +60,9 @@ public abstract class DBSupporter {
 	}
     }
 
-    protected abstract void prepareParameter(PreparedStatement stmt);
+    protected abstract void prepareParameter(PreparedStatement stmt) throws SQLException;
 
-    protected abstract void processResult(ResultSet rs);
+    protected abstract void processResult(ResultSet rs) throws SQLException;
 
     protected abstract void afterSqlExecuted(int updateCount);
 
