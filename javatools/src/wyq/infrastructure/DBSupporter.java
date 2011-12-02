@@ -15,8 +15,8 @@ public abstract class DBSupporter {
 
     private Connection conn;
 
-    protected void connect() throws ClassNotFoundException, SQLException, IllegalAccessException, InstantiationException {
-	Class.forName(getSqlConnProviderClass()).newInstance();
+    protected void connect() throws ClassNotFoundException, SQLException {
+	Class.forName(getSqlConnProviderClass());
 	conn = DriverManager.getConnection(getConnStr());
     }
 
@@ -60,7 +60,8 @@ public abstract class DBSupporter {
 	}
     }
 
-    protected abstract void prepareParameter(PreparedStatement stmt) throws SQLException;
+    protected abstract void prepareParameter(PreparedStatement stmt)
+	    throws SQLException;
 
     protected abstract void processResult(ResultSet rs) throws SQLException;
 
