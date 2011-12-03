@@ -1,6 +1,7 @@
 package wyq.tool.logic;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
@@ -37,7 +38,28 @@ public class DataInjector extends AbstractProcessor {
     @Override
     public void process(String[] args) throws Exception {
 	// read the xls file
-	InputStream is = new FileInputStream(xls_file);
+	List<DBItem> list = openXlsAndGetDBItems(xls_file);
+
+	// prepare sql from the xls file
+	prepareSqlForDBItems(list);
+
+	// prepare DBContorller instance
+	DBController controller = new DBController();
+
+	// execute sql
+	for (DBItem item : list) {
+	    if (delete_data_before_insert) {
+		controller.goDel(item);
+	    }
+	    controller.goInsert(item);
+	}
+	controller.close();
+    }
+
+    protected List<DBItem> openXlsAndGetDBItems(String xlsFile)
+	    throws IOException {
+	// read the xls file
+	InputStream is = new FileInputStream(xlsFile);
 	HSSFWorkbook workbook = new HSSFWorkbook(is);
 
 	int numberOfSheets = workbook.getNumberOfSheets();
@@ -76,6 +98,10 @@ public class DataInjector extends AbstractProcessor {
 	    }
 	    list.add(item);
 	}
+	return list;
+    }
+
+    protected void prepareSqlForDBItems(List<DBItem> list) {
 	// prepare sql from the xls file
 	if (delete_data_before_insert) {
 	    for (DBItem item : list) {
@@ -86,21 +112,9 @@ public class DataInjector extends AbstractProcessor {
 	for (DBItem item : list) {
 	    item.InsertSql = getInsertSql(item);
 	}
-
-	// prepare DBContorller instance
-	DBController controller = new DBController();
-
-	// execute sql
-	for (DBItem item : list) {
-	    if (delete_data_before_insert) {
-		controller.goDel(item);
-	    }
-	    controller.goInsert(item);
-	}
-	controller.close();
     }
 
-    private String getDeleteSql(DBItem item) {
+    protected String getDeleteSql(DBItem item) {
 	StringBuilder sb = new StringBuilder("DELETE FROM ");
 	sb.append(item.tableName);
 	sb.append(" WHERE ");
@@ -115,7 +129,7 @@ public class DataInjector extends AbstractProcessor {
 	return sb.toString();
     }
 
-    private String getInsertSql(DBItem item) {
+    protected String getInsertSql(DBItem item) {
 	StringBuilder sb = new StringBuilder("INSERT INTO ");
 	sb.append(item.tableName + " ( ");
 	StringBuilder values = new StringBuilder(" VALUES ( ");
@@ -140,12 +154,12 @@ public class DataInjector extends AbstractProcessor {
 	ProcessorRunner.run(DataInjector.class, args);
     }
 
-    private class DBItem {
-	private String tableName;
-	private List<String> cols = new ArrayList<String>();
-	private List<Map<String, String>> rows = new ArrayList<Map<String, String>>();
-	private String InsertSql;
-	private String DeleteSql;
+    protected class DBItem {
+	public String tableName;
+	public List<String> cols = new ArrayList<String>();
+	public List<Map<String, String>> rows = new ArrayList<Map<String, String>>();
+	public String InsertSql;
+	public String DeleteSql;
     }
 
     private class DBController extends DBSupporter {
