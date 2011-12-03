@@ -15,6 +15,8 @@ public abstract class DBSupporter {
 
     private Connection conn;
 
+    protected boolean useExecuteBatch = false;
+
     protected void connect() throws ClassNotFoundException, SQLException {
 	Class.forName(getSqlConnProviderClass());
 	conn = DriverManager.getConnection(getConnStr());
@@ -35,7 +37,12 @@ public abstract class DBSupporter {
 	try {
 	    if (stmt instanceof PreparedStatement) {
 		PreparedStatement pstmt = (PreparedStatement) stmt;
-		hasResult = pstmt.execute();
+		if (useExecuteBatch) {
+		    pstmt.executeBatch();
+		    hasResult = false;
+		} else {
+		    hasResult = pstmt.execute();
+		}
 	    } else {
 		hasResult = stmt.execute(sql);
 	    }
