@@ -80,9 +80,15 @@ public class DataInjectorSQLCreator extends DataInjector {
 		} else {
 		    value = "NULL";
 		}
-	    } else if (!isNumeric(value)) {
-		value = " = '" + value + "'";
+	    } else {
+		if (!isNumeric(value)) {
+		    value = "'" + value + "'";
+		}
+		if (isDel) {
+		    value = " = " + value;
+		}
 	    }
+
 	    String replaceMark = isDel ? "/\\*VALUE\\*/" : "\\?";
 	    sql = sql.replaceFirst(replaceMark, value);
 	}
