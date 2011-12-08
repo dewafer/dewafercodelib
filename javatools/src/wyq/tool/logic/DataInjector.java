@@ -79,7 +79,7 @@ public class DataInjector extends AbstractProcessor {
 		    Iterator<Cell> cellIterator = row.cellIterator();
 		    while (cellIterator.hasNext()) {
 			HSSFCell cell = (HSSFCell) cellIterator.next();
-			item.cols.add(cell.getStringCellValue());
+			item.cols.add(getCellValue(cell));
 		    }
 		} else {
 		    // after the first row are the data
@@ -89,7 +89,7 @@ public class DataInjector extends AbstractProcessor {
 		    while (cellIterator.hasNext()) {
 			HSSFCell cell = (HSSFCell) cellIterator.next();
 			String colName = item.cols.get(cellCount);
-			String celValue = cell.getStringCellValue();
+			String celValue = getCellValue(cell);
 			dbrow.put(colName, celValue);
 			cellCount++;
 		    }
@@ -99,6 +99,11 @@ public class DataInjector extends AbstractProcessor {
 	    list.add(item);
 	}
 	return list;
+    }
+
+    protected String getCellValue(HSSFCell cell) {
+	String strValue = cell.getStringCellValue();
+	return strValue.trim();
     }
 
     protected void prepareSqlForDBItems(List<DBItem> list) {
