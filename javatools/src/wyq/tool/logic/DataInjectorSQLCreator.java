@@ -75,20 +75,37 @@ public class DataInjectorSQLCreator extends DataInjector {
     private String setValues(List<String> values, String sql, boolean isDel) {
 	for (String value : values) {
 	    if (value == null || value.length() == 0) {
-		value = "NULL";
+		if (isDel) {
+		    value = "IS NULL";
+		} else {
+		    value = "NULL";
+		}
 	    } else if (!isNumeric(value)) {
-		value = "'" + value + "'";
+		value = " = '" + value + "'";
 	    }
-	    sql = sql.replaceFirst("\\?", value);
-	    if (isDel) {
-		sql = sql.replaceFirst("\\?", value);
-	    }
+	    String replaceMark = isDel ? "/\\*VALUE\\*/" : "\\?";
+	    sql = sql.replaceFirst(replaceMark, value);
 	}
 	return sql;
     }
 
     private boolean isNumeric(String value) {
-	return Pattern.matches("^\\d+$", value);
+	return Pattern.matches("^[1-9]+\\d*$", value);
+    }
+
+    @Override
+    protected String getDeleteSql(DBItem item) {
+	StringBuilder sb = new StringBuilder("DELETE FROM ");
+	sb.append(item.tableName);
+	sb.append(" WHERE ");
+	for (String colName : item.cols) {
+	    // for null compare
+	    sb.append(colName + " /*VALUE*/ ");
+	    if (item.cols.lastIndexOf(colName) != item.cols.size() - 1) {
+		sb.append(" AND ");
+	    }
+	}
+	return sb.toString();
     }
 
     /**
