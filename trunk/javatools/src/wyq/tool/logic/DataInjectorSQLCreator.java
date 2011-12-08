@@ -30,6 +30,8 @@ public class DataInjectorSQLCreator extends DataInjector {
 	prepareSqlForDBItems(list);
 
 	createSqls(list);
+
+	tool.openExplorer(sql_file_path);
     }
 
     protected void createSqls(List<DBItem> list) throws IOException {
