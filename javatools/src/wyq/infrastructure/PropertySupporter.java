@@ -9,6 +9,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Properties;
 
+import wyq.tool.util.Logger;
+
 /**
  * A properties auto inject supporter. Extend this class or use
  * <code>PropertySupporter.inject</code> method.
@@ -113,6 +115,8 @@ public class PropertySupporter {
 	    handleException(e);
 	} catch (IOException e) {
 	    handleException(e);
+	} catch (Exception e) {
+	    handleException(e);
 	}
 
 	Class<?> clz = target.getClass();
@@ -130,6 +134,8 @@ public class PropertySupporter {
 		if (f.isAccessible() && !Modifier.isStatic(f.getModifiers())
 			&& !Modifier.isFinal(f.getModifiers())) {
 		    f.set(target, convertedValue);
+		    Logger.log("Inject set[" + fieldName + ": "
+			    + convertedValue + "]");
 		}
 	    } catch (IllegalArgumentException e) {
 		handleException(e);
