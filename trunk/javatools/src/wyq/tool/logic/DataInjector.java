@@ -38,7 +38,7 @@ public class DataInjector extends AbstractProcessor {
     @Override
     public void process(String[] args) throws Exception {
 	// read the xls file
-	List<DBItem> list = openXlsAndGetDBItems(xls_file);
+	List<DBItem> list = openXlsAndGetDBItems(getResFilePath(xls_file));
 
 	// prepare sql from the xls file
 	prepareSqlForDBItems(list);
