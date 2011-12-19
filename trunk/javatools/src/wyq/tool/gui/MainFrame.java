@@ -6,6 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -65,6 +67,12 @@ public class MainFrame {
      */
     private void initialize() {
 	frame = new JFrame();
+	frame.addWindowListener(new WindowAdapter() {
+	    @Override
+	    public void windowOpened(WindowEvent arg0) {
+		PluginLoader.load();
+	    }
+	});
 	frame.setBounds(100, 100, 630, 380);
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -128,6 +136,7 @@ public class MainFrame {
 	    Logger.log(processor.getCmdProcessorHelp());
 	    String cmd = getCmdLineTextField().getText();
 	    processor.process(cmd);
+	    getCmdLineTextField().setText("");
 	}
     }
 

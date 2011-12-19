@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import wyq.tool.util.Logger;
+
 /**
  * Load jar files or class files under the classpath
  * 
@@ -216,7 +218,7 @@ public class SmartExtClasspathLoader {
 	// lazy load
 	Set<Class<?>> clzzSet = null;
 	for (Entry clzzName : clzzNameSet) {
-	    System.out.println(clzzName.toString());
+	    Logger.log(clzzName.toString());
 	    if (nameList != null) {
 		nameList.add(clzzName.getFullName());
 	    }
@@ -265,7 +267,7 @@ public class SmartExtClasspathLoader {
     public static void main(String[] args) {
 	Set<Class<?>> clzs = loadClasspath("C:\\test");
 	for (Class<?> clz : clzs) {
-	    System.out.println(clz);
+	    Logger.log(clz);
 	}
     }
 
