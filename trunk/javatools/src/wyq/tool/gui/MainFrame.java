@@ -6,8 +6,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -19,6 +17,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.text.JTextComponent;
+
+import wyq.cmd.CmdProcessor;
+import wyq.cmd.CmdProcessorFactory;
+import wyq.tool.util.Logger;
 
 public class MainFrame {
 
@@ -110,15 +112,22 @@ public class MainFrame {
     }
 
     private class SwingAction extends AbstractAction {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3630840312348520825L;
+
 	public SwingAction() {
 	    putValue(NAME, "Enter");
 	    putValue(SHORT_DESCRIPTION, "Some short description");
 	}
 
 	public void actionPerformed(ActionEvent e) {
-	    // getConsoleTextPane().setText(e.toString());
-	    System.out.println("Shit!!!!");
-	    throw new RuntimeException("holy shit!");
+	    CmdProcessor processor = CmdProcessorFactory.getCmdProcessor();
+	    Logger.log("Using CmdProcessor:" + processor.getClass());
+	    Logger.log(processor.getCmdProcessorHelp());
+	    String cmd = getCmdLineTextField().getText();
+	    processor.process(cmd);
 	}
     }
 
