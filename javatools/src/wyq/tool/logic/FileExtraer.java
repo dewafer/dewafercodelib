@@ -2,7 +2,6 @@ package wyq.tool.logic;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 import wyq.infrastructure.FileTool;
 import wyq.tool.util.AbstractProcessor;
@@ -66,23 +65,11 @@ public class FileExtraer extends AbstractProcessor {
     }
 
     private String getContentFile() {
-	String cfile = contentFile;
 	if (args != null && args.length > 0) {
-	    cfile = args[0];
-	    log("using arg:" + cfile);
+	    contentFile = args[0];
+	    log("using arg:" + contentFile);
 	}
-	File cf = new File(cfile);
-	if (cf.exists()) {
-	    return cf.getAbsolutePath();
-	} else {
-	    URL url = this.getClass().getResource(contentFile);
-	    if (null != url) {
-		return url.getFile();
-	    } else {
-		url = this.getClass().getResource("/" + contentFile);
-		return url.getFile();
-	    }
-	}
+	return getResFilePath(contentFile);
     }
 
     private File getTargetFile(String file) {
