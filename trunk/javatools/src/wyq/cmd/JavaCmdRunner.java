@@ -1,6 +1,10 @@
 package wyq.cmd;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -38,14 +42,46 @@ public class JavaCmdRunner extends PropertySupporter implements CmdProcessor {
 		ProcessorRunner.run(pclz, c.args);
 		println("Cmd Finished.");
 		println(getCmdProcessorHelp());
+	    } else if (isClassWithMain(clz)) {
+		// run main(String[] args)
+		Method mainMethod = clz.getMethod("main", String[].class);
+		mainMethod.invoke(null, new Object[] { c.args });
 	    } else {
 		println((new StringBuilder("Can't run the cmd:")).append(cmd)
 			.toString());
 	    }
 	} catch (ClassNotFoundException e) {
 	    e.printStackTrace();
+	} catch (SecurityException e) {
+	    e.printStackTrace();
+	} catch (NoSuchMethodException e) {
+	    e.printStackTrace();
+	} catch (IllegalArgumentException e) {
+	    e.printStackTrace();
+	} catch (IllegalAccessException e) {
+	    e.printStackTrace();
+	} catch (InvocationTargetException e) {
+	    e.printStackTrace();
 	}
 	return true;
+    }
+
+    private boolean isClassWithMain(Class<?> clz) {
+	Method[] ms = clz.getMethods();
+	for (Method m : ms) {
+	    if ("main".equals(m.getName())
+		    && Modifier.isStatic(m.getModifiers())
+		    && equalsParamTypes(m.getParameterTypes(),
+			    new Class<?>[] { String[].class })) {
+		return true;
+	    }
+	}
+	return false;
+    }
+
+    private boolean equalsParamTypes(Class<?>[] parameterTypes,
+	    Class<?>[] classes) {
+	return Arrays.equals(parameterTypes, classes);
     }
 
     protected void println(String o) {
