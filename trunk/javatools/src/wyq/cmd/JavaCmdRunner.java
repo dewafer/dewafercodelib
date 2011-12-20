@@ -46,6 +46,8 @@ public class JavaCmdRunner extends PropertySupporter implements CmdProcessor {
 		// run main(String[] args)
 		Method mainMethod = clz.getMethod("main", String[].class);
 		mainMethod.invoke(null, new Object[] { c.args });
+		println("Cmd Finished.");
+		println(getCmdProcessorHelp());
 	    } else {
 		println((new StringBuilder("Can't run the cmd:")).append(cmd)
 			.toString());
