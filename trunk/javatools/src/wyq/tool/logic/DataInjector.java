@@ -34,6 +34,8 @@ public class DataInjector extends AbstractProcessor {
     private boolean delete_data_before_insert;
     private String db_provider_class;
     private String db_conn_str;
+    private String username;
+    private String password;
 
     @Override
     public void process(String[] args) throws Exception {
@@ -244,6 +246,16 @@ public class DataInjector extends AbstractProcessor {
 
 	public void close() throws SQLException {
 	    super.close();
+	}
+
+	@Override
+	protected String getUser() {
+	    return DataInjector.this.username;
+	}
+
+	@Override
+	protected String getPassword() {
+	    return DataInjector.this.password;
 	}
 
     }

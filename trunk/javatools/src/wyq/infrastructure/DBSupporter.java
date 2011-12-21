@@ -13,13 +13,22 @@ public abstract class DBSupporter {
 
     protected abstract String getConnStr();
 
+    protected String getUser() {
+	return "";
+    };
+
+    protected String getPassword() {
+	return "";
+    };
+
     private Connection conn;
 
     protected boolean useExecuteBatch = false;
 
     protected void connect() throws ClassNotFoundException, SQLException {
 	Class.forName(getSqlConnProviderClass());
-	conn = DriverManager.getConnection(getConnStr());
+	conn = DriverManager.getConnection(getConnStr(), getUser(),
+		getPassword());
     }
 
     protected void executeSQL(String sql) throws SQLException {
