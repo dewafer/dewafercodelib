@@ -3,6 +3,7 @@ package wyq.tool.logic;
 import java.io.File;
 import java.io.IOException;
 
+import wyq.infrastructure.ExcelOperator;
 import wyq.infrastructure.FileTool;
 import wyq.tool.util.AbstractProcessor;
 import wyq.tool.util.Processor.InjectProperty;
@@ -14,8 +15,11 @@ public class FileExtraer extends AbstractProcessor {
     private String contentFile;
     private String targetFolder;
     private String workspace;
+    private boolean usingXls;
     private FileTool tool = new FileTool();
     private String[] args;
+    private String sheetName;
+    private int colNo;
 
     private static final String[] IGNORE_LINE_PREFIX = { "#", "//", "/*", "-",
 	    "=" };
@@ -57,7 +61,13 @@ public class FileExtraer extends AbstractProcessor {
     private String[] openFile() {
 	String[] lines = null;
 	try {
-	    lines = tool.readTxtFileLines(getContentFile(), IGNORE_LINE_PREFIX);
+	    if (usingXls) {
+		File xls = new File(getContentFile());
+		lines = ExcelOperator.getRowStrings(xls, sheetName, colNo);
+	    } else {
+		lines = tool.readTxtFileLines(getContentFile(),
+			IGNORE_LINE_PREFIX);
+	    }
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
