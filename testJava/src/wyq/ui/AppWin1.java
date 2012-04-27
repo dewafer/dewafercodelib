@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
-import wyq.test.TestBean2;
+import wyq.test.TestBean;
 
 public class AppWin1 {
 
@@ -59,10 +59,10 @@ public class AppWin1 {
 		// Object bean = new Object();
 		// dataList.add(bean);
 		// }
-		List<TestBean2> dataList = new ArrayList<TestBean2>();
+		List<TestBean> dataList = new ArrayList<TestBean>();
 		for (int i = 0; i < 5; i++) {
 
-			TestBean2 bean = new TestBean2();
+			TestBean bean = new TestBean();
 			bean.setValue1("value" + i);
 			bean.setValue2(i);
 			dataList.add(bean);

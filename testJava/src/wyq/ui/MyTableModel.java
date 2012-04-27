@@ -45,9 +45,6 @@ public class MyTableModel extends AbstractTableModel {
 			Class<?> fieldType = m.getReturnType();
 			DataMetaModel model = new DataMetaModel();
 			model.name = fieldName;
-			if (fieldType.isPrimitive()) {
-				fieldType = convertPrimitive(fieldType);
-			}
 			model.type = fieldType;
 			try {
 				classType.getMethod("set" + fieldName, fieldType);
@@ -72,7 +69,7 @@ public class MyTableModel extends AbstractTableModel {
 				return PRIMITIVE_MAP[i];
 			}
 		}
-		return String.class;
+		return null;
 	}
 
 	private static final Class<?>[] PRIMITIVE_MAP = { Boolean.class,
@@ -87,7 +84,11 @@ public class MyTableModel extends AbstractTableModel {
 	public Class<?> getColumnClass(int columnIndex) {
 		// synchronized (dataMetaModelList) {
 		// return String.class;
-		return dataMetaModelList.get(columnIndex).type;
+		Class<?> fieldType = dataMetaModelList.get(columnIndex).type;
+		if (fieldType.isPrimitive()) {
+			fieldType = convertPrimitive(fieldType);
+		}
+		return fieldType;
 		// }
 	}
 
@@ -137,7 +138,6 @@ public class MyTableModel extends AbstractTableModel {
 		meta = dataMetaModelList.get(arg1);
 		// }
 		String colName = meta.name;
-		Class<?> type = meta.type;
 		Object o;
 		// synchronized (dataList) {
 		o = dataList.get(arg0);
@@ -172,7 +172,7 @@ public class MyTableModel extends AbstractTableModel {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		return type.cast(value);
+		return value;
 		// return "test";
 	}
 
