@@ -1,24 +1,15 @@
 package wyq.ui;
 
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
-import wyq.test.TestBean;
-import javax.swing.JScrollBar;
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JToggleButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.JLayeredPane;
-import javax.swing.JTextArea;
-import java.awt.FlowLayout;
-import javax.swing.JSplitPane;
-import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+
+import wyq.test.TestBean2;
 
 public class AppWin1 {
 
@@ -56,18 +47,28 @@ public class AppWin1 {
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
-		
+
 		table = new JTable();
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null},
-				{null},
-				{null},
-			},
-			new String[] {
-				"New column"
-			}
-		));
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.setFillsViewportHeight(true);
+		table.setColumnSelectionAllowed(true);
+		table.setCellSelectionEnabled(true);
+		// List<Object> dataList = new ArrayList<Object>();
+		// for (int i = 0; i < 5; i++) {
+		//
+		// Object bean = new Object();
+		// dataList.add(bean);
+		// }
+		List<TestBean2> dataList = new ArrayList<TestBean2>();
+		for (int i = 0; i < 5; i++) {
+
+			TestBean2 bean = new TestBean2();
+			bean.setValue1("value" + i);
+			bean.setValue2(i);
+			dataList.add(bean);
+		}
+		MyTableModel tm = new MyTableModel(dataList);
+		table.setModel(tm);
 		frame.getContentPane().add(table, BorderLayout.CENTER);
 	}
 }
