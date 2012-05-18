@@ -41,7 +41,12 @@ public class MyTableModel extends AbstractTableModel {
 		List<Method> getMethods = getMethodsStartWith("get", "is");
 		// List<Method> setMethods = getMethodsStartWith("set");
 		for (Method m : getMethods) {
-			String fieldName = m.getName().substring(3);
+			String fieldName = "";
+			if (m.getName().startsWith("get")) {
+				fieldName = m.getName().substring(3);
+			} else {
+				fieldName = m.getName().substring(2);
+			}
 			Class<?> fieldType = m.getReturnType();
 			DataMetaModel model = new DataMetaModel();
 			model.name = fieldName;
@@ -144,27 +149,21 @@ public class MyTableModel extends AbstractTableModel {
 		// }
 		Method getMethod;
 		Object value = null;
+		String methodRealName = null;
+		Class<?> typeOfValue = meta.type;
+		if (Boolean.TYPE.equals(typeOfValue)
+				|| Boolean.class.equals(typeOfValue)) {
+			methodRealName = "is" + colName;
+		} else {
+			methodRealName = "get" + colName;
+		}
 		try {
-			getMethod = classType.getMethod("get" + colName);
+			getMethod = classType.getMethod(methodRealName);
 			value = getMethod.invoke(o);
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
-			try {
-				getMethod = classType.getMethod("is" + colName);
-				value = getMethod.invoke(o);
-			} catch (SecurityException e1) {
-				e1.printStackTrace();
-			} catch (NoSuchMethodException e1) {
-				e1.printStackTrace();
-			} catch (IllegalArgumentException e1) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e1) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e1) {
-				e.printStackTrace();
-			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
