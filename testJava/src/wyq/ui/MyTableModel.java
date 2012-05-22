@@ -3,22 +3,43 @@ package wyq.ui;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
 public class MyTableModel extends AbstractTableModel {
 
-	/**
-	 * 
-	 */
+	private class DataMetaModel {
+		private boolean editable;
+		private String name;
+		private Class<?> type;
+	}
+
+	private static final Class<?>[] PRIMITIVE_ARRAY = { Boolean.TYPE,
+			Character.TYPE, Byte.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE,
+			Float.TYPE, Double.TYPE };
+
+	private static final Class<?>[] PRIMITIVE_MAP = { Boolean.class,
+			Character.class, Byte.class, Short.class, Integer.class,
+			Long.class, Float.class, Double.class };
+
 	private static final long serialVersionUID = 361040467694716979L;
 
-	private List<? extends Object> dataList = new ArrayList<Object>();
 	private Class<? extends Object> classType;
+
+	private List<? extends Object> dataList = new ArrayList<Object>();
+
 	private List<DataMetaModel> dataMetaModelList;
 
-	public MyTableModel(List<? extends Object> dataList) {
+	private static final String[] IGNORE_METHOD_NAME_LIST = { "getClass" };
+
+	private List<String> ignoreMethodNameList = new ArrayList<String>(
+			Arrays.asList(IGNORE_METHOD_NAME_LIST));
+
+	public MyTableModel(List<? extends Object> dataList,
+			String... ignoreMethodNames) {
 		this.dataList = dataList;
 		// check there is only one type in the list
 		Class<? extends Object> type = null;
@@ -33,19 +54,56 @@ public class MyTableModel extends AbstractTableModel {
 			}
 		}
 		classType = type;
+		if (ignoreMethodNames != null && ignoreMethodNames.length > 0) {
+			Collections.addAll(this.ignoreMethodNameList, ignoreMethodNames);
+		}
 		dataMetaModelList = getDataMetaModelList();
+	}
+
+	private Class<?> convertPrimitive(Class<?> primType) {
+		// 8 elements
+		// Boolean.TYPE, Character.TYPE, Byte.TYPE, Short.TYPE,
+		// Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE
+		for (int i = 0; i < PRIMITIVE_ARRAY.length; i++) {
+			if (PRIMITIVE_ARRAY[i].equals(primType)) {
+				return PRIMITIVE_MAP[i];
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		Class<?> fieldType = dataMetaModelList.get(columnIndex).type;
+		if (fieldType.isPrimitive()) {
+			fieldType = convertPrimitive(fieldType);
+		}
+		return fieldType;
+	}
+
+	@Override
+	public int getColumnCount() {
+		return dataMetaModelList.size();
+	}
+
+	@Override
+	public String getColumnName(int column) {
+		return dataMetaModelList.get(column).name;
 	}
 
 	private List<DataMetaModel> getDataMetaModelList() {
 		List<DataMetaModel> dataMetaModelList = new ArrayList<DataMetaModel>();
 		List<Method> getMethods = getMethodsStartWith("get", "is");
-		// List<Method> setMethods = getMethodsStartWith("set");
 		for (Method m : getMethods) {
+			String methodName = m.getName();
+			if (ignoreMethodNameList.contains(methodName)) {
+				continue;
+			}
 			String fieldName = "";
-			if (m.getName().startsWith("get")) {
-				fieldName = m.getName().substring(3);
+			if (methodName.startsWith("get")) {
+				fieldName = methodName.substring(3);
 			} else {
-				fieldName = m.getName().substring(2);
+				fieldName = methodName.substring(2);
 			}
 			Class<?> fieldType = m.getReturnType();
 			DataMetaModel model = new DataMetaModel();
@@ -65,46 +123,6 @@ public class MyTableModel extends AbstractTableModel {
 		return dataMetaModelList;
 	}
 
-	private Class<?> convertPrimitive(Class<?> primType) {
-		// 8 elements
-		// Boolean.TYPE, Character.TYPE, Byte.TYPE, Short.TYPE,
-		// Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE
-		for (int i = 0; i < PRIMITIVE_ARRAY.length; i++) {
-			if (PRIMITIVE_ARRAY[i].equals(primType)) {
-				return PRIMITIVE_MAP[i];
-			}
-		}
-		return null;
-	}
-
-	private static final Class<?>[] PRIMITIVE_MAP = { Boolean.class,
-			Character.class, Byte.class, Short.class, Integer.class,
-			Long.class, Float.class, Double.class };
-
-	private static final Class<?>[] PRIMITIVE_ARRAY = { Boolean.TYPE,
-			Character.TYPE, Byte.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE,
-			Float.TYPE, Double.TYPE };
-
-	@Override
-	public Class<?> getColumnClass(int columnIndex) {
-		// synchronized (dataMetaModelList) {
-		// return String.class;
-		Class<?> fieldType = dataMetaModelList.get(columnIndex).type;
-		if (fieldType.isPrimitive()) {
-			fieldType = convertPrimitive(fieldType);
-		}
-		return fieldType;
-		// }
-	}
-
-	@Override
-	public String getColumnName(int column) {
-		// synchronized (dataMetaModelList) {
-		// return "col";
-		return dataMetaModelList.get(column).name;
-		// }
-	}
-
 	private List<Method> getMethodsStartWith(String... prefixes) {
 		Method[] methods = classType.getMethods();
 		List<Method> getMethods = new ArrayList<Method>();
@@ -121,32 +139,16 @@ public class MyTableModel extends AbstractTableModel {
 	}
 
 	@Override
-	public int getColumnCount() {
-		// synchronized (dataMetaModelList) {
-		// return 5;
-		return dataMetaModelList.size();
-		// }
-	}
-
-	@Override
 	public int getRowCount() {
-		// synchronized (dataList) {
-		// return 3;
 		return dataList.size();
-		// }
 	}
 
 	@Override
 	public Object getValueAt(int arg0, int arg1) {
 		DataMetaModel meta;
-		// synchronized (dataMetaModelList) {
 		meta = dataMetaModelList.get(arg1);
-		// }
 		String colName = meta.name;
-		Object o;
-		// synchronized (dataList) {
-		o = dataList.get(arg0);
-		// }
+		Object o = dataList.get(arg0);
 		Method getMethod;
 		Object value = null;
 		String methodRealName = null;
@@ -172,13 +174,35 @@ public class MyTableModel extends AbstractTableModel {
 			e.printStackTrace();
 		}
 		return value;
-		// return "test";
 	}
 
-	private class DataMetaModel {
-		private String name;
-		private Class<?> type;
-		private boolean editable;
+	@Override
+	public boolean isCellEditable(int arg0, int arg1) {
+		return dataMetaModelList.get(arg1).editable;
 	}
 
+	@Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		DataMetaModel meta;
+		meta = dataMetaModelList.get(columnIndex);
+		String colName = meta.name;
+		Object o = dataList.get(rowIndex);
+		Method getMethod;
+		String methodRealName = "set" + colName;
+		Class<?> typeOfValue = meta.type;
+		try {
+			getMethod = classType.getMethod(methodRealName, typeOfValue);
+			getMethod.invoke(o, aValue);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
 }
