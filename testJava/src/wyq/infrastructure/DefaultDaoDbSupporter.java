@@ -23,7 +23,7 @@ public class DefaultDaoDbSupporter extends DBSupporter implements
 	private Type returnType;
 
 	private InjectManager injectManager = new InjectManager();
-	private Convertor convertor;
+	private Convertor convertor = new DefaultConvertor();
 
 	public void setConvertor(Convertor convertor) {
 		this.convertor = convertor;
@@ -71,48 +71,70 @@ public class DefaultDaoDbSupporter extends DBSupporter implements
 						resultClass = returnClass;
 					}
 				}
-				
-				Method[] allMethods = resultClass.getMethods();
+
 				List<String> fields = new ArrayList<String>();
-				for (Method m : allMethods) {
-					String methodName = m.getName();
-					if (methodName.startsWith("set")) {
-						fields.add(methodName.substring(3));
+				boolean isResultPrimitive = isPrimitive(resultClass);
+				if (!isResultPrimitive) {
+					Method[] allMethods = resultClass.getMethods();
+					for (Method m : allMethods) {
+						String methodName = m.getName();
+						if (methodName.startsWith("set")) {
+							fields.add(methodName.substring(3));
+						}
 					}
 				}
 				List<Object> resultList = new ArrayList<Object>();
 				// while (rs.next()) {
 				int i = 10;
 				while (i-- > 0) {
-					Object bean = resultClass.newInstance();
-					for (String fieldName : fields) {
-						String dbColumnName = getDbColumnName(fieldName);
-						// Object value = rs.getObject(dbColumnName);
+					if (isResultPrimitive) {
+						// Object value = rs.getObject(1);
 						Object value = "test" + i;
-						injectManager.setterInject(fieldName, value, bean,
-								convertor);
+						Object convertedValue = convertor.convert(value, null,
+								resultClass);
+						resultList.add(convertedValue);
+					} else {
+						Object bean = resultClass.newInstance();
+						for (String fieldName : fields) {
+							String dbColumnName = getDbColumnName(fieldName);
+							// Object value = rs.getObject(dbColumnName);
+							Object value = "test" + i;
+							injectManager.setterInject(fieldName, value, bean,
+									convertor);
+						}
+						if (resultClass.equals(returnClass)) {
+							result = bean;
+							return;
+						}
+						resultList.add(bean);
 					}
-					if (resultClass.equals(returnClass)) {
-						result = bean;
-						return;
-					}
-					resultList.add(bean);
 				}
 				if (Collection.class.isAssignableFrom(returnClass)) {
 					result = resultList;
 				} else if (returnClass.isArray()) {
 					Object[] arr = (Object[]) Array.newInstance(resultClass, 0);
 					result = resultList.toArray(arr);
+				} else if (!resultList.isEmpty()) {
+					result = resultList.get(0);
+				} else {
+					result = null;
 				}
-
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
+	}
+
+	private boolean isPrimitive(Class<?> resultClass) {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 	private String getDbColumnName(String fieldName) {
