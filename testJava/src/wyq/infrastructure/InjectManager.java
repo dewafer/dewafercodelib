@@ -5,8 +5,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import wyq.test.TestBean;
-
 public class InjectManager {
 
 	public void setterInject(String fieldName, Object value,
@@ -90,7 +88,7 @@ public class InjectManager {
 	}
 
 	public void setterInject(String fieldName, Object value,
-			TestBean targetObject, Convertor c) {
+			Object targetObject, Convertor c) {
 		Class<?> typeOfValue = value.getClass();
 		setterInject(fieldName, value, typeOfValue, targetObject, c);
 	}
