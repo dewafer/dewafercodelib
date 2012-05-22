@@ -134,7 +134,7 @@ public class DefaultDaoDbSupporter extends DBSupporter implements
 
 	private boolean isPrimitive(Class<?> resultClass) {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 
 	private String getDbColumnName(String fieldName) {
