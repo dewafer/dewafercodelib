@@ -1,9 +1,11 @@
 package wyq.infrastructure;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class DefaultDaoDbSupporter extends DBSupporter implements
 		DaoDbSupporter {
@@ -42,7 +44,38 @@ public class DefaultDaoDbSupporter extends DBSupporter implements
 
 	@Override
 	protected void processResult(ResultSet rs) throws SQLException {
-		result = beanFactory.produceResult(rs, daoClass, invokedMethod);
+		Class<?> rowType = null;
+		Class<?> wrapperType = null;
+		Class<?> returnType = invokedMethod.getReturnType();
+
+		if (void.class.equals(returnType)) {
+			// return type is void
+			rowType = null;
+			wrapperType = null;
+
+			// no need of result
+			result = null;
+			return;
+
+		} else if (returnType.isArray()) {
+			// return type is Array
+			rowType = returnType.getComponentType();
+			wrapperType = returnType;
+
+		} else if (List.class.equals(returnType)) {
+			// return type is collection(generic type)
+			ParameterizedType genericType = (ParameterizedType) invokedMethod
+					.getGenericReturnType();
+			rowType = (Class<?>) genericType.getActualTypeArguments()[0];
+			wrapperType = returnType;
+
+		} else {
+			// return type is not array nor collection
+			rowType = returnType;
+			wrapperType = null;
+		}
+
+		result = beanFactory.produceResult(rs, rowType, wrapperType);
 	}
 
 	@Override

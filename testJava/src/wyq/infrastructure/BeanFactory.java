@@ -10,4 +10,6 @@ public interface BeanFactory {
 	Object produceResult(int updateCount, Class<?> daoClass,
 			Method invokedMethod);
 
+	Object produceResult(ResultSet rs, Class<?> rowType, Class<?> wrapperType);
+
 }
