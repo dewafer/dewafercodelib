@@ -1,9 +1,11 @@
 package wyq.infrastructure;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -56,22 +58,19 @@ public class DaoManager implements InvocationHandler {
 			throws Throwable {
 		// find the SQL file first.
 		Class<?> daoClass = method.getDeclaringClass();
-		// String resName = daoClass.getName() + "_" + method.getName();
-		// InputStream resourceAsStream = daoClass.getResourceAsStream(resName);
-		// BufferedReader reader = new BufferedReader(new InputStreamReader(
-		// resourceAsStream));
+		String resName = daoClass.getName() + "_" + method.getName();
+		InputStream resourceAsStream = daoClass.getResourceAsStream(resName);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				resourceAsStream));
 		StringBuilder sb = new StringBuilder();
-		// String line = null;
-		// while ((line = reader.readLine()) != null) {
-		// sb.append(line);
-		// sb.append(LINE_SEP);
-		// }
-
-		Type returnType = method.getGenericReturnType();
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			sb.append(line);
+			sb.append(LINE_SEP);
+		}
 
 		// then execute the SQL and return the result.
-		return daoDbSupporter
-				.execute(sb.toString(), returnType, daoClass, args);
+		return daoDbSupporter.execute(sb.toString(), method, daoClass, args);
 	}
 
 }
