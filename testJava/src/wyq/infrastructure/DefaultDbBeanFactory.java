@@ -1,81 +1,99 @@
 package wyq.infrastructure;
 
-import java.lang.reflect.Method;
-import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class DefaultDbBeanFactory implements BeanFactory {
 
-	private Convertor convertor;
+	private Convertor convertor = new DefaultConvertor();
 
 	public void setConvertor(Convertor convertor) {
 		this.convertor = convertor;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object produceResult(ResultSet rs, Class<?> daoClass,
-			Method invokedMethod) {
-		throw new RuntimeException();
+	public Object produceWrapper(List<Object> beanList, Class<?> beanWrapperType) {
+		Object wrapper = null;
+		try {
+			wrapper = beanWrapperType.newInstance();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+		if (wrapper == null) {
+			return null;
+		}
+		if (Collection.class.isAssignableFrom(beanWrapperType)) {
+			@SuppressWarnings("rawtypes")
+			Collection c = (Collection) wrapper;
+			c.addAll(beanList);
+		}
+		return wrapper;
 	}
 
 	@Override
-	public Object produceResult(int updateCount, Class<?> daoClass,
-			Method invokedMethod) {
-		Class<?> returnType = invokedMethod.getReturnType();
-		if (void.class.equals(returnType)) {
-			return null;
-		} else {
-			Object convertedResult = null;
+	public Object produceBean(Map<String, Object> mapBean, Class<?> beanType) {
+		// TODO Auto-generated method stub
+		if (isPrimitiveType(beanType)) {
+
+			Object value = null;
+			Iterator<Object> itr = mapBean.values().iterator();
+			if (itr.hasNext()) {
+				value = itr.next();
+			}
+
+			Object result = null;
 			try {
-				convertedResult = convertor.convert(updateCount, null,
-						returnType);
+				result = convertor.convert(value, value, beanType);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			return convertedResult;
+			return result;
+		} else {
+			// inject bean
+			return null;
 		}
 	}
 
-	@Override
-	public Object produceResult(ResultSet rs, Class<?> rowType,
-			Class<?> wrapperType) {
-		// TODO implements
-		// return type is null : no need of result;
-		if (rowType == null) {
-			return null;
-		}
-
-		if (wrapperType == null) {
-			// only one record is needed
-			// Object result = null;
-			// try {
-			// if (rs.next()) {
-			// Object value = rs.getObject(0);
-			// result = convertor.convert(value, value, rowType);
-			// }
-			// } catch (SQLException e) {
-			// e.printStackTrace();
-			// } catch (Exception e) {
-			// e.printStackTrace();
-			// }
-			// return result;
+	private boolean isPrimitiveType(Class<?> beanType) {
+		if (String.class.equals(beanType)) {
+			return true;
+		} else if (beanType.isPrimitive()) {
+			return true;
 		} else {
-			// lots of them
-			// only one record is needed
-			// List<Object> result = new ArrayList<Object>();
-			// try {
-			// while (rs.next()) {
-			// Object value = rs.getObject(0);
-			// result.add(convertor.convert(value, value, rowType));
-			// }
-			// } catch (SQLException e) {
-			// e.printStackTrace();
-			// } catch (Exception e) {
-			// e.printStackTrace();
-			// }
-			// return result;
+			// 8 elements
+			// Boolean.TYPE, Character.TYPE, Byte.TYPE, Short.TYPE,
+			// Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE
+			if (Boolean.class.equals(beanType)) {
+				return true;
+			}
+			if (Character.class.equals(beanType)) {
+				return true;
+			}
+			if (Byte.class.equals(beanType)) {
+				return true;
+			}
+			if (Short.class.equals(beanType)) {
+				return true;
+			}
+			if (Integer.class.equals(beanType)) {
+				return true;
+			}
+			if (Long.class.equals(beanType)) {
+				return true;
+			}
+			if (Float.class.equals(beanType)) {
+				return true;
+			}
+			if (Double.class.equals(beanType)) {
+				return true;
+			}
+			return false;
 		}
-
-		return null;
 	}
 
 }

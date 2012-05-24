@@ -1,15 +1,12 @@
 package wyq.infrastructure;
 
-import java.lang.reflect.Method;
-import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
 
 public interface BeanFactory {
 
-	Object produceResult(ResultSet rs, Class<?> daoClass, Method invokedMethod);
+	Object produceWrapper(List<Object> beanList, Class<?> beanWrapperType);
 
-	Object produceResult(int updateCount, Class<?> daoClass,
-			Method invokedMethod);
-
-	Object produceResult(ResultSet rs, Class<?> rowType, Class<?> wrapperType);
+	Object produceBean(Map<String, Object> mapBean, Class<?> beanType);
 
 }
