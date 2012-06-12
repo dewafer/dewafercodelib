@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0" class="java.beans.XMLDecoder"> 
+ <object class="wyq.test.TestSerializable"> 
+  <void property="intValue"> 
+   <int>100</int> 
+  </void> 
+  <void property="randValue"> 
+   <int>-899102995</int> 
+  </void> 
+  <void property="strValue"> 
+   <string>no!</string> 
+  </void> 
+ </object> 
+</java> 
