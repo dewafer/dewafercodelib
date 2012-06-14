@@ -9,7 +9,7 @@ public class TestInterface {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		iTest001 i1 = Repository.getComponent(iTest001.class);
+		iTest001 i1 = Repository.get(iTest001.class);
 		i1.f1();
 	}
 

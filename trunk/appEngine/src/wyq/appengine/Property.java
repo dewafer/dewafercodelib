@@ -11,22 +11,51 @@ public class Property extends Properties implements Component {
 	 */
 	private static final long serialVersionUID = -2323409154240652900L;
 
-	public Property(Properties p) {
+	public static Property get() {
+		return new Property();
+	}
+
+	public static Property get(String file) {
+		return new Property(file);
+	}
+
+	public static Property get(Class<?> c) {
+		return new Property(c);
+	}
+
+	protected Property(Properties p) {
 		super(p);
 	}
 
-	public Property(String p) {
+	protected Property(String p) {
 		super();
 		loadPropertyFile(p);
 	}
 
-	public Property() {
+	protected Property() {
 		super();
-		loadPropertyFile(null);
+		loadPropertyFile(this.getClass());
+	}
+
+	protected Property(Class<?> c) {
+		loadPropertyFile(c);
 	}
 
 	protected void loadPropertyFile(String name) {
-		Class<?> clazz = this.getClass();
+		loadPropertyFile(null, name);
+	}
+
+	protected void loadPropertyFile(Class<?> c) {
+		loadPropertyFile(c, null);
+	}
+
+	protected void loadPropertyFile(Class<?> c, String name) {
+		Class<?> clazz;
+		if (c == null) {
+			clazz = this.getClass();
+		} else {
+			clazz = c;
+		}
 		if (name == null) {
 			name = clazz.getSimpleName();
 		}
@@ -42,6 +71,10 @@ public class Property extends Properties implements Component {
 
 	public void load(String file) {
 		loadPropertyFile(file);
+	}
+
+	public void load(Class<?> c) {
+		loadPropertyFile(c);
 	}
 
 	protected void loadAction(InputStream in) throws IOException {

@@ -16,7 +16,7 @@ public class Factory implements Component {
 	private InvocationHandler invocationHandler;
 
 	protected Factory() {
-		Property p = new Property("/factory.properties");
+		Property p = Property.get("/factory.properties");
 		defaultPackageName = p.getProperty("defaultPackageName");
 		invocationHandlerName = p.getProperty("invocationHandlerName");
 	}
@@ -66,6 +66,6 @@ public class Factory implements Component {
 
 	protected void loadHandler() {
 		invocationHandler = (InvocationHandler) Repository
-				.getComponent(invocationHandlerName);
+				.get(invocationHandlerName);
 	}
 }

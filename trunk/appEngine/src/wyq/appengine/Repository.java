@@ -23,25 +23,25 @@ public class Repository implements Component {
 	private String repositorySaveFile;
 
 	protected Repository() {
-		Property p = new Property("/repository.properties");
+		Property p = Property.get("/repository.properties");
 		repositorySaveFile = p.getProperty("repositorySaveFile");
 
-		p = new Property("/conf.properties");
+		p = Property.get("/conf.properties");
 		register(p, "Property", Property.class);
 		register(this, "Repository", Repository.class);
 	}
 
-	public static Component getComponent(String name) {
+	public static Component get(String name) {
 		return res.loadComponent(name);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Component> T getComponent(Class<T> cls) {
+	public static <T extends Component> T get(Class<T> cls) {
 		return (T) res.loadComponent(cls);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Component> T getComponent(String name, Class<T> cls) {
+	public static <T extends Component> T get(String name, Class<T> cls) {
 		return (T) res.loadComponent(name, cls);
 	}
 
