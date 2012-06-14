@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0" class="java.beans.XMLDecoder"> 
+ <object class="wyq.test.TestSerializable2"> 
+  <void property="map"> 
+   <object class="java.util.HashMap"> 
+    <void method="put"> 
+     <string>k1</string> 
+     <string>v1</string> 
+    </void> 
+   </object> 
+  </void> 
+ </object> 
+</java> 
