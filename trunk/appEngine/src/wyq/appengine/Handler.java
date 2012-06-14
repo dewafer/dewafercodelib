@@ -16,6 +16,7 @@ public class Handler implements InvocationHandler, Component {
 			throws Throwable {
 		System.out.println("Handler [arg0=" + "..." + ", arg1=" + arg1
 				+ ", arg2=" + Arrays.toString(arg2) + "]");
+		// TODO implements
 		return null;
 	}
 }
