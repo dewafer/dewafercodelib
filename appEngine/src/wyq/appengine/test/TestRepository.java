@@ -13,12 +13,12 @@ public class TestRepository {
 		for (int i = 0; i < 2; i++) {
 			Repository.load();
 
-			XMLProperty p = Repository.getComponent(XMLProperty.class);
-			Repository component = Repository.getComponent(Repository.class);
-			XMLProperty p2 = Repository.getComponent(XMLProperty.class);
+			XMLProperty p = Repository.get(XMLProperty.class);
+			Repository component = Repository.get(Repository.class);
+			XMLProperty p2 = Repository.get(XMLProperty.class);
 			System.out.println(p);
 			System.out.println(component);
-			Repository c2 = Repository.getComponent(Repository.class);
+			Repository c2 = Repository.get(Repository.class);
 			System.out.println(c2);
 			p.put("test1111", "vvvv");
 			System.out.println(p2);
