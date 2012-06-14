@@ -16,19 +16,19 @@ public class Repository implements Component {
 
 	private static Repository res = new Repository();
 
-	private Map<String, Component> compNamePool = new HashMap<String, Component>();
-	private Map<Class<?>, Component> compClsPool = new HashMap<Class<?>, Component>();
+	private Factory factory;
 
-	private String defaultPackageName;
+	private Map<RepositoryKeyEntry, Component> compPool = new HashMap<RepositoryKeyEntry, Component>();
 
 	private String repositorySaveFile;
 
 	protected Repository() {
-		Property p = new Property("/conf.properties");
-		register(p, "Property", Property.class);
-		defaultPackageName = p.getProperty("defaultPackageName");
-		register(this, "Repository", Repository.class);
+		Property p = new Property("/repository.properties");
 		repositorySaveFile = p.getProperty("repositorySaveFile");
+
+		p = new Property("/conf.properties");
+		register(p, "Property", Property.class);
+		register(this, "Repository", Repository.class);
 	}
 
 	public static Component getComponent(String name) {
@@ -40,69 +40,54 @@ public class Repository implements Component {
 		return (T) res.loadComponent(cls);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T extends Component> T getComponent(String name, Class<T> cls) {
+		return (T) res.loadComponent(name, cls);
+	}
+
 	protected Component loadComponent(String name) {
-		Component component = compNamePool.get(name);
-		if (component == null) {
-			component = initComp(name, null);
-		}
-		return component;
+		return loadComponent(name, null);
 	}
 
 	protected Component loadComponent(Class<? extends Component> cls) {
-		Component component = compClsPool.get(cls);
+		String name = cls.getSimpleName();
+		return loadComponent(name, cls);
+	}
+
+	protected Component loadComponent(String name,
+			Class<? extends Component> cls) {
+		RepositoryKeyEntry key = new RepositoryKeyEntry(name, cls);
+		Component component = compPool.get(key);
 		if (component == null) {
-			component = initComp(null, cls);
+			if (factory == null) {
+				loadFactory();
+			}
+			component = factory.factory(name, cls);
+			register(component, name, cls);
 		}
 		return component;
 	}
 
-	protected Component initComp(String name, Class<?> c) {
-		try {
-			String keyName;
-			Class<?> keyCls;
-			Component comp;
-
-			if (c != null) {
-				keyCls = c;
-			} else {
-				String fullName;
-				if (defaultPackageName != null
-						&& defaultPackageName.length() > 0) {
-					fullName = defaultPackageName + "." + name;
-				} else {
-					fullName = name;
-				}
-
-				try {
-					keyCls = Class.forName(fullName);
-				} catch (ClassNotFoundException e) {
-					throw new RuntimeException(e);
-				}
-			}
-
-			keyName = keyCls.getSimpleName();
-
-			comp = (Component) keyCls.newInstance();
-			register(comp, keyName, keyCls);
-
-			return comp;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	protected void loadFactory() {
+		factory = new Factory();
 	}
 
 	protected void register(Component c, String name, Class<?> cls) {
-		compNamePool.put(name, c);
-		compClsPool.put(cls, c);
+		if (c == null) {
+			throw new RuntimeException("Register null component!");
+		}
+		if (cls == null) {
+			cls = c.getClass();
+		}
+		if (name == null) {
+			name = cls.getSimpleName();
+		}
+		RepositoryKeyEntry keyEntry = new RepositoryKeyEntry(name, cls);
+		compPool.put(keyEntry, c);
 	}
 
 	public static void save() {
 		try {
-			// XMLEncoder encoder = new XMLEncoder(new FileOutputStream(
-			// res.repositorySaveFile));
-			// encoder.writeObject(res);
-			// encoder.flush();
-			// encoder.close();
 			ObjectOutputStream oos = new ObjectOutputStream(
 					new FileOutputStream(res.repositorySaveFile));
 			oos.writeObject(res);
@@ -115,16 +100,69 @@ public class Repository implements Component {
 
 	public static void load() {
 		try {
-			// XMLDecoder decoder = new XMLDecoder(new FileInputStream(
-			// res.repositorySaveFile));
-			// res = (Repository)decoder.readObject();
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
 					res.repositorySaveFile));
 			res = (Repository) ois.readObject();
 			ois.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-			// throw new RuntimeException(e);
 		}
+	}
+
+	private class RepositoryKeyEntry implements Component {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 2494953274083461053L;
+
+		public RepositoryKeyEntry(String name, Class<?> entryClass) {
+			super();
+			this.name = name;
+			this.entryClass = entryClass;
+		}
+
+		private String name;
+		private Class<?> entryClass;
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result
+					+ ((entryClass == null) ? 0 : entryClass.hashCode());
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			RepositoryKeyEntry other = (RepositoryKeyEntry) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (entryClass == null) {
+				if (other.entryClass != null)
+					return false;
+			} else if (!entryClass.equals(other.entryClass))
+				return false;
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			} else if (!name.equals(other.name))
+				return false;
+			return true;
+		}
+
+		private Repository getOuterType() {
+			return Repository.this;
+		}
+
 	}
 }

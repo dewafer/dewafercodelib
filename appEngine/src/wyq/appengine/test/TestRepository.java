@@ -23,8 +23,10 @@ public class TestRepository {
 			p.put("test1111", "vvvv");
 			System.out.println(p2);
 			System.out.println(p);
-			
+
 			Repository.save();
+
+			System.out.println();
 
 		}
 	}
