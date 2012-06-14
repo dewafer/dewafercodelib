@@ -50,8 +50,7 @@ public class Repository implements Component {
 	}
 
 	protected Component loadComponent(Class<? extends Component> cls) {
-		String name = cls.getSimpleName();
-		return loadComponent(name, cls);
+		return loadComponent(null, cls);
 	}
 
 	protected Component loadComponent(String name,
@@ -76,11 +75,8 @@ public class Repository implements Component {
 		if (c == null) {
 			throw new RuntimeException("Register null component!");
 		}
-		if (cls == null) {
-			cls = c.getClass();
-		}
-		if (name == null) {
-			name = cls.getSimpleName();
+		if (name == null && cls == null) {
+			throw new RuntimeException("Wrong arguments! NullPointException!");
 		}
 		RepositoryKeyEntry keyEntry = new RepositoryKeyEntry(name, cls);
 		compPool.put(keyEntry, c);

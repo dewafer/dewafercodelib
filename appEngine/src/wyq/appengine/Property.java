@@ -40,6 +40,10 @@ public class Property extends Properties implements Component {
 		}
 	}
 
+	public void load(String file) {
+		loadPropertyFile(file);
+	}
+
 	protected void loadAction(InputStream in) throws IOException {
 		load(in);
 	}

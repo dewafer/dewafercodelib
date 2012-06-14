@@ -22,6 +22,9 @@ public class Factory implements Component {
 	}
 
 	public Component factory(String name, Class<?> c) {
+		if (name == null && c == null) {
+			throw new RuntimeException("Wrong arguments! NullPointException!");
+		}
 		try {
 			Class<?> keyCls;
 			Component comp;
