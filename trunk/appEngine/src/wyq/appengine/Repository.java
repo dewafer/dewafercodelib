@@ -7,6 +7,8 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import wyq.appengine.Factory.FactoryParameter;
+
 public class Repository implements Component {
 
 	/**
@@ -63,7 +65,7 @@ public class Repository implements Component {
 			if (factory == null) {
 				loadFactory();
 			}
-			component = factory.factory(name, cls);
+			component = factory.factory(new FactoryParameter(name, cls));
 			register(component, name, cls);
 		}
 		return component;
