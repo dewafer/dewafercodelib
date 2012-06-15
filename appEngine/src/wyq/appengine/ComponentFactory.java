@@ -3,6 +3,8 @@ package wyq.appengine;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
+import wyq.appengine.Factory.FactoryParameter;
+
 public class ComponentFactory implements Component, Factory {
 
 	/**
@@ -25,23 +27,23 @@ public class ComponentFactory implements Component, Factory {
 	 * @see wyq.appengine.Factory#factory(java.lang.String, java.lang.Class)
 	 */
 	@Override
-	public Component factory(String name, Class<?> c) {
-		if (name == null && c == null) {
+	public Component factory(FactoryParameter parameterObject) {
+		if (parameterObject.getComponentName() == null && parameterObject.getComponentClass() == null) {
 			throw new RuntimeException("Wrong arguments! NullPointException!");
 		}
 		try {
 			Class<?> keyCls;
 			Component comp;
 
-			if (c != null) {
-				keyCls = c;
+			if (parameterObject.getComponentClass() != null) {
+				keyCls = parameterObject.getComponentClass();
 			} else {
 				String fullName;
 				if (defaultPackageName != null
 						&& defaultPackageName.length() > 0) {
-					fullName = defaultPackageName + "." + name;
+					fullName = defaultPackageName + "." + parameterObject.getComponentName();
 				} else {
-					fullName = name;
+					fullName = parameterObject.getComponentName();
 				}
 
 				try {
