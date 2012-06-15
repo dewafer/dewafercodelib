@@ -25,72 +25,57 @@ public class Repository implements Component {
 	private String repositorySaveFile;
 	private String usingFactory;
 
-	protected Repository() {
-		Property p = Property.get("/repository.properties");
-		repositorySaveFile = p.getProperty("repositorySaveFile");
-		usingFactory = p.getProperty("usingFactory");
-
-		p = Property.get("/conf.properties");
-		register(p, "Property", Property.class);
-		register(this, "Repository", Repository.class);
-	}
-
 	public static Component get(String name) {
-		return res.loadComponent(name);
+		return get(name, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T extends Component> T get(Class<T> cls) {
-		return (T) res.loadComponent(cls);
+		return get(null, cls);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T extends Component> T get(String name, Class<T> cls) {
-		return (T) res.loadComponent(name, cls);
-	}
-
-	protected Component loadComponent(String name) {
-		return loadComponent(name, null);
-	}
-
-	protected Component loadComponent(Class<? extends Component> cls) {
-		return loadComponent(null, cls);
-	}
-
-	protected Component loadComponent(String name,
-			Class<? extends Component> cls) {
-		RepositoryKeyEntry key = new RepositoryKeyEntry(name, cls);
-		Component component = compPool.get(key);
-		if (component == null) {
-			if (factory == null) {
-				loadFactory();
-			}
-			component = (Component) factory.factory(new FactoryParameter(name,
-					cls));
-			register(component, name, cls);
-		}
-		return component;
-	}
-
-	protected void loadFactory() {
-		try {
-			Class<?> fclass = Class.forName(usingFactory);
-			factory = (Factory) fclass.newInstance();
-			register(factory, "Factory", Factory.class);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected void register(Component c, String name, Class<?> cls) {
+		Component c = res.findComponent(name, cls);
 		if (c == null) {
-			throw new RuntimeException("Register null component!");
+			c = res.loadComponent(name, cls);
 		}
-		if (name == null && cls == null) {
-			throw new RuntimeException("Wrong arguments! NullPointException!");
+		return (T) c;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Component> T put(String name, Class<T> cls,
+			Component c) {
+		if (c == null) {
+			throw new RuntimeException("Can NOT put null component!");
 		}
-		RepositoryKeyEntry keyEntry = new RepositoryKeyEntry(name, cls);
-		compPool.put(keyEntry, c);
+		return (T) res.register(c, name, cls);
+	}
+
+	public static Component find(String name) {
+		return find(name, null);
+	}
+
+	public static <T extends Component> T find(Class<T> cls) {
+		return find(null, cls);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Component> T find(String name, Class<T> cls) {
+		return (T) res.findComponent(name, cls);
+	}
+
+	public static <T extends Component> boolean contains(String name,
+			Class<T> cls) {
+		return res.containsKey(name, cls);
+	}
+
+	public static boolean contains(Component c) {
+		return res.containsValue(c);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Component> T release(String name, Class<T> cls) {
+		return (T) res.remove(name, cls);
 	}
 
 	public static void save() {
@@ -114,6 +99,77 @@ public class Repository implements Component {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	protected Repository() {
+		Property p = Property.get("/repository.properties");
+		repositorySaveFile = p.getProperty("repositorySaveFile");
+		usingFactory = p.getProperty("usingFactory");
+
+		p = Property.get("/conf.properties");
+		register(p, "Property", Property.class);
+		register(this, "Repository", Repository.class);
+	}
+
+	protected Component findComponent(String name,
+			Class<? extends Component> cls) {
+		RepositoryKeyEntry key = new RepositoryKeyEntry(name, cls);
+		return compPool.get(key);
+	}
+
+	protected Component loadComponent(String name,
+			Class<? extends Component> cls) {
+		Component component = null;
+		if (factory == null) {
+			loadFactory();
+		}
+		component = (Component) factory
+				.factory(new FactoryParameter(name, cls));
+		register(component, name, cls);
+		return component;
+	}
+
+	protected void loadFactory() {
+		try {
+			Class<?> fclass = Class.forName(usingFactory);
+			factory = (Factory) fclass.newInstance();
+			register(factory, "Factory", Factory.class);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Component register(Component c, String name,
+			Class<? extends Component> cls) {
+		if (c == null) {
+			throw new RuntimeException("Register null component!");
+		}
+		if (name == null && cls == null) {
+			throw new RuntimeException("Wrong arguments! NullPointException!");
+		}
+		RepositoryKeyEntry keyEntry = new RepositoryKeyEntry(name, cls);
+		return compPool.put(keyEntry, c);
+	}
+
+	protected boolean containsKey(String name, Class<? extends Component> cls) {
+		return containsKey(new RepositoryKeyEntry(name, cls));
+	}
+
+	protected boolean containsKey(RepositoryKeyEntry key) {
+		return compPool.containsKey(key);
+	}
+
+	protected boolean containsValue(Component value) {
+		return compPool.containsValue(value);
+	}
+
+	protected Component remove(String name, Class<? extends Component> cls) {
+		RepositoryKeyEntry key = new RepositoryKeyEntry(name, cls);
+		return remove(key);
+	}
+
+	protected Component remove(RepositoryKeyEntry key) {
+		return compPool.remove(key);
 	}
 
 	private class RepositoryKeyEntry implements Component {
