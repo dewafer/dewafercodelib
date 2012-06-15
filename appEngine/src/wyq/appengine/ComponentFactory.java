@@ -3,8 +3,6 @@ package wyq.appengine;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
-import wyq.appengine.Factory.FactoryParameter;
-
 public class ComponentFactory implements Component, Factory {
 
 	/**
@@ -23,12 +21,15 @@ public class ComponentFactory implements Component, Factory {
 		invocationHandlerName = p.getProperty("invocationHandlerName");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see wyq.appengine.Factory#factory(java.lang.String, java.lang.Class)
 	 */
 	@Override
 	public Component factory(FactoryParameter parameterObject) {
-		if (parameterObject.getComponentName() == null && parameterObject.getComponentClass() == null) {
+		if (parameterObject.getComponentName() == null
+				&& parameterObject.getComponentClass() == null) {
 			throw new RuntimeException("Wrong arguments! NullPointException!");
 		}
 		try {
@@ -41,7 +42,8 @@ public class ComponentFactory implements Component, Factory {
 				String fullName;
 				if (defaultPackageName != null
 						&& defaultPackageName.length() > 0) {
-					fullName = defaultPackageName + "." + parameterObject.getComponentName();
+					fullName = defaultPackageName + "."
+							+ parameterObject.getComponentName();
 				} else {
 					fullName = parameterObject.getComponentName();
 				}
