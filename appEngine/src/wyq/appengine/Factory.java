@@ -1,6 +1,6 @@
 package wyq.appengine;
 
-public interface Factory {
+public interface Factory extends Component {
 
 	public static class FactoryParameter {
 		private String componentName;
@@ -28,6 +28,6 @@ public interface Factory {
 		}
 	}
 
-	public abstract Component factory(FactoryParameter parameterObject);
+	public abstract Object factory(FactoryParameter parameterObject);
 
 }
