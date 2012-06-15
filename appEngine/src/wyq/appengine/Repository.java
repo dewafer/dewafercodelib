@@ -21,10 +21,12 @@ public class Repository implements Component {
 	private Map<RepositoryKeyEntry, Component> compPool = new HashMap<RepositoryKeyEntry, Component>();
 
 	private String repositorySaveFile;
+	private String usingFactory;
 
 	protected Repository() {
 		Property p = Property.get("/repository.properties");
 		repositorySaveFile = p.getProperty("repositorySaveFile");
+		usingFactory = p.getProperty("usingFactory");
 
 		p = Property.get("/conf.properties");
 		register(p, "Property", Property.class);
@@ -68,7 +70,12 @@ public class Repository implements Component {
 	}
 
 	protected void loadFactory() {
-		factory = new Factory();
+		try {
+			Class<?> fclass = Class.forName(usingFactory);
+			factory = (Factory) fclass.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	protected void register(Component c, String name, Class<?> cls) {
