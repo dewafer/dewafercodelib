@@ -3,7 +3,7 @@ package wyq.appengine;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
-public class ComponentFactory implements Component, Factory {
+public class ComponentFactory implements Factory {
 
 	/**
 	 * 
@@ -16,7 +16,7 @@ public class ComponentFactory implements Component, Factory {
 	private InvocationHandler invocationHandler;
 
 	protected ComponentFactory() {
-		Property p = Property.get("/factory.properties");
+		Property p = Property.get("/ComponentFactory.properties");
 		defaultPackageName = p.getProperty("defaultPackageName");
 		invocationHandlerName = p.getProperty("invocationHandlerName");
 	}
@@ -27,14 +27,14 @@ public class ComponentFactory implements Component, Factory {
 	 * @see wyq.appengine.Factory#factory(java.lang.String, java.lang.Class)
 	 */
 	@Override
-	public Component factory(FactoryParameter parameterObject) {
+	public Object factory(FactoryParameter parameterObject) {
 		if (parameterObject.getComponentName() == null
 				&& parameterObject.getComponentClass() == null) {
 			throw new RuntimeException("Wrong arguments! NullPointException!");
 		}
 		try {
 			Class<?> keyCls;
-			Component comp;
+			Object comp;
 
 			if (parameterObject.getComponentClass() != null) {
 				keyCls = parameterObject.getComponentClass();
@@ -59,11 +59,11 @@ public class ComponentFactory implements Component, Factory {
 				if (invocationHandler == null) {
 					loadHandler();
 				}
-				comp = (Component) Proxy.newProxyInstance(this.getClass()
-						.getClassLoader(), new Class<?>[] { keyCls,
-						Component.class }, invocationHandler);
+				comp = Proxy.newProxyInstance(this.getClass().getClassLoader(),
+						new Class<?>[] { keyCls, Component.class },
+						invocationHandler);
 			} else {
-				comp = (Component) keyCls.newInstance();
+				comp = keyCls.newInstance();
 			}
 			return comp;
 

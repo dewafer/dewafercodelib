@@ -65,7 +65,8 @@ public class Repository implements Component {
 			if (factory == null) {
 				loadFactory();
 			}
-			component = factory.factory(new FactoryParameter(name, cls));
+			component = (Component) factory.factory(new FactoryParameter(name,
+					cls));
 			register(component, name, cls);
 		}
 		return component;
@@ -75,6 +76,7 @@ public class Repository implements Component {
 		try {
 			Class<?> fclass = Class.forName(usingFactory);
 			factory = (Factory) fclass.newInstance();
+			register(factory, "Factory", Factory.class);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
