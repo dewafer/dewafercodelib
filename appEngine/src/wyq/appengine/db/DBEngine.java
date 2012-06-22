@@ -26,7 +26,7 @@ public class DBEngine implements Component {
 
 	protected Property property = null;
 
-	protected DBEngine() {
+	public DBEngine() {
 		property = Property.get();
 		handler = getDBEngineHandler();
 

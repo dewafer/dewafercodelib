@@ -14,9 +14,9 @@ public class ComponentFactory implements Factory {
 	private ComponentFactoryProxyHandler invocationHandler;
 
 	protected ComponentFactory() {
-		Property p = Property.get("/ComponentFactory.properties");
-		defaultPackageName = p.getProperty("defaultPackageName");
-		invocationHandlerName = p.getProperty("invocationHandlerName");
+		Property p = Property.get();
+		defaultPackageName = p.getProperty("ComponentFactory.defaultPackageName");
+		invocationHandlerName = p.getProperty("ComponentFactory.invocationHandlerName");
 	}
 
 	/*
