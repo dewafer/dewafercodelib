@@ -5,10 +5,11 @@ import java.lang.reflect.Method;
 
 import wyq.appengine.Factory.FactoryParameter;
 
-public class ComponentFactoryProxyHandler implements InvocationHandler, Component {
+public class ComponentFactoryProxyHandler implements InvocationHandler,
+		Component {
 
 	/**
-	 * 
+	 * *
 	 */
 	private static final long serialVersionUID = 6916777032196397091L;
 
@@ -16,7 +17,8 @@ public class ComponentFactoryProxyHandler implements InvocationHandler, Componen
 	public Object invoke(Object arg0, Method arg1, Object[] arg2)
 			throws Throwable {
 		Class<?> clazz = arg1.getDeclaringClass();
-		String implClazzName = Property.get(clazz).getProperty("Class");
+		String keyName = clazz.getName() + ".impl";
+		String implClazzName = Property.get().getProperty(keyName);
 		if (implClazzName == null || implClazzName.length() == 0) {
 			throw new RuntimeException("No implements configuration!");
 		}

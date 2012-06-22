@@ -13,161 +13,161 @@ import wyq.appengine.Repository;
 
 public class DBEngine implements Component {
 
-    /**
+	/**
      * 
      */
-    private static final long serialVersionUID = 7080149505747366739L;
+	private static final long serialVersionUID = 7080149505747366739L;
 
-    protected Connection conn;
+	protected Connection conn;
 
-    protected boolean useExecuteBatch = false;
+	protected boolean useExecuteBatch = false;
 
-    protected DBEngineHandler handler = null;
+	protected DBEngineHandler handler = null;
 
-    protected DBEngineConnectionProvider provider = null;
+	protected DBEngineConnectionProvider provider = null;
 
-    protected Property property = null;
+	protected Property property = null;
 
-    protected DBEngine() {
-	property = Property.get();
-	handler = getDBEngineHandler();
+	protected DBEngine() {
+		property = Property.get();
+		handler = getDBEngineHandler();
 
-	provider = new DBEngineConnectionProvider() {
+		provider = new DBEngineConnectionProvider() {
 
-	    /**
+			/**
 	     * 
 	     */
-	    private static final long serialVersionUID = 5341870178797916485L;
+			private static final long serialVersionUID = 5341870178797916485L;
 
-	    @Override
-	    public String getUser() {
-		return getProperty("DBEngine.username");
-	    }
+			@Override
+			public String getUser() {
+				return getProperty("DBEngine.username");
+			}
 
-	    @Override
-	    public String getSqlConnProviderClass() {
-		return getProperty("DBEngine.SqlConnProviderClass");
-	    }
+			@Override
+			public String getSqlConnProviderClass() {
+				return getProperty("DBEngine.SqlConnProviderClass");
+			}
 
-	    @Override
-	    public String getPassword() {
-		return getProperty("DBEngine.password");
-	    }
+			@Override
+			public String getPassword() {
+				return getProperty("DBEngine.password");
+			}
 
-	    @Override
-	    public String getConnStr() {
-		return getProperty("DBEngine.ConnStr");
-	    }
+			@Override
+			public String getConnStr() {
+				return getProperty("DBEngine.ConnStr");
+			}
 
-	    private String getProperty(String propKey) {
-		String value = property.getProperty(propKey);
-		if (value == null) {
-		    value = "";
-		}
-		return value;
-	    }
-	};
-    }
-
-    public static DBEngine get() {
-	return Repository.get("DBEngine", DBEngine.class);
-    }
-
-    @SuppressWarnings("unchecked")
-    public DBEngineHandler getDBEngineHandler() {
-	String dbHandlerClassName = property
-		.getProperty("DBEngine.DBEngineHandlerClassName");
-	if (dbHandlerClassName == null || dbHandlerClassName.length() == 0) {
-	    return null;
+			private String getProperty(String propKey) {
+				String value = property.getProperty(propKey);
+				if (value == null) {
+					value = "";
+				}
+				return value;
+			}
+		};
 	}
-	Class<DBEngineHandler> dbHandlerClass = null;
-	try {
-	    dbHandlerClass = (Class<DBEngineHandler>) Class
-		    .forName(dbHandlerClassName);
-	} catch (ClassNotFoundException e) {
-	    e.printStackTrace();
-	}
-	String dbHandlerName = property
-		.getProperty("DBEngine.DBEngineHandlerName");
-	return Repository.get(dbHandlerName, dbHandlerClass);
-    }
 
-    public void connect() throws ClassNotFoundException, SQLException {
-	Class.forName(provider.getSqlConnProviderClass());
-	conn = DriverManager.getConnection(provider.getConnStr(),
-		provider.getUser(), provider.getPassword());
-    }
-
-    public void executeSQL(String sql) throws SQLException {
-	if (conn == null)
-	    return;
-	Statement stmt = null;
-	if (sql.contains("?")) {
-	    PreparedStatement pstmt = conn.prepareStatement(sql);
-	    if (handler != null) {
-		handler.prepareParameter(pstmt);
-	    }
-	    stmt = pstmt;
-	} else {
-	    stmt = conn.createStatement();
+	public static DBEngine get() {
+		return Repository.get("DBEngine", DBEngine.class);
 	}
-	boolean hasResult;
-	try {
-	    if (stmt instanceof PreparedStatement) {
-		PreparedStatement pstmt = (PreparedStatement) stmt;
-		if (useExecuteBatch) {
-		    pstmt.executeBatch();
-		    hasResult = false;
-		} else {
-		    hasResult = pstmt.execute();
+
+	@SuppressWarnings("unchecked")
+	public DBEngineHandler getDBEngineHandler() {
+		String dbHandlerClassName = property
+				.getProperty("DBEngine.DBEngineHandlerClassName");
+		if (dbHandlerClassName == null || dbHandlerClassName.length() == 0) {
+			return null;
 		}
-	    } else {
-		hasResult = stmt.execute(sql);
-	    }
-	    if (hasResult) {
-		ResultSet resultSet = stmt.getResultSet();
-		if (handler != null) {
-		    handler.processResult(resultSet);
-		}
-	    } else {
-		if (handler != null) {
-		    handler.processResult(stmt.getUpdateCount());
-		}
-	    }
-	    if (!conn.getAutoCommit()) {
-		conn.commit();
-	    }
-	} catch (SQLException e) {
-	    if (!conn.getAutoCommit()) {
+		Class<DBEngineHandler> dbHandlerClass = null;
 		try {
-		    conn.rollback();
-		} catch (SQLException e1) {
-		    e1.printStackTrace();
+			dbHandlerClass = (Class<DBEngineHandler>) Class
+					.forName(dbHandlerClassName);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
-	    }
-	    throw e;
+		String dbHandlerName = property
+				.getProperty("DBEngine.DBEngineHandlerName");
+		return Repository.get(dbHandlerName, dbHandlerClass);
 	}
-    }
 
-    public void close() throws SQLException {
-	if (conn != null) {
-	    conn.close();
+	public void connect() throws ClassNotFoundException, SQLException {
+		Class.forName(provider.getSqlConnProviderClass());
+		conn = DriverManager.getConnection(provider.getConnStr(),
+				provider.getUser(), provider.getPassword());
 	}
-    }
 
-    public DBEngineHandler getHandler() {
-	return handler;
-    }
+	public void executeSQL(String sql) throws SQLException {
+		if (conn == null)
+			return;
+		Statement stmt = null;
+		if (sql.contains("?")) {
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			if (handler != null) {
+				handler.prepareParameter(pstmt);
+			}
+			stmt = pstmt;
+		} else {
+			stmt = conn.createStatement();
+		}
+		boolean hasResult;
+		try {
+			if (stmt instanceof PreparedStatement) {
+				PreparedStatement pstmt = (PreparedStatement) stmt;
+				if (useExecuteBatch) {
+					pstmt.executeBatch();
+					hasResult = false;
+				} else {
+					hasResult = pstmt.execute();
+				}
+			} else {
+				hasResult = stmt.execute(sql);
+			}
+			if (hasResult) {
+				ResultSet resultSet = stmt.getResultSet();
+				if (handler != null) {
+					handler.processResult(resultSet);
+				}
+			} else {
+				if (handler != null) {
+					handler.processResult(stmt.getUpdateCount());
+				}
+			}
+			if (!conn.getAutoCommit()) {
+				conn.commit();
+			}
+		} catch (SQLException e) {
+			if (!conn.getAutoCommit()) {
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+			throw e;
+		}
+	}
 
-    public void setHandler(DBEngineHandler handler) {
-	this.handler = handler;
-    }
+	public void close() throws SQLException {
+		if (conn != null) {
+			conn.close();
+		}
+	}
 
-    public DBEngineConnectionProvider getProvider() {
-	return provider;
-    }
+	public DBEngineHandler getHandler() {
+		return handler;
+	}
 
-    public void setProvider(DBEngineConnectionProvider provider) {
-	this.provider = provider;
-    }
+	public void setHandler(DBEngineHandler handler) {
+		this.handler = handler;
+	}
+
+	public DBEngineConnectionProvider getProvider() {
+		return provider;
+	}
+
+	public void setProvider(DBEngineConnectionProvider provider) {
+		this.provider = provider;
+	}
 }

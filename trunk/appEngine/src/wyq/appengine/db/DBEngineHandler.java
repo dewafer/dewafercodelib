@@ -8,11 +8,11 @@ import wyq.appengine.Component;
 
 public interface DBEngineHandler extends Component {
 
-    public abstract void prepareParameter(PreparedStatement stmt)
-	    throws SQLException;
+	public abstract void prepareParameter(PreparedStatement stmt)
+			throws SQLException;
 
-    public abstract void processResult(ResultSet rs) throws SQLException;
+	public abstract void processResult(ResultSet rs) throws SQLException;
 
-    public abstract void processResult(int updateCount);
+	public abstract void processResult(int updateCount);
 
 }
