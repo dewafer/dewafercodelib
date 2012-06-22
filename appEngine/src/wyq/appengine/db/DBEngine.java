@@ -20,8 +20,6 @@ public class DBEngine implements Component {
 
 	protected Connection conn;
 
-	protected boolean useExecuteBatch = false;
-
 	protected DBEngineHandler handler = null;
 
 	protected DBEngineConnectionProvider provider = null;
@@ -115,12 +113,7 @@ public class DBEngine implements Component {
 		try {
 			if (stmt instanceof PreparedStatement) {
 				PreparedStatement pstmt = (PreparedStatement) stmt;
-				if (useExecuteBatch) {
-					pstmt.executeBatch();
-					hasResult = false;
-				} else {
-					hasResult = pstmt.execute();
-				}
+				hasResult = pstmt.execute();
 			} else {
 				hasResult = stmt.execute(sql);
 			}
