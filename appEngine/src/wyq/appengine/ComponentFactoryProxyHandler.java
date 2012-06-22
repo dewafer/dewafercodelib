@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 
 import wyq.appengine.Factory.FactoryParameter;
 
-public class Handler implements InvocationHandler, Component {
+public class ComponentFactoryProxyHandler implements InvocationHandler, Component {
 
 	/**
 	 * 

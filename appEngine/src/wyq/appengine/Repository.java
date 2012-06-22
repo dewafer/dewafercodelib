@@ -102,11 +102,11 @@ public class Repository implements Component {
 	}
 
 	protected Repository() {
-		Property p = Property.get("/repository.properties");
+		Property p = new Property("/repository.properties");
 		repositorySaveFile = p.getProperty("repositorySaveFile");
 		usingFactory = p.getProperty("usingFactory");
 
-		p = Property.get("/conf.properties");
+		p = new Property("/conf.properties");
 		register(p, "Property", Property.class);
 		register(this, "Repository", Repository.class);
 	}
