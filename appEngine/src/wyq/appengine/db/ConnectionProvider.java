@@ -2,7 +2,7 @@ package wyq.appengine.db;
 
 import wyq.appengine.Component;
 
-public interface DBEngineConnectionProvider extends Component {
+public interface ConnectionProvider extends Component {
 	public abstract String getSqlConnProviderClass();
 
 	public abstract String getConnStr();
