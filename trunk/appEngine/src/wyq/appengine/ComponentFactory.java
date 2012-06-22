@@ -1,7 +1,5 @@
 package wyq.appengine;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 
 public class ComponentFactory implements Factory {
 
@@ -13,7 +11,7 @@ public class ComponentFactory implements Factory {
 	private String defaultPackageName;
 	private String invocationHandlerName;
 
-	private InvocationHandler invocationHandler;
+	private ComponentFactoryProxyHandler invocationHandler;
 
 	protected ComponentFactory() {
 		Property p = Property.get("/ComponentFactory.properties");
@@ -59,9 +57,8 @@ public class ComponentFactory implements Factory {
 				if (invocationHandler == null) {
 					loadHandler();
 				}
-				comp = Proxy.newProxyInstance(this.getClass().getClassLoader(),
-						new Class<?>[] { keyCls, Component.class },
-						invocationHandler);
+				comp = invocationHandler.getProxy(new Class<?>[] { keyCls,
+						Component.class });
 			} else {
 				comp = keyCls.newInstance();
 			}
@@ -73,7 +70,7 @@ public class ComponentFactory implements Factory {
 	}
 
 	protected void loadHandler() {
-		invocationHandler = (InvocationHandler) Repository
+		invocationHandler = (ComponentFactoryProxyHandler) Repository
 				.get(invocationHandlerName);
 	}
 }
