@@ -1,8 +1,10 @@
-package wyq.appengine;
+package wyq.appengine.component;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import wyq.appengine.Component;
 
 public class Property extends Properties implements Component {
 

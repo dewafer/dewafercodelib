@@ -1,4 +1,4 @@
-package wyq.appengine;
+package wyq.appengine.component;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,7 +7,9 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import wyq.appengine.Factory.FactoryParameter;
+import wyq.appengine.Component;
+import wyq.appengine.Factory;
+import wyq.appengine.FactoryParameter;
 
 public class Repository implements Component {
 
@@ -122,8 +124,8 @@ public class Repository implements Component {
 		if (factory == null) {
 			loadFactory();
 		}
-		component = (Component) factory
-				.factory(new FactoryParameter(name, cls));
+		FactoryParameter param = factory.buildParameter(name, cls);
+		component = (Component) factory.factory(param);
 		register(component, name, cls);
 		return component;
 	}

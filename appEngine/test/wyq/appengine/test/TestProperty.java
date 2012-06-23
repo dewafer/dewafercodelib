@@ -1,6 +1,6 @@
 package wyq.appengine.test;
 
-import wyq.appengine.Property;
+import wyq.appengine.component.Property;
 
 public class TestProperty {
 

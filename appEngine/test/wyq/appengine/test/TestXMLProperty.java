@@ -1,6 +1,6 @@
 package wyq.appengine.test;
 
-import wyq.appengine.XMLProperty;
+import wyq.appengine.component.XMLProperty;
 
 public class TestXMLProperty {
 
