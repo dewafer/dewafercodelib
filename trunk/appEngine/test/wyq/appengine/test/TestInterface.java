@@ -1,6 +1,6 @@
 package wyq.appengine.test;
 
-import wyq.appengine.Repository;
+import wyq.appengine.component.Repository;
 
 public class TestInterface {
 

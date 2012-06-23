@@ -1,4 +1,4 @@
-package wyq.appengine;
+package wyq.appengine.component;
 
 import java.io.IOException;
 import java.io.InputStream;

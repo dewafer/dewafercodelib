@@ -1,7 +1,7 @@
 package wyq.appengine.test;
 
-import wyq.appengine.Repository;
-import wyq.appengine.XMLProperty;
+import wyq.appengine.component.Repository;
+import wyq.appengine.component.XMLProperty;
 
 public class TestRepository {
 
