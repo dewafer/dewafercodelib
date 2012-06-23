@@ -59,7 +59,12 @@ public class ComponentFactory implements Factory {
 					try {
 						keyCls = Class.forName(fullName);
 					} catch (ClassNotFoundException e) {
-						throw new RuntimeException(e);
+						try {
+							fullName = parameterObject.getComponentName();
+							keyCls = Class.forName(fullName);
+						} catch (ClassNotFoundException e1) {
+							throw new RuntimeException(e1);
+						}
 					}
 				}
 
