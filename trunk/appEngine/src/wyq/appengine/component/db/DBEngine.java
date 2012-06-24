@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import wyq.appengine.Component;
-import wyq.appengine.component.Property;
+import wyq.appengine.ComponentField;
 import wyq.appengine.component.Repository;
 
 public class DBEngine implements Component {
@@ -20,28 +20,12 @@ public class DBEngine implements Component {
 
 	protected Connection conn;
 
-	protected DBEngineHandler handler = null;
+	protected DBEngineHandler handler;
 
-	protected ConnectionProvider provider = null;
-
-	protected Property property = null;
-
-	public DBEngine() {
-		property = Property.get();
-		handler = loadDBEngineHandler();
-
-		provider = Repository.get("DBEngineConnectionProvider",
-				ConnectionProvider.class);
-	}
+	protected ConnectionProvider provider;
 
 	public static DBEngine get() {
 		return Repository.get("DBEngine", DBEngine.class);
-	}
-
-	public DBEngineHandler loadDBEngineHandler() {
-		DBEngineHandler h = null;
-		h = Repository.get("DBEngineHandler", DBEngineHandler.class);
-		return h;
 	}
 
 	public void connect() throws ClassNotFoundException, SQLException {
@@ -124,6 +108,7 @@ public class DBEngine implements Component {
 		return provider;
 	}
 
+	@ComponentField(name = { "DBEngineConnectionProvider" })
 	public void setProvider(ConnectionProvider provider) {
 		this.provider = provider;
 	}

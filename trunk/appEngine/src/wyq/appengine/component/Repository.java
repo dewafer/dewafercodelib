@@ -4,10 +4,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
 import wyq.appengine.Component;
+import wyq.appengine.ComponentField;
+import wyq.appengine.ExceptionHandler;
 import wyq.appengine.Factory;
 import wyq.appengine.FactoryParameter;
 
@@ -20,12 +24,14 @@ public class Repository implements Component {
 
 	private static Repository res = new Repository();
 
-	private Factory factory;
+	private Factory<Component> factory;
 
 	private Map<RepositoryKeyEntry, Component> compPool = new HashMap<RepositoryKeyEntry, Component>();
 
 	private String repositorySaveFile;
 	private String usingFactory;
+
+	private ExceptionHandler exceptionHandler;
 
 	public static Component get(String name) {
 		return get(name, null);
@@ -108,6 +114,16 @@ public class Repository implements Component {
 		repositorySaveFile = p.getProperty("Repository.repositorySaveFile");
 		usingFactory = p.getProperty("Repository.usingFactory");
 
+		String exceptionHandlerName = p
+				.getProperty("Repository.ExceptionHandler");
+		try {
+			exceptionHandler = (ExceptionHandler) Class.forName(
+					exceptionHandlerName).newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+		register(exceptionHandler, "ExceptionHandler", ExceptionHandler.class);
 		register(p, "Property", Property.class);
 		register(this, "Repository", Repository.class);
 	}
@@ -127,16 +143,72 @@ public class Repository implements Component {
 		FactoryParameter param = factory.buildParameter(name, cls);
 		component = (Component) factory.factory(param);
 		register(component, name, cls);
+		initComponent(component);
 		return component;
 	}
 
+	protected void initComponent(Component component) {
+		// ignore Proxy
+		if (Proxy.isProxyClass(component.getClass())) {
+			return;
+		}
+
+		Class<?> compClass = component.getClass();
+		for (Method m : compClass.getMethods()) {
+			if (m.getName().startsWith("set")) {
+				ComponentField meta = m.getAnnotation(ComponentField.class);
+				if (meta != null && meta.ignore()) {
+					continue;
+				}
+				Class<?>[] params = m.getParameterTypes();
+				boolean ignored = (params.length == 0);
+				for (Class<?> param : params) {
+					if (!Component.class.isAssignableFrom(param)) {
+						ignored = true;
+						break;
+					}
+				}
+				if (!ignored) {
+					String[] compNames = new String[0];
+					if (meta != null) {
+						compNames = meta.name();
+					}
+					if (compNames.length > 0
+							&& compNames.length != params.length) {
+						throw new RuntimeException(
+								"Error Component Name Length!");
+					}
+					if (compNames.length == 0) {
+						compNames = new String[params.length];
+						for (int i = 0; i < params.length; i++) {
+							compNames[i] = params[i].getSimpleName();
+						}
+					}
+					Object[] paramComps = new Component[params.length];
+					for (int i = 0; i < params.length; i++) {
+						String n = compNames[i];
+						@SuppressWarnings("unchecked")
+						Class<? extends Component> c = (Class<? extends Component>) params[i];
+						paramComps[i] = Repository.get(n, c);
+					}
+					try {
+						m.invoke(component, paramComps);
+					} catch (Exception e) {
+						exceptionHandler.handle(e);
+					}
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	protected void loadFactory() {
 		try {
 			Class<?> fclass = Class.forName(usingFactory);
-			factory = (Factory) fclass.newInstance();
+			factory = (Factory<Component>) fclass.newInstance();
 			register(factory, "Factory", Factory.class);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			exceptionHandler.handle(e);
 		}
 	}
 
