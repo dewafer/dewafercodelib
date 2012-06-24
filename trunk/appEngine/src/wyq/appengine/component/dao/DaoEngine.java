@@ -20,7 +20,7 @@ public class DaoEngine implements Component {
 
 		Factory<Object> proxyFactory = Repository.get("ProxyFactory",
 				ProxyFactory.class);
-		FactoryParameter parameter = proxyFactory.buildParameter(
+		FactoryParameter parameter = proxyFactory.prepare(
 				new Class<?>[] { daoInterface }, handler);
 		return (T) proxyFactory.factory(parameter);
 	}

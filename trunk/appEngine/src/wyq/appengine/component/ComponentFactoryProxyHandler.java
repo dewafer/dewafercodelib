@@ -55,7 +55,7 @@ public class ComponentFactoryProxyHandler implements InvocationHandler,
 		} catch (ClassNotFoundException e) {
 			@SuppressWarnings("unchecked")
 			Factory<Component> f = Repository.get("Factory", Factory.class);
-			FactoryParameter param = f.buildParameter(implClazzName, implClazz);
+			FactoryParameter param = f.prepare(implClazzName, implClazz);
 			implObj = f.factory(param);
 		}
 
