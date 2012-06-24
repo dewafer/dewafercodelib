@@ -32,11 +32,15 @@ public abstract class AbstractFactory<T, R extends FactoryParameter> implements
 
 	@Override
 	public FactoryParameter prepare(Object... values) {
-		if (values == null || values.length != paramLength()) {
-			throw new IllegalArgumentException();
-		}
 		Class<?> fparamType = factoryParamType();
-		Class<?>[] fpConsTypes = paramTypes();
+		int fpConsTypesLength = values.length;
+		Class<?>[] fpConsTypes = new Class<?>[fpConsTypesLength];
+		for (int i = 0; i < fpConsTypesLength; i++) {
+			Object v = values[i];
+			if (v != null) {
+				fpConsTypes[i] = v.getClass();
+			}
+		}
 
 		Constructor<?> constructor;
 		FactoryParameter p = null;
@@ -44,7 +48,7 @@ public abstract class AbstractFactory<T, R extends FactoryParameter> implements
 		try {
 			if (fparamType.isMemberClass()) {
 				List<Class<?>> fpConsTypeList = new ArrayList<Class<?>>();
-				Collections.addAll(fpConsTypeList, paramTypes());
+				Collections.addAll(fpConsTypeList, fpConsTypes);
 				fpConsTypeList.add(0, this.getClass());
 				fpConsTypes = fpConsTypeList.toArray(fpConsTypes);
 
@@ -53,7 +57,7 @@ public abstract class AbstractFactory<T, R extends FactoryParameter> implements
 				initValueList.add(0, this);
 				initValues = initValueList.toArray(initValues);
 			}
-			constructor = fparamType.getDeclaredConstructor(fpConsTypes);
+			constructor = findConstructor(fparamType, fpConsTypes);
 			constructor.setAccessible(true);
 			p = (FactoryParameter) constructor.newInstance(initValues);
 		} catch (Exception e) {
@@ -62,9 +66,66 @@ public abstract class AbstractFactory<T, R extends FactoryParameter> implements
 		return p;
 	}
 
-	protected abstract int paramLength();
+	private Constructor<?> findConstructor(Class<?> fparamType,
+			Class<?>[] fpConsTypes) {
+		for (Constructor<?> c : fparamType.getDeclaredConstructors()) {
+			if (c.getParameterTypes().length != fpConsTypes.length) {
+				continue;
+			}
+			boolean skip = false;
+			for (int i = 0; i < c.getParameterTypes().length; i++) {
+				Class<?> cpt = c.getParameterTypes()[i];
+				Class<?> fpConsType = fpConsTypes[i];
+				if (fpConsType == null) {
+					continue;
+				}
+				if (!equals(cpt, fpConsType)) {
+					skip = true;
+					break;
+				}
+			}
+			if (!skip) {
+				return c;
+			}
+		}
+		return null;
+	}
 
-	protected abstract Class<?>[] paramTypes();
+	private boolean equals(Class<?> cpt, Class<?> fpConsType) {
+		Class<?> aCpt = autoBox(cpt);
+		Class<?> afpConsType = autoBox(fpConsType);
+
+		if (aCpt.equals(afpConsType)) {
+			return true;
+		} else {
+			return cpt.isAssignableFrom(afpConsType);
+		}
+	}
+
+	private Class<?> autoBox(Class<?> c) {
+		// 8 elements
+		// Boolean.TYPE, Character.TYPE, Byte.TYPE, Short.TYPE,
+		// Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE
+		if (Boolean.TYPE.equals(c)) {
+			return Boolean.class;
+		} else if (Character.TYPE.equals(c)) {
+			return Character.class;
+		} else if (Byte.TYPE.equals(c)) {
+			return Byte.class;
+		} else if (Short.TYPE.equals(c)) {
+			return Short.class;
+		} else if (Integer.TYPE.equals(c)) {
+			return Integer.class;
+		} else if (Long.TYPE.equals(c)) {
+			return Long.class;
+		} else if (Float.TYPE.equals(c)) {
+			return Float.class;
+		} else if (Double.TYPE.equals(c)) {
+			return Double.class;
+		} else {
+			return c;
+		}
+	}
 
 	protected abstract Class<? extends R> factoryParamType();
 

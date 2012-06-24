@@ -48,16 +48,6 @@ public class ProxyFactory extends AbstractFactory<Object, ProxyFactoryParam> {
 	}
 
 	@Override
-	protected int paramLength() {
-		return 2;
-	}
-
-	@Override
-	protected Class<?>[] paramTypes() {
-		return new Class<?>[] { Class[].class, InvocationHandler.class };
-	}
-
-	@Override
 	protected Class<ProxyFactoryParam> factoryParamType() {
 		return ProxyFactoryParam.class;
 	}

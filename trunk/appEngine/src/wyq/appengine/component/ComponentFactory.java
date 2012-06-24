@@ -96,16 +96,6 @@ public class ComponentFactory extends
 	}
 
 	@Override
-	protected int paramLength() {
-		return 2;
-	}
-
-	@Override
-	protected Class<?>[] paramTypes() {
-		return new Class<?>[] { String.class, Class.class };
-	}
-
-	@Override
 	protected Class<ComponentFactoryParameter> factoryParamType() {
 		return ComponentFactoryParameter.class;
 	}
