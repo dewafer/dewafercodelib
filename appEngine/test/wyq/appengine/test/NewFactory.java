@@ -23,16 +23,6 @@ public class NewFactory extends AbstractFactory<Object, NewFactoryParam> {
 		return param.getV1() + param.getV2();
 	}
 
-	@Override
-	protected int paramLength() {
-		return 2;
-	}
-
-	@Override
-	protected Class<?>[] paramTypes() {
-		return new Class<?>[] { String.class, int.class };
-	}
-
 	private class NParam2 extends NewFactoryParam {
 
 		private NParam2(String v1, int v2) {

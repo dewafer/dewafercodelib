@@ -15,10 +15,14 @@ public class BeanFactory extends AbstractFactory<Object, BeanFactoryParameter> {
 	 */
 	private static final long serialVersionUID = -1073671067251961068L;
 
+	private BeanDataSource dataSource;
+
 	@Override
 	protected Object build(BeanFactoryParameter param) {
 		Class<?> beanClass = param.beanClass;
-		BeanDataSource dataSource = param.dataSource;
+		if (param.dataSource != null) {
+			dataSource = param.dataSource;
+		}
 
 		// check bean class
 		if (!beanClass.isAnnotationPresent(Bean.class)) {
@@ -64,16 +68,6 @@ public class BeanFactory extends AbstractFactory<Object, BeanFactoryParameter> {
 	}
 
 	@Override
-	protected int paramLength() {
-		return 2;
-	}
-
-	@Override
-	protected Class<?>[] paramTypes() {
-		return new Class<?>[] { Class.class, BeanDataSource.class };
-	}
-
-	@Override
 	protected Class<BeanFactoryParameter> factoryParamType() {
 		return BeanFactoryParameter.class;
 	}
@@ -89,6 +83,14 @@ public class BeanFactory extends AbstractFactory<Object, BeanFactoryParameter> {
 			this.beanClass = beanClass;
 			this.dataSource = dataSource;
 		}
+	}
+
+	public BeanDataSource getDataSource() {
+		return dataSource;
+	}
+
+	public void setDataSource(BeanDataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
 }
