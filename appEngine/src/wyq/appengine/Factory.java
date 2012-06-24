@@ -1,8 +1,8 @@
 package wyq.appengine;
 
-public interface Factory extends Component {
+public interface Factory<T> extends Component {
 
-	public abstract Object factory(FactoryParameter parameterObject);
+	public abstract T factory(FactoryParameter parameterObject);
 
 	public abstract FactoryParameter buildParameter(Object... values);
 

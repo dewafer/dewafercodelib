@@ -3,10 +3,11 @@ package wyq.appengine.component;
 import java.lang.reflect.InvocationHandler;
 
 import wyq.appengine.Component;
+import wyq.appengine.ExceptionHandler;
 import wyq.appengine.Factory;
 import wyq.appengine.FactoryParameter;
 
-public class ComponentFactory implements Factory {
+public class ComponentFactory implements Factory<Object> {
 
 	/**
 	 * 
@@ -17,6 +18,7 @@ public class ComponentFactory implements Factory {
 	private String invocationHandlerName;
 
 	private InvocationHandler invocationHandler;
+	private ExceptionHandler exceptionHandler;
 
 	protected ComponentFactory() {
 		Property p = Property.get();
@@ -24,6 +26,8 @@ public class ComponentFactory implements Factory {
 				.getProperty("ComponentFactory.defaultPackageName");
 		invocationHandlerName = p
 				.getProperty("ComponentFactory.invocationHandlerName");
+		exceptionHandler = Repository.get("ExceptionHandler",
+				ExceptionHandler.class);
 	}
 
 	/*
@@ -37,12 +41,12 @@ public class ComponentFactory implements Factory {
 			ComponentFactoryParameter parameterObject = (ComponentFactoryParameter) factoryParameterObject;
 			if (parameterObject.getComponentName() == null
 					&& parameterObject.getComponentClass() == null) {
-				throw new RuntimeException(
+				throw new IllegalArgumentException(
 						"Wrong arguments! NullPointException!");
 			}
 			try {
-				Class<?> keyCls;
-				Object comp;
+				Class<?> keyCls = null;
+				Object comp = null;
 
 				if (parameterObject.getComponentClass() != null) {
 					keyCls = parameterObject.getComponentClass();
@@ -63,33 +67,36 @@ public class ComponentFactory implements Factory {
 							fullName = parameterObject.getComponentName();
 							keyCls = Class.forName(fullName);
 						} catch (ClassNotFoundException e1) {
-							throw new RuntimeException(e1);
+							exceptionHandler.handle(e1);
 						}
 					}
 				}
 
-				if (keyCls.isInterface()) {
-					if (invocationHandler == null) {
-						loadHandler();
+				if (keyCls != null) {
+					if (keyCls.isInterface()) {
+						if (invocationHandler == null) {
+							loadHandler();
+						}
+						Class<?>[] ifaces = new Class<?>[] { keyCls,
+								Component.class };
+						Factory<Object> factory = Repository.get(
+								"ProxyFactory", ProxyFactory.class);
+						FactoryParameter para = factory.buildParameter(ifaces,
+								invocationHandler);
+						comp = factory.factory(para);
+					} else {
+						comp = keyCls.newInstance();
 					}
-					Class<?>[] ifaces = new Class<?>[] { keyCls,
-							Component.class };
-					Factory factory = Repository.get("ProxyFactory",
-							ProxyFactory.class);
-					FactoryParameter para = factory.buildParameter(ifaces,
-							invocationHandler);
-					comp = factory.factory(para);
-				} else {
-					comp = keyCls.newInstance();
 				}
 				return comp;
 
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				exceptionHandler.handle(e);
 			}
 		} else {
-			throw new RuntimeException(new IllegalArgumentException());
+			throw new IllegalArgumentException();
 		}
+		return null;
 	}
 
 	protected void loadHandler() {
@@ -135,5 +142,13 @@ public class ComponentFactory implements Factory {
 
 	public String getDefaultPackageName() {
 		return defaultPackageName;
+	}
+
+	public ExceptionHandler getExceptionHandler() {
+		return exceptionHandler;
+	}
+
+	public void setExceptionHandler(ExceptionHandler exceptionHandler) {
+		this.exceptionHandler = exceptionHandler;
 	}
 }

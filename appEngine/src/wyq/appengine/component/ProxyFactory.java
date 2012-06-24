@@ -12,7 +12,7 @@ import wyq.appengine.Component;
 import wyq.appengine.Factory;
 import wyq.appengine.FactoryParameter;
 
-public class ProxyFactory implements Factory {
+public class ProxyFactory implements Factory<Object> {
 
 	/**
 	 * 
@@ -38,7 +38,7 @@ public class ProxyFactory implements Factory {
 			}
 			return proxyd.getProxy();
 		} else {
-			throw new RuntimeException(new IllegalArgumentException());
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -124,4 +124,5 @@ public class ProxyFactory implements Factory {
 		}
 
 	}
+
 }

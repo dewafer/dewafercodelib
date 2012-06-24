@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 import wyq.appengine.Component;
+import wyq.appengine.ExceptionHandler;
 import wyq.appengine.Factory;
 import wyq.appengine.FactoryParameter;
 
@@ -14,6 +15,8 @@ public class ComponentFactoryProxyHandler implements InvocationHandler,
 	 * *
 	 */
 	private static final long serialVersionUID = 6916777032196397091L;
+
+	private ExceptionHandler exceptionHandler;
 
 	@Override
 	public Object invoke(Object arg0, Method arg1, Object[] arg2)
@@ -26,8 +29,8 @@ public class ComponentFactoryProxyHandler implements InvocationHandler,
 		}
 		if (implClazzName == null || implClazzName.length() == 0) {
 			// throw new RuntimeException("No implements configuration!");
-			throw new RuntimeException(new UnsupportedOperationException(
-					arg1.toString()));
+			exceptionHandler.handle(new UnsupportedOperationException(arg1
+					.toString()));
 		}
 
 		Class<?> implClazz = null;
@@ -50,33 +53,41 @@ public class ComponentFactoryProxyHandler implements InvocationHandler,
 				throw new ClassNotFoundException();
 			}
 		} catch (ClassNotFoundException e) {
-			Factory f = Repository.get("Factory", Factory.class);
+			@SuppressWarnings("unchecked")
+			Factory<Component> f = Repository.get("Factory", Factory.class);
 			FactoryParameter param = f.buildParameter(implClazzName, implClazz);
 			implObj = f.factory(param);
 		}
 
-		if (implObj == null) {
-			throw new RuntimeException(
-					"ComponentFactoryProxyHandler: Implements load failure!");
-		}
-
-		if (implClazz == null) {
-			implClazz = implObj.getClass();
-		}
-
-		// find same method in implObj
-		String methodName = arg1.getName();
-		Class<?>[] paramTypes = arg1.getParameterTypes();
-		Method realMethod;
 		Object result = null;
-		try {
-			realMethod = implClazz.getDeclaredMethod(methodName, paramTypes);
-			realMethod.setAccessible(true);
-			result = realMethod.invoke(implObj, arg2);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		if (implObj != null) {
+			if (implClazz == null) {
+				implClazz = implObj.getClass();
+			}
+
+			// find same method in implObj
+			String methodName = arg1.getName();
+			Class<?>[] paramTypes = arg1.getParameterTypes();
+			Method realMethod;
+			try {
+				realMethod = implClazz
+						.getDeclaredMethod(methodName, paramTypes);
+				realMethod.setAccessible(true);
+				result = realMethod.invoke(implObj, arg2);
+			} catch (Exception e) {
+				exceptionHandler.handle(e);
+			}
 		}
+
 		return result;
+	}
+
+	public ExceptionHandler getExceptionHandler() {
+		return exceptionHandler;
+	}
+
+	public void setExceptionHandler(ExceptionHandler exceptionHandler) {
+		this.exceptionHandler = exceptionHandler;
 	}
 
 }
