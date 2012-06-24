@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Set;
 
 import wyq.appengine.Component;
-import wyq.appengine.Factory;
 import wyq.appengine.FactoryParameter;
+import wyq.appengine.component.ProxyFactory.ProxyFactoryParam;
 
-public class ProxyFactory implements Factory<Object> {
+public class ProxyFactory extends AbstractFactory<Object, ProxyFactoryParam> {
 
 	/**
 	 * 
@@ -20,29 +20,62 @@ public class ProxyFactory implements Factory<Object> {
 	private static final long serialVersionUID = 528513640112684785L;
 
 	@Override
-	public Object factory(FactoryParameter parameterObject) {
-		if (parameterObject instanceof ProxyFactoryParam) {
-			ProxyFactoryParam proxyParam = (ProxyFactoryParam) parameterObject;
-			Class<?>[] ifaces = proxyParam.getInterfaces();
-			InvocationHandler handler = proxyParam.getInvocationHandler();
-
-			String proxyDelegateName = "ProxyDelegate:"
-					+ handler.getClass().getName();
-			ProxyDelegate proxyd = Repository.find(proxyDelegateName,
-					ProxyDelegate.class);
-			if (proxyd == null) {
-				proxyd = new ProxyDelegate(ifaces, handler);
-				Repository.put(proxyDelegateName, ProxyDelegate.class, proxyd);
-			} else if (!proxyd.containsAll(ifaces)) {
-				proxyd.renewInterfaces(ifaces);
-			}
-			return proxyd.getProxy();
-		} else {
+	public FactoryParameter prepare(Object... values) {
+		if (values == null || values.length != 2) {
 			throw new IllegalArgumentException();
 		}
+		Class<?>[] interfaces = (Class<?>[]) values[0];
+		InvocationHandler invocationHandler = (InvocationHandler) values[1];
+		return new ProxyFactoryParam(interfaces, invocationHandler);
 	}
 
-	private class ProxyDelegate implements Component {
+	@Override
+	protected Object build(ProxyFactoryParam param) {
+		Class<?>[] ifaces = param.interfaces;
+		InvocationHandler handler = param.invocationHandler;
+
+		String proxyDelegateName = "ProxyDelegate:"
+				+ handler.getClass().getName();
+		ProxyDelegate proxyd = Repository.find(proxyDelegateName,
+				ProxyDelegate.class);
+		if (proxyd == null) {
+			proxyd = new ProxyDelegate(ifaces, handler);
+			Repository.put(proxyDelegateName, ProxyDelegate.class, proxyd);
+		} else if (!proxyd.containsAll(ifaces)) {
+			proxyd.renewInterfaces(ifaces);
+		}
+		return proxyd.getProxy();
+	}
+
+	@Override
+	protected int paramLength() {
+		return 2;
+	}
+
+	@Override
+	protected Class<?>[] paramTypes() {
+		return new Class<?>[] { Class[].class, InvocationHandler.class };
+	}
+
+	@Override
+	protected Class<ProxyFactoryParam> factoryParamType() {
+		return ProxyFactoryParam.class;
+	}
+
+	class ProxyFactoryParam implements FactoryParameter {
+
+		private Class<?>[] interfaces;
+		private InvocationHandler invocationHandler;
+
+		public ProxyFactoryParam(Class<?>[] interfaces,
+				InvocationHandler invocationHandler) {
+			this.interfaces = interfaces;
+			this.invocationHandler = invocationHandler;
+		}
+
+	}
+
+	class ProxyDelegate implements Component {
 		/**
 		 * 
 		 */
@@ -82,45 +115,6 @@ public class ProxyFactory implements Factory<Object> {
 		private Object newProxy(InvocationHandler handler) {
 			return Proxy.newProxyInstance(handler.getClass().getClassLoader(),
 					toArray(), handler);
-		}
-
-	}
-
-	@Override
-	public FactoryParameter buildParameter(Object... values) {
-		if (values == null || values.length != 2) {
-			throw new IllegalArgumentException();
-		}
-		Class<?>[] interfaces = (Class<?>[]) values[0];
-		InvocationHandler invocationHandler = (InvocationHandler) values[1];
-		return new ProxyFactoryParam(interfaces, invocationHandler);
-	}
-
-	public class ProxyFactoryParam implements FactoryParameter {
-
-		private Class<?>[] interfaces;
-		private InvocationHandler invocationHandler;
-
-		public ProxyFactoryParam(Class<?>[] interfaces,
-				InvocationHandler invocationHandler) {
-			this.interfaces = interfaces;
-			this.invocationHandler = invocationHandler;
-		}
-
-		public Class<?>[] getInterfaces() {
-			return interfaces;
-		}
-
-		public void setInterfaces(Class<?>[] interfaces) {
-			this.interfaces = interfaces;
-		}
-
-		public InvocationHandler getInvocationHandler() {
-			return invocationHandler;
-		}
-
-		public void setInvocationHandler(InvocationHandler invocationHandler) {
-			this.invocationHandler = invocationHandler;
 		}
 
 	}

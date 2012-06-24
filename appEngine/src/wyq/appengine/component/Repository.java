@@ -140,7 +140,7 @@ public class Repository implements Component {
 		if (factory == null) {
 			loadFactory();
 		}
-		FactoryParameter param = factory.buildParameter(name, cls);
+		FactoryParameter param = factory.prepare(name, cls);
 		component = (Component) factory.factory(param);
 		register(component, name, cls);
 		initComponent(component);
