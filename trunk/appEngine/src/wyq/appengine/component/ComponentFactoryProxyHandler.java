@@ -22,10 +22,19 @@ public class ComponentFactoryProxyHandler implements InvocationHandler,
 	public Object invoke(Object arg0, Method arg1, Object[] arg2)
 			throws Throwable {
 		Class<?> clazz = arg1.getDeclaringClass();
-		String keyName = clazz.getName() + ".impl";
+		String methodName = arg1.getName();
+		String keyName = clazz.getName() + "#" + methodName + ".impl";
 		String implClazzName = Property.get().getProperty(keyName);
 		if (implClazzName == null || implClazzName.length() == 0) {
-			implClazzName = new Property(clazz).getProperty("implClass");
+			keyName = clazz.getName() + ".impl";
+			implClazzName = Property.get().getProperty(keyName);
+		}
+		if (implClazzName == null || implClazzName.length() == 0) {
+			implClazzName = new Property(clazz).getProperty(methodName
+					+ ".impl");
+		}
+		if (implClazzName == null || implClazzName.length() == 0) {
+			implClazzName = new Property(clazz).getProperty("impl");
 		}
 		if (implClazzName == null || implClazzName.length() == 0) {
 			// throw new RuntimeException("No implements configuration!");
@@ -66,7 +75,6 @@ public class ComponentFactoryProxyHandler implements InvocationHandler,
 			}
 
 			// find same method in implObj
-			String methodName = arg1.getName();
 			Class<?>[] paramTypes = arg1.getParameterTypes();
 			Method realMethod;
 			try {
