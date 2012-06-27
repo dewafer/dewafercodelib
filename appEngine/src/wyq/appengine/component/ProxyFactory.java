@@ -35,7 +35,7 @@ public class ProxyFactory extends AbstractFactory<Object, ProxyFactoryParam> {
 		InvocationHandler handler = param.invocationHandler;
 
 		String proxyDelegateName = "ProxyDelegate:"
-				+ handler.getClass().getName();
+				+ handler.getClass().getName() + "#" + handler.hashCode();
 		ProxyDelegate proxyd = Repository.find(proxyDelegateName,
 				ProxyDelegate.class);
 		if (proxyd == null) {
