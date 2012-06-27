@@ -53,22 +53,20 @@ public class ComponentFactory extends
 			if (param.componentClass != null) {
 				keyCls = param.componentClass;
 			} else {
-				String fullName;
-				if (defaultPackageName != null
-						&& defaultPackageName.length() > 0) {
-					fullName = defaultPackageName + "." + param.componentName;
-				} else {
-					fullName = param.componentName;
-				}
+				String fullName = param.componentName;
 
 				try {
 					keyCls = Class.forName(fullName);
 				} catch (ClassNotFoundException e) {
-					try {
-						fullName = param.componentName;
-						keyCls = Class.forName(fullName);
-					} catch (ClassNotFoundException e1) {
-						exceptionHandler.handle(e1);
+					if (defaultPackageName != null
+							&& defaultPackageName.length() > 0) {
+						fullName = defaultPackageName + "."
+								+ param.componentName;
+						try {
+							keyCls = Class.forName(fullName);
+						} catch (ClassNotFoundException e1) {
+							exceptionHandler.handle(e1);
+						}
 					}
 				}
 			}
@@ -103,6 +101,10 @@ public class ComponentFactory extends
 	public class ComponentFactoryParameter implements FactoryParameter {
 		private String componentName;
 		private Class<?> componentClass;
+
+		public ComponentFactoryParameter(String componentName) {
+			this(componentName, null);
+		}
 
 		public ComponentFactoryParameter(String componentName,
 				Class<?> componentClass) {
