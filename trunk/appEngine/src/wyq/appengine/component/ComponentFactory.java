@@ -72,17 +72,19 @@ public class ComponentFactory extends
 			}
 
 			if (keyCls != null) {
-				if (keyCls.isInterface() && isInterfaceProxyDefined(keyCls)) {
-					if (invocationHandler == null) {
-						loadHandler();
+				if (keyCls.isInterface()) {
+					if (isInterfaceProxyDefined(keyCls)) {
+						if (invocationHandler == null) {
+							loadHandler();
+						}
+						Class<?>[] ifaces = new Class<?>[] { keyCls,
+								Component.class };
+						Factory<Object> factory = Repository.get(
+								"ProxyFactory", ProxyFactory.class);
+						FactoryParameter para = factory.prepare(ifaces,
+								invocationHandler);
+						comp = factory.factory(para);
 					}
-					Class<?>[] ifaces = new Class<?>[] { keyCls,
-							Component.class };
-					Factory<Object> factory = Repository.get("ProxyFactory",
-							ProxyFactory.class);
-					FactoryParameter para = factory.prepare(ifaces,
-							invocationHandler);
-					comp = factory.factory(para);
 				} else {
 					comp = keyCls.newInstance();
 				}
