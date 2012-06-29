@@ -8,7 +8,7 @@ import wyq.appengine.ExceptionHandler;
 import wyq.appengine.Factory;
 import wyq.appengine.FactoryParameter;
 
-public class ComponentFactoryProxyHandler implements InvocationHandler,
+public class ComponentProxyHandler implements InvocationHandler,
 		Component {
 
 	/**
