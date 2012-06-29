@@ -21,14 +21,12 @@ public class Repository implements Component {
 
 	private static Repository res = new Repository();
 
-	private Factory<Component> factory;
-	private Factory<Component> initFactory;
-
-	private Map<RepositoryKeyEntry, Component> compPool = new HashMap<RepositoryKeyEntry, Component>();
-
 	private String repositorySaveFile;
 	private String usingFactory;
 	private String usingInitFactory;
+	private ComponentPool compPool = new ComponentPool();
+	private Factory<Component> factory;
+	private Factory<Component> initFactory;
 
 	private ExceptionHandler exceptionHandler;
 
@@ -257,5 +255,29 @@ public class Repository implements Component {
 			return Repository.this;
 		}
 
+	}
+
+	private class ComponentPool {
+		private Map<RepositoryKeyEntry, Component> compPool = new HashMap<RepositoryKeyEntry, Component>();
+
+		public boolean containsKey(Object arg0) {
+			return compPool.containsKey(arg0);
+		}
+
+		public boolean containsValue(Object arg0) {
+			return compPool.containsValue(arg0);
+		}
+
+		public Component get(Object arg0) {
+			return compPool.get(arg0);
+		}
+
+		public Component put(RepositoryKeyEntry arg0, Component arg1) {
+			return compPool.put(arg0, arg1);
+		}
+
+		public Component remove(Object arg0) {
+			return compPool.remove(arg0);
+		}
 	}
 }
