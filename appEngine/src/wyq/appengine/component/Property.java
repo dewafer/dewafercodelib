@@ -2,7 +2,10 @@ package wyq.appengine.component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import wyq.appengine.Component;
 
@@ -81,5 +84,27 @@ public class Property extends Properties implements Component {
 
 	protected void loadAction(InputStream in) throws IOException {
 		load(in);
+	}
+
+	public boolean isKeyDefined(String keyRegExp) {
+		for (Object key : this.keySet()) {
+			String strKey = key.toString();
+			if (Pattern.matches(keyRegExp, strKey)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String[] getProperties(String keyRegExp) {
+		List<String> p = new ArrayList<String>();
+		for (Object key : this.keySet()) {
+			String strKey = key.toString();
+			if (Pattern.matches(keyRegExp, strKey)) {
+				p.add(getProperty(strKey));
+			}
+		}
+		String[] values = new String[p.size()];
+		return p.toArray(values);
 	}
 }

@@ -72,7 +72,7 @@ public class ComponentFactory extends
 			}
 
 			if (keyCls != null) {
-				if (keyCls.isInterface()) {
+				if (keyCls.isInterface() && isInterfaceProxyDefined(keyCls)) {
 					if (invocationHandler == null) {
 						loadHandler();
 					}
@@ -96,6 +96,19 @@ public class ComponentFactory extends
 	@Override
 	protected Class<ComponentFactoryParameter> factoryParamType() {
 		return ComponentFactoryParameter.class;
+	}
+
+	protected boolean isInterfaceProxyDefined(Class<?> icls) {
+		Property p = Property.get();
+		String key = "^" + icls.getName().replace(".", "\\.")
+				+ "(\\.\\w+)?\\.impl$";
+		if (!p.isKeyDefined(key)) {
+			p = new Property(icls);
+			String simpleKey = "^(\\w+\\.)impl$";
+			return p.isKeyDefined(simpleKey);
+		} else {
+			return true;
+		}
 	}
 
 	public class ComponentFactoryParameter implements FactoryParameter {
