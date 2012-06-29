@@ -13,6 +13,8 @@ public class PropertyInitFactory extends
 
 	private boolean useStandalonePropertyFile = false;
 
+	private boolean annotationMustPresent = false;
+
 	private Convertor convertor;
 	/**
 	 * 
@@ -22,6 +24,8 @@ public class PropertyInitFactory extends
 	public PropertyInitFactory() {
 		useStandalonePropertyFile = Boolean.valueOf(Property.get().getProperty(
 				"PropertyInitFactory.useStandalonePropertyFile"));
+		annotationMustPresent = Boolean.valueOf(Property.get().getProperty(
+				"PropertyInitFactory.annotationMustPresent"));
 	}
 
 	@Override
@@ -46,6 +50,10 @@ public class PropertyInitFactory extends
 			p = fparam.prop;
 		}
 		for (Field f : compClass.getDeclaredFields()) {
+			if (annotationMustPresent
+					&& !f.isAnnotationPresent(PropertyField.class)) {
+				continue;
+			}
 			PropertyField meta = f.getAnnotation(PropertyField.class);
 			Property prop = p;
 			if (meta != null && meta.ignore()) {

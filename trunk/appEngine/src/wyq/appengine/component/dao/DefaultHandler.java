@@ -1,83 +1,78 @@
 package wyq.appengine.component.dao;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-public class DefaultHandler implements DaoEngineHandler {
+import wyq.appengine.ExceptionHandler;
+import wyq.appengine.component.db.DBEngine;
+import wyq.appengine.component.db.DBEngine.DBResult;
+import wyq.appengine.component.db.DBEngineHandler;
+import wyq.appengine.component.file.TextFile;
+
+public class DefaultHandler implements DaoEngineHandler, DBEngineHandler {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7420307159693763074L;
 
-	// private static final String LINE_SEP =
-	// System.getProperty("line.separator");
+	private DaoResult daoResult = null;
+	private Object[] params = null;
 
-	Method method;
-	Object[] args;
+	private ExceptionHandler exceptionHandler;
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args)
 			throws Throwable {
-		this.method = method;
-		this.args = args;
-		System.out.println(this);
-		// Annotation[] annotations = method.getAnnotations();
-		// for (Annotation a : annotations)
-		// System.out.println(a);
-		// // TODO implements
-		// 1.Read the SQL file(s)
-		// Class<?> clazz = method.getDeclaringClass();
-		// String name = clazz.getSimpleName() + "_" + method.getName();
-		// InputStream input = clazz.getResourceAsStream(name);
-		// String sql = read(input).toString();
 
-		// 2.interpret the SQL
-		// int paramCount = findParams(sql);
+		Class<?> clazz = method.getDeclaringClass();
+		String fileName = clazz.getSimpleName() + "_" + method.getName()
+				+ ".sql";
+		String sql = new TextFile(clazz, fileName).readAll();
 
-		// 3.execute SQL
-		// 4.handle result
+		daoResult = null;
+		params = args;
 
-		// DaoEngineHandler handler = Repository.get("DaoEngineHandler",
-		// DaoEngineHandler.class);
-		// handler.setContent(new DaoEngineContent(method, args));
-		//
-		// DBEngine dbEngine = DBEngine.get();
-		// dbEngine.setHandler(handler.getDBEngineHandler());
-		//
-		// dbEngine.connect();
-		// dbEngine.executeSQL(handler.getSql());
-		// dbEngine.close();
-		//
-		// return handler.getResult();
-		return null;
+		DBEngine db = DBEngine.get();
+		DBEngineHandler tmpHandler = db.getHandler();
+		db.setHandler(this);
+		db.connect();
+		db.executeSQL(sql);
+		db.close();
+		db.setHandler(tmpHandler);
+
+		return daoResult;
 	}
 
 	@Override
-	public String toString() {
-		return "DefaultHandler [method=" + method + ", args="
-				+ Arrays.toString(args) + "]";
+	public void prepareParameter(PreparedStatement stmt) {
+		if (params == null)
+			return;
+		try {
+			for (int i = 0; i < params.length; i++) {
+				stmt.setObject(i + 1, params[i]);
+			}
+		} catch (SQLException e) {
+			exceptionHandler.handle(e);
+		}
 	}
 
-	// private int findParams(String sql) {
-	// // TODO Auto-generated method stub
-	// return 0;
-	// }
-	//
-	// private StringBuilder read(InputStream is) {
-	// BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-	// StringBuilder sb = new StringBuilder();
-	// String line = null;
-	// try {
-	// while ((line = reader.readLine()) != null) {
-	// sb.append(line);
-	// sb.append(LINE_SEP);
-	// }
-	// } catch (IOException e) {
-	// e.printStackTrace();
-	// }
-	//
-	// return sb;
-	// }
+	@Override
+	public void processResult(DBResult result) {
+		try {
+			daoResult = new DaoResult(result);
+		} catch (SQLException e) {
+			exceptionHandler.handle(e);
+		}
+	}
+
+	public ExceptionHandler getExceptionHandler() {
+		return exceptionHandler;
+	}
+
+	public void setExceptionHandler(ExceptionHandler exceptionHandler) {
+		this.exceptionHandler = exceptionHandler;
+	}
 
 }
