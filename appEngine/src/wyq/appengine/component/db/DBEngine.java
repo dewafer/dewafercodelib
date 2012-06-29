@@ -9,6 +9,7 @@ import java.sql.Statement;
 
 import wyq.appengine.Component;
 import wyq.appengine.ComponentField;
+import wyq.appengine.ExceptionHandler;
 import wyq.appengine.component.Repository;
 
 public class DBEngine implements Component {
@@ -24,17 +25,27 @@ public class DBEngine implements Component {
 
 	protected ConnectionProvider provider;
 
+	private ExceptionHandler exceptionHandler;
+
 	public static DBEngine get() {
 		return Repository.get("DBEngine", DBEngine.class);
 	}
 
-	public void connect() throws ClassNotFoundException, SQLException {
-		Class.forName(provider.getSqlConnProviderClass());
-		conn = DriverManager.getConnection(provider.getConnStr(),
-				provider.getUser(), provider.getPassword());
+	public void connect() {
+		try {
+			if (conn == null || conn.isClosed()) {
+				Class.forName(provider.getSqlConnProviderClass());
+				conn = DriverManager.getConnection(provider.getConnStr(),
+						provider.getUser(), provider.getPassword());
+			}
+		} catch (ClassNotFoundException e) {
+			exceptionHandler.handle(e);
+		} catch (SQLException e) {
+			exceptionHandler.handle(e);
+		}
 	}
 
-	public void executeSQL(String sql) throws SQLException {
+	public void executeSQL(String sql) {
 		if (conn == null)
 			return;
 		try {
@@ -62,14 +73,14 @@ public class DBEngine implements Component {
 				conn.commit();
 			}
 		} catch (SQLException e) {
-			if (!conn.getAutoCommit()) {
-				try {
+			try {
+				if (!conn.getAutoCommit()) {
 					conn.rollback();
-				} catch (SQLException e1) {
-					throw e1;
 				}
+			} catch (SQLException e1) {
+				exceptionHandler.handle(e1);
 			}
-			throw e;
+			exceptionHandler.handle(e);
 		}
 	}
 
@@ -77,22 +88,22 @@ public class DBEngine implements Component {
 		if (handler == null) {
 			return;
 		}
-		try {
-			if (o instanceof PreparedStatement) {
-				PreparedStatement p = (PreparedStatement) o;
-				handler.prepareParameter(p);
-			} else if (o instanceof DBResult) {
-				DBResult r = (DBResult) o;
-				handler.processResult(r);
-			}
-		} catch (RuntimeException e) {
-			e.printStackTrace();
+		if (o instanceof PreparedStatement) {
+			PreparedStatement p = (PreparedStatement) o;
+			handler.prepareParameter(p);
+		} else if (o instanceof DBResult) {
+			DBResult r = (DBResult) o;
+			handler.processResult(r);
 		}
 	}
 
-	public void close() throws SQLException {
-		if (conn != null) {
-			conn.close();
+	public void close() {
+		try {
+			if (conn != null && !conn.isClosed()) {
+				conn.close();
+			}
+		} catch (SQLException e) {
+			exceptionHandler.handle(e);
 		}
 	}
 
@@ -134,5 +145,13 @@ public class DBEngine implements Component {
 			return this.resultSet != null;
 		}
 
+	}
+
+	public ExceptionHandler getExceptionHandler() {
+		return exceptionHandler;
+	}
+
+	public void setExceptionHandler(ExceptionHandler exceptionHandler) {
+		this.exceptionHandler = exceptionHandler;
 	}
 }
