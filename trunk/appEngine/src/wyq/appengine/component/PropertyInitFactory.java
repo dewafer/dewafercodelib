@@ -11,11 +11,18 @@ import wyq.appengine.component.PropertyInitFactory.PropertyInitFactoryParam;
 public class PropertyInitFactory extends
 		AbstractFactory<Object, PropertyInitFactoryParam> {
 
+	private boolean useStandalonePropertyFile = false;
+
 	private Convertor convertor;
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1740371298282094781L;
+
+	public PropertyInitFactory() {
+		useStandalonePropertyFile = Boolean.valueOf(Property.get().getProperty(
+				"PropertyInitFactory.useStandalonePropertyFile"));
+	}
 
 	@Override
 	protected Object build(PropertyInitFactoryParam fparam) {
@@ -31,8 +38,16 @@ public class PropertyInitFactory extends
 		}
 
 		Class<?> compClass = component.getClass();
+		Property p = Property.get();
+		if (useStandalonePropertyFile) {
+			p = new Property(compClass);
+		}
+		if (fparam.prop != null) {
+			p = fparam.prop;
+		}
 		for (Field f : compClass.getDeclaredFields()) {
 			PropertyField meta = f.getAnnotation(PropertyField.class);
+			Property prop = p;
 			if (meta != null && meta.ignore()) {
 				continue;
 			}
@@ -40,12 +55,17 @@ public class PropertyInitFactory extends
 			if (meta != null && meta.name() != null && meta.name().length() > 0) {
 				propName = meta.name();
 			}
-			String propValue;
-			if (fparam.prop != null) {
-				propValue = fparam.prop.getProperty(propName);
-			} else {
-				propValue = Property.get().getProperty(propName);
+			if (meta != null && meta.useStandalonePropFile()) {
+				String propFileName = meta.standalonePropFileName();
+				if (propFileName.length() > 0) {
+					prop = new Property(propFileName);
+				} else {
+					prop = new Property(compClass);
+				}
 			}
+
+			String propValue;
+			propValue = prop.getProperty(propName);
 
 			if (propValue != null) {
 				try {

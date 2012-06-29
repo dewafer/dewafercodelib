@@ -28,21 +28,21 @@ public class Property extends Properties implements Component {
 		return Repository.get(c.getName(), Property.class);
 	}
 
-	protected Property(Properties p) {
+	public Property(Properties p) {
 		super(p);
 	}
 
-	protected Property(String p) {
+	public Property(String p) {
 		super();
 		loadPropertyFile(p);
 	}
 
-	protected Property() {
+	public Property() {
 		super();
 		loadPropertyFile(this.getClass());
 	}
 
-	protected Property(Class<?> c) {
+	public Property(Class<?> c) {
 		loadPropertyFile(c);
 	}
 
