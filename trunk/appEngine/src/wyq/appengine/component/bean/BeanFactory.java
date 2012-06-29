@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import wyq.appengine.Convertor;
 import wyq.appengine.FactoryParameter;
 import wyq.appengine.component.AbstractFactory;
 import wyq.appengine.component.bean.BeanFactory.BeanFactoryParameter;
@@ -16,6 +17,8 @@ public class BeanFactory extends AbstractFactory<Object, BeanFactoryParameter> {
 	private static final long serialVersionUID = -1073671067251961068L;
 
 	private BeanDataSource dataSource;
+
+	private Convertor convertor;
 
 	@Override
 	protected Object build(BeanFactoryParameter param) {
@@ -53,11 +56,14 @@ public class BeanFactory extends AbstractFactory<Object, BeanFactoryParameter> {
 		if (bean != null) {
 			// set values
 			for (Map.Entry<String, Field> entity : beanFields.entrySet()) {
-				String fieldName = entity.getKey();
-				Object value = dataSource.getValue(fieldName);
-				Field f = entity.getValue();
-				f.setAccessible(true);
 				try {
+					String fieldName = entity.getKey();
+					Object value = dataSource.getValue(fieldName);
+					Field f = entity.getValue();
+					if (convertor != null) {
+						value = convertor.convert(value, f.getType());
+					}
+					f.setAccessible(true);
 					f.set(bean, value);
 				} catch (Exception e) {
 					exceptionHandler.handle(e);
@@ -91,6 +97,14 @@ public class BeanFactory extends AbstractFactory<Object, BeanFactoryParameter> {
 
 	public void setDataSource(BeanDataSource dataSource) {
 		this.dataSource = dataSource;
+	}
+
+	public Convertor getConvertor() {
+		return convertor;
+	}
+
+	public void setConvertor(Convertor convertor) {
+		this.convertor = convertor;
 	}
 
 }

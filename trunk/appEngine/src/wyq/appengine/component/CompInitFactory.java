@@ -19,6 +19,10 @@ public class CompInitFactory extends
 	@Override
 	protected Object build(CompInitFactoryParam fparam) {
 		Object component = fparam.compObject;
+
+		if (component == null) {
+			return null;
+		}
 		// ignore Proxy
 		if (Proxy.isProxyClass(component.getClass())) {
 			return component;

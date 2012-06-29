@@ -23,23 +23,34 @@ public class ComponentFactoryProxyHandler implements InvocationHandler,
 			throws Throwable {
 		Class<?> clazz = arg1.getDeclaringClass();
 		String methodName = arg1.getName();
-		String keyName = clazz.getName() + "#" + methodName + ".impl";
+		String keyName = clazz.getName() + "." + methodName + ".impl";
 		String implClazzName = Property.get().getProperty(keyName);
-		if (implClazzName == null || implClazzName.length() == 0) {
+		if (implClazzName == null) {
 			keyName = clazz.getName() + ".impl";
 			implClazzName = Property.get().getProperty(keyName);
 		}
-		if (implClazzName == null || implClazzName.length() == 0) {
+		if (implClazzName == null) {
 			implClazzName = new Property(clazz).getProperty(methodName
 					+ ".impl");
 		}
-		if (implClazzName == null || implClazzName.length() == 0) {
+		if (implClazzName == null) {
 			implClazzName = new Property(clazz).getProperty("impl");
 		}
-		if (implClazzName == null || implClazzName.length() == 0) {
+		if (implClazzName == null) {
 			// throw new RuntimeException("No implements configuration!");
 			exceptionHandler.handle(new UnsupportedOperationException(arg1
 					.toString()));
+		} else if (implClazzName.length() == 0) {
+			// do nothing just return the argument
+			Class<?> returnType = arg1.getReturnType();
+			if (arg2 != null) {
+				for (Object o : arg2) {
+					if (returnType.isAssignableFrom(o.getClass())) {
+						return returnType.cast(o);
+					}
+				}
+			}
+			return null;
 		}
 
 		Class<?> implClazz = null;

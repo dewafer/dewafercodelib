@@ -142,8 +142,11 @@ public class Repository implements Component {
 		}
 		FactoryParameter param = factory.prepare(name, cls);
 		component = (Component) factory.factory(param);
-		register(component, name, cls);
-		initComponent(component);
+
+		if (component != null) {
+			register(component, name, cls);
+			initComponent(component);
+		}
 		return component;
 	}
 
@@ -156,10 +159,10 @@ public class Repository implements Component {
 		try {
 			Class<?> fclass = Class.forName(usingFactory);
 			factory = (Factory<Component>) fclass.newInstance();
+			register(factory, "Factory", Factory.class);
 
 			initFactory = (Factory<Component>) factory
 					.manufacture(usingInitFactory);
-			register(factory, "Factory", Factory.class);
 			register(initFactory, "initFactory", Factory.class);
 		} catch (Exception e) {
 			exceptionHandler.handle(e);
