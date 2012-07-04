@@ -102,9 +102,9 @@ public class Shudu {
 				printNow();
 				println(tryCount + ":" + p);
 				println(valid);
-				println(triedPossible);
-				println(theGame);
 				if (valid) {
+					println(triedPossible);
+					println(theGame);
 					solved = theGame.isSolved();
 					if (!solved) {
 						possibleStack.add(new HashSet<Possible>());
@@ -112,6 +112,7 @@ public class Shudu {
 					}
 					break;
 				} else {
+					println(triedPossible);
 					if (itr.hasNext()) {
 						theGame = new Game(peek());
 					} else {
