@@ -1,9 +1,10 @@
 package wyq.appengine.component.file;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -71,19 +72,46 @@ public class TextFile extends File implements Component {
 
 	public String readAll() {
 		StringBuilder sb = new StringBuilder();
+		BufferedReader reader = null;
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(this));
+			reader = new BufferedReader(new FileReader(this));
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				sb.append(line);
 				sb.append(LINE_SEP);
 			}
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			exceptionHandler.handle(e);
-		} catch (IOException e) {
-			exceptionHandler.handle(e);
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					exceptionHandler.handle(e);
+				}
+			}
 		}
 		return sb.toString();
+	}
+
+	public void writeAll(String content, boolean append) {
+		BufferedWriter writer = null;
+		try {
+			writer = new BufferedWriter(new FileWriter(this, append));
+			writer.write(content);
+			writer.flush();
+			writer.close();
+		} catch (Exception e) {
+			exceptionHandler.handle(e);
+		} finally {
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					exceptionHandler.handle(e);
+				}
+			}
+		}
 	}
 
 	public ExceptionHandler getExceptionHandler() {
