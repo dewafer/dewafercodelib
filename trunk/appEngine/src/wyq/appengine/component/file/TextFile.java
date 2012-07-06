@@ -19,7 +19,7 @@ public class TextFile extends File implements Component {
 	 */
 	private static final long serialVersionUID = -2188324052240230771L;
 
-	private static final String LINE_SEP = System.getProperty("line.separator");
+	public static final String LINE_SEP = System.getProperty("line.separator");
 
 	private ExceptionHandler exceptionHandler;
 
