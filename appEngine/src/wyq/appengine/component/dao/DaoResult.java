@@ -42,8 +42,8 @@ public class DaoResult implements Component {
 			}
 			while (resultSet.next()) {
 				List<Object> resultValue = new ArrayList<Object>();
-				for (String column : columnNames) {
-					resultValue.add(resultSet.getObject(column));
+				for (int i = 0; i < columnNames.size(); i++) {
+					resultValue.add(resultSet.getObject(i + 1));
 				}
 				resultList.add(resultValue);
 			}
