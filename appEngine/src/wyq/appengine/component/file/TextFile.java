@@ -142,6 +142,10 @@ public class TextFile extends File implements Component {
 		return readerWriter.skip(arg0);
 	}
 
+	public void flush() throws IOException {
+		readerWriter.flush();
+	}
+
 	public ExceptionHandler getExceptionHandler() {
 		return exceptionHandler;
 	}
