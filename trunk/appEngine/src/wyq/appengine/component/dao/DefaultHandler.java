@@ -3,6 +3,7 @@ package wyq.appengine.component.dao;
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 
 import wyq.appengine.ExceptionHandler;
 import wyq.appengine.component.db.DBEngine;
@@ -32,7 +33,7 @@ public class DefaultHandler implements DaoEngineHandler, DBEngineHandler {
 		String sql = new TextFile(clazz, fileName).readAll();
 
 		daoResult = null;
-		params = args;
+		params = getSqlParams(args);
 
 		DBEngine db = DBEngine.get();
 		DBEngineHandler tmpHandler = db.getHandler();
@@ -43,6 +44,24 @@ public class DefaultHandler implements DaoEngineHandler, DBEngineHandler {
 		db.setHandler(tmpHandler);
 
 		return daoResult;
+	}
+
+	protected Object[] getSqlParams(Object[] args) {
+		Object[] argTmp = new Object[0];
+		if (args != null && args.length == 1) {
+			Object arg = args[0];
+			if (arg instanceof Object[]) {
+				argTmp = (Object[]) arg;
+			} else if (arg instanceof Collection<?>) {
+				Collection<?> c = (Collection<?>) arg;
+				argTmp = c.toArray(argTmp);
+			} else {
+				argTmp = args;
+			}
+		} else {
+			argTmp = args;
+		}
+		return argTmp;
 	}
 
 	@Override
