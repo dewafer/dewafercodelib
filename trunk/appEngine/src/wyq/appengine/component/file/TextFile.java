@@ -3,6 +3,7 @@ package wyq.appengine.component.file;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,6 +23,8 @@ public class TextFile extends File implements Component {
 	public static final String LINE_SEP = System.getProperty("line.separator");
 
 	private ExceptionHandler exceptionHandler;
+
+	private TextFileReaderWriter readerWriter = new TextFileReaderWriter();
 
 	public TextFile(File parent, String child) {
 		super(parent, child);
@@ -72,46 +75,71 @@ public class TextFile extends File implements Component {
 
 	public String readAll() {
 		StringBuilder sb = new StringBuilder();
-		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new FileReader(this));
+			readerWriter.openRead();
 			String line = null;
-			while ((line = reader.readLine()) != null) {
+			while ((line = readerWriter.readLine()) != null) {
 				sb.append(line);
 				sb.append(LINE_SEP);
 			}
 		} catch (Exception e) {
 			exceptionHandler.handle(e);
 		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					exceptionHandler.handle(e);
-				}
+			try {
+				readerWriter.closeRead();
+			} catch (IOException e) {
+				exceptionHandler.handle(e);
 			}
 		}
 		return sb.toString();
 	}
 
 	public void writeAll(String content, boolean append) {
-		BufferedWriter writer = null;
 		try {
-			writer = new BufferedWriter(new FileWriter(this, append));
-			writer.write(content);
-			writer.flush();
-			writer.close();
+			readerWriter.openWrite(append);
+			readerWriter.write(content);
+			readerWriter.flush();
 		} catch (Exception e) {
 			exceptionHandler.handle(e);
 		} finally {
-			if (writer != null) {
-				try {
-					writer.close();
-				} catch (IOException e) {
-					exceptionHandler.handle(e);
-				}
+			try {
+				readerWriter.closeWrite();
+			} catch (IOException e) {
+				exceptionHandler.handle(e);
 			}
 		}
+	}
+
+	public String readLine() {
+		String line = null;
+		try {
+			readerWriter.openRead();
+			line = readerWriter.readLine();
+		} catch (Exception e) {
+			exceptionHandler.handle(e);
+		}
+		return line;
+	}
+
+	public void writeLine(String line) {
+		try {
+			readerWriter.openWrite(true);
+			readerWriter.writeLine(line);
+		} catch (Exception e) {
+			exceptionHandler.handle(e);
+		}
+	}
+
+	public void close() throws IOException {
+		readerWriter.close();
+	}
+
+	public void reset() throws IOException {
+		readerWriter.reset();
+	}
+
+	public long skip(long arg0) throws IOException {
+		return readerWriter.skip(arg0);
 	}
 
 	public ExceptionHandler getExceptionHandler() {
@@ -120,5 +148,85 @@ public class TextFile extends File implements Component {
 
 	public void setExceptionHandler(ExceptionHandler exceptionHandler) {
 		this.exceptionHandler = exceptionHandler;
+	}
+
+	class TextFileReaderWriter {
+
+		private BufferedReader reader;
+		private BufferedWriter writer;
+
+		public void openRead() throws FileNotFoundException {
+			if (reader == null) {
+				reader = new BufferedReader(new FileReader(TextFile.this));
+			}
+		}
+
+		public void openWrite(boolean append) throws IOException {
+			if (writer == null) {
+				writer = new BufferedWriter(new FileWriter(TextFile.this,
+						append));
+			}
+		}
+
+		public void close() throws IOException {
+			closeRead();
+			closeWrite();
+		}
+
+		public void closeRead() throws IOException {
+			if (reader != null) {
+				reader.close();
+				reader = null;
+			}
+		}
+
+		public void closeWrite() throws IOException {
+			if (writer != null) {
+				writer.close();
+				writer = null;
+			}
+		}
+
+		public String readLine() throws IOException {
+			String line = null;
+			if (reader != null) {
+				line = reader.readLine();
+			}
+			return line;
+		}
+
+		public void writeLine(String line) throws IOException {
+			if (writer != null) {
+				writer.write(line);
+				writer.newLine();
+			}
+		}
+
+		public void reset() throws IOException {
+			if (reader != null) {
+				reader.reset();
+			}
+		}
+
+		public long skip(long arg0) throws IOException {
+			long skipped = 0;
+			if (reader != null) {
+				skipped = reader.skip(arg0);
+			}
+			return skipped;
+		}
+
+		public void flush() throws IOException {
+			if (writer != null) {
+				writer.flush();
+			}
+		}
+
+		public void write(String str) throws IOException {
+			if (writer != null) {
+				writer.write(str);
+			}
+		}
+
 	}
 }
