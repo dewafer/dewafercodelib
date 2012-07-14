@@ -53,11 +53,11 @@ public class DaoResult implements Component {
 	public Object getValue(String columnName) {
 		if (!hasResult)
 			return null;
-		if (!isOutRange(current, -1, resultList.size()))
+		if (isOutRange(current, 0, resultList.size()))
 			return null;
 		int col = columnNames.indexOf(columnName);
 		List<Object> currentRow = resultList.get(current);
-		if (!isOutRange(col, -1, currentRow.size()))
+		if (isOutRange(col, 0, currentRow.size()))
 			return null;
 		return currentRow.get(col);
 	}
