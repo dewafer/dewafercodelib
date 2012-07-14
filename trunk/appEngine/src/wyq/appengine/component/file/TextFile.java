@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 
@@ -22,7 +24,18 @@ public class TextFile extends File implements Component {
 
 	public static final String LINE_SEP = System.getProperty("line.separator");
 
-	private ExceptionHandler exceptionHandler;
+	private ExceptionHandler exceptionHandler = new ExceptionHandler() {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 9064625580881097471L;
+
+		@Override
+		public void handle(Exception e) {
+			e.printStackTrace();
+		}
+	};
 
 	private TextFileReaderWriter readerWriter = new TextFileReaderWriter();
 
@@ -161,14 +174,37 @@ public class TextFile extends File implements Component {
 
 		public void openRead() throws FileNotFoundException {
 			if (reader == null) {
-				reader = new BufferedReader(new FileReader(TextFile.this));
+				if (TextFile.this.exists()) {
+					reader = new BufferedReader(new FileReader(TextFile.this));
+				} else {
+					// try find in res
+					String resPath = TextFile.this.getPath().replace(
+							File.separator, "/");
+
+					InputStream inputStream = this.getClass()
+							.getResourceAsStream(resPath);
+					if (inputStream == null)
+						inputStream = this.getClass().getResourceAsStream(
+								"/" + resPath);
+
+					if (inputStream == null)
+						throw new FileNotFoundException(resPath);
+
+					reader = new BufferedReader(new InputStreamReader(
+							inputStream));
+				}
 			}
 		}
 
 		public void openWrite(boolean append) throws IOException {
 			if (writer == null) {
+				if (!TextFile.this.exists()) {
+					TextFile.this.mkdirs();
+					TextFile.this.createNewFile();
+				}
 				writer = new BufferedWriter(new FileWriter(TextFile.this,
 						append));
+
 			}
 		}
 
