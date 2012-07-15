@@ -33,7 +33,7 @@ public class TextFile extends File implements Component {
 
 		@Override
 		public void handle(Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	};
 
