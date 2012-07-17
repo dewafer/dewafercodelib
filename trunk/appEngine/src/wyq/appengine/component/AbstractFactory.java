@@ -58,6 +58,8 @@ public abstract class AbstractFactory<T, R extends FactoryParameter> implements
 				initValues = initValueList.toArray(initValues);
 			}
 			constructor = findConstructor(fparamType, fpConsTypes);
+			if (constructor == null)
+				throw new IllegalArgumentException();
 			constructor.setAccessible(true);
 			p = (FactoryParameter) constructor.newInstance(initValues);
 		} catch (Exception e) {
