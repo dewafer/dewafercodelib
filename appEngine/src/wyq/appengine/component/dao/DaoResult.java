@@ -41,6 +41,7 @@ public class DaoResult extends Table {
 
 				@Override
 				public boolean nextRow() throws SQLException {
+					rowCol = 0;
 					return resultSet.next();
 				}
 

@@ -25,6 +25,7 @@ public abstract class Table extends AbstractTable<TableDataSource> implements
 			while (dataSource.nextRowValue()) {
 				dataRow.add(dataSource.getRowValue());
 			}
+			resultList.add(dataRow);
 		}
 	}
 
