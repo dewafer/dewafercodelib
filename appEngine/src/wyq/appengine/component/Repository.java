@@ -106,6 +106,11 @@ public class Repository implements Component {
 		}
 	}
 
+	public static String getProperty(String key) {
+		Property p = get("Property", Property.class);
+		return p.getProperty(key);
+	}
+
 	protected Repository() {
 		Property p = new Property("/conf.properties");
 		repositorySaveFile = p.getProperty("Repository.repositorySaveFile");
