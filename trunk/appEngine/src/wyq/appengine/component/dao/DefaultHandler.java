@@ -127,7 +127,7 @@ public class DefaultHandler implements DaoEngineHandler, DBEngineHandler {
 	public void processResult(DBResult result) {
 		try {
 			daoResult = new DaoResult(result);
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			exceptionHandler.handle(e);
 		}
 	}
