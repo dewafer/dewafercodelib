@@ -49,6 +49,12 @@ public class CsvFile extends TextFile {
 
 	static class CsvTable extends Table implements TableDataSource {
 
+		private static final String SPLITER_REPLACEMENT = "\nÅC\n";
+
+		private static final String SPLITER = ",";
+
+		private static final String REPLACE_PATTERN = "\"[^\"]*,+[^\"]*\"";
+
 		/**
 		 * 
 		 */
@@ -72,17 +78,26 @@ public class CsvFile extends TextFile {
 		private String[] lineSpliter(String line) {
 			if (line == null || line.length() == 0)
 				return new String[0];
-			Pattern pattern = Pattern.compile("\"[^\"]*,+[^\"]*\"");
+			Pattern pattern = Pattern.compile(REPLACE_PATTERN);
 			Matcher matcher = pattern.matcher(line);
 			int diff = 0;
 			while (matcher.find()) {
 				String tmp = matcher.group();
-				String replaceStr = tmp.replaceAll(",", "\nÅC\n");
+				String replaceStr = tmp.replaceAll(SPLITER, SPLITER_REPLACEMENT);
 				line = line.substring(0, matcher.start() + diff) + replaceStr
 						+ line.substring(matcher.end() + diff, line.length());
 				diff += replaceStr.length() - tmp.length();
 			}
-			return line.split(",");
+			String[] split = line.split(SPLITER);
+			for (int i = 0; i < split.length; i++) {
+				String value = split[i];
+				if (value.indexOf(SPLITER_REPLACEMENT) >= 0) {
+					value = value.replaceAll(SPLITER_REPLACEMENT, SPLITER);
+					value = value.substring(1, value.length() - 1);
+				}
+				split[i] = value;
+			}
+			return split;
 		}
 
 		@Override
