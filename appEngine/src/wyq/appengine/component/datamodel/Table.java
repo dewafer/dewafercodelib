@@ -31,6 +31,7 @@ public abstract class Table extends AbstractTable<TableDataSource> implements
 
 	@Override
 	public Iterator<Map<String, Object>> iterator() {
+		beforeFirst();
 		return new Iterator<Map<String, Object>>() {
 
 			@Override
