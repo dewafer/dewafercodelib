@@ -137,6 +137,10 @@ public class Repository implements Component {
 		Component component = null;
 		if (factory == null) {
 			loadFactory();
+			Component theFactory = findComponent(name, cls);
+			if (theFactory != null) {
+				return theFactory;
+			}
 		}
 		FactoryParameter param = factory.prepare(name, cls);
 		component = (Component) factory.factory(param);
