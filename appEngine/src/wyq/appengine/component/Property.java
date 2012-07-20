@@ -62,7 +62,7 @@ public class Property extends Properties implements Component {
 			clazz = c;
 		}
 		if (name == null) {
-			name = clazz.getSimpleName();
+			name = clazz.getSimpleName() + ".properties";
 		}
 		InputStream resourceAsStream = clazz.getResourceAsStream(name);
 		if (resourceAsStream != null) {
