@@ -59,7 +59,7 @@ public class CompInitFactory extends
 							compNames[i] = params[i].getSimpleName();
 						}
 					}
-					Object[] paramComps = new Component[params.length];
+					Object[] paramComps = new Object[params.length];
 					for (int i = 0; i < params.length; i++) {
 						String n = compNames[i];
 						@SuppressWarnings("unchecked")
