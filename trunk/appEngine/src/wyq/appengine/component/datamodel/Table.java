@@ -53,9 +53,8 @@ public abstract class Table extends AbstractTable<TableDataSource> implements
 
 			@Override
 			public boolean hasNext() {
-				return !Table.this.isAfterLast();
+				return !Table.this.isLast();
 			}
 		};
 	}
-
 }
