@@ -1,0 +1,20 @@
+/**
+ * 
+ */
+package wyq.other.tool;
+
+import java.lang.*;
+import java.util.*;
+import java.io.*;
+
+/**
+ * @author wyq
+ * 
+ */
+public class JavaScript {
+
+	public void main() {
+		/*MainScript*/
+	}
+
+}
