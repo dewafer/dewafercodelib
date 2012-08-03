@@ -15,9 +15,10 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
+@Deprecated
 public class Compiler {
 
-	public boolean compileFile(String fullFileName, String output)
+	public boolean compileFile(String fullFileName, String outputPath)
 			throws IOException {
 		boolean result = false;
 		// get compiler
@@ -36,7 +37,7 @@ public class Compiler {
 		Location location = StandardLocation.CLASS_OUTPUT;
 		try {
 			fileManager.setLocation(location,
-					Arrays.asList(new File[] { new File(output) }));
+					Arrays.asList(new File[] { new File(outputPath) }));
 
 			// get JavaFileObject object, it will specify the java source file.
 			Iterable<? extends JavaFileObject> itr = fileManager
