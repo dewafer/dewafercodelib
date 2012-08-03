@@ -1,11 +1,10 @@
 package wyq.other.tool;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import other.tool.Compiler;
+import other.tool.JavaStringCompiler;
 import other.tool.Runner;
 import wyq.appengine.component.file.TextFile;
 import wyq.appengine.component.template.TemplateEngine;
@@ -14,34 +13,38 @@ public class Script {
 
 	public void script() {
 		try {
-//			String scriptClassPath = this.getClass()
-//					.getResource(this.getClass().getSimpleName() + ".class")
-//					.getFile();
-//			String classFolder = new File(scriptClassPath).getParent();
-//			TextFile outputJavaScriptFile = new TextFile(classFolder,
-//					"JavaScript.java");
+			// String scriptClassPath = this.getClass()
+			// .getResource(this.getClass().getSimpleName() + ".class")
+			// .getFile();
+			// String classFolder = new File(scriptClassPath).getParent();
+			// TextFile outputJavaScriptFile = new TextFile(classFolder,
+			// "JavaScript.java");
 
-			String script = "System.out.println(\"This is a test\");";
+//			String script = "System.out.println(\"This is a test\");";
+			String script = new TextFile("script1.txt").readAll();
 			String template = TemplateEngine.get()
 					.getTemplate(ScriptTemplate.class).defaultTemplate(script);
 
-//			if (!outputJavaScriptFile.exists()) {
-//				outputJavaScriptFile.createNewFile();
-//			}
-//
-//			outputJavaScriptFile.writeAll(template, false);
+			// if (!outputJavaScriptFile.exists()) {
+			// outputJavaScriptFile.createNewFile();
+			// }
 
-			Compiler c = new Compiler();
+			// outputJavaScriptFile.writeAll(template, false);
 
-//			c.compileFile(outputJavaScriptFile.getPath(), "bin/");
-			c.compileJava("wyq.other.tool.JavaScript", template);
+			// Compiler c = new Compiler();
+
+			// c.compileFile(outputJavaScriptFile.getPath(), "bin/");
+			// c.compileJava("wyq.other.tool.JavaScript", template);
+			JavaStringCompiler c = new JavaStringCompiler(
+					"wyq.other.tool.JavaScript", template, "bin/");
+			c.compile();
 			Class<?> class1 = Class.forName("wyq.other.tool.JavaScript");
 			Object newInstance = class1.newInstance();
 			Method method = class1.getMethod("main");
 			method.invoke(newInstance);
 
-//		} catch (IOException e) {
-//			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -60,6 +63,9 @@ public class Script {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Throwable e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
