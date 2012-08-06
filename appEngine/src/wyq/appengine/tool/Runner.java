@@ -1,4 +1,4 @@
-package other.tool;
+package wyq.appengine.tool;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
