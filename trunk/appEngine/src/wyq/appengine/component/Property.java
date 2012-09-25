@@ -78,6 +78,9 @@ public class Property extends Properties implements Component {
 				resourceAsStream = clazz.getResourceAsStream(name);
 			}
 		}
+		if (resourceAsStream == null) {
+			resourceAsStream = clazz.getResourceAsStream("\\" + name);
+		}
 		if (resourceAsStream != null) {
 			try {
 				loadAction(resourceAsStream);
