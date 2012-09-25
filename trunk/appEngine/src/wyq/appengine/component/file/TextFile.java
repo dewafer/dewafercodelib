@@ -199,7 +199,7 @@ public class TextFile extends File implements Component {
 		public void openWrite(boolean append) throws IOException {
 			if (writer == null) {
 				if (!TextFile.this.exists()) {
-					TextFile.this.mkdirs();
+					TextFile.this.getParentFile().mkdirs();
 					TextFile.this.createNewFile();
 				}
 				writer = new BufferedWriter(new FileWriter(TextFile.this,
