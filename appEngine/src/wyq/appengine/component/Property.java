@@ -1,5 +1,7 @@
 package wyq.appengine.component;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -61,10 +63,21 @@ public class Property extends Properties implements Component {
 		} else {
 			clazz = c;
 		}
+		InputStream resourceAsStream = null;
 		if (name == null) {
 			name = clazz.getSimpleName() + ".properties";
+			resourceAsStream = clazz.getResourceAsStream(name);
+		} else {
+			if (c == null) {
+				try {
+					resourceAsStream = new FileInputStream(name);
+				} catch (FileNotFoundException e) {
+					resourceAsStream = clazz.getResourceAsStream(name);
+				}
+			} else {
+				resourceAsStream = clazz.getResourceAsStream(name);
+			}
 		}
-		InputStream resourceAsStream = clazz.getResourceAsStream(name);
 		if (resourceAsStream != null) {
 			try {
 				loadAction(resourceAsStream);
