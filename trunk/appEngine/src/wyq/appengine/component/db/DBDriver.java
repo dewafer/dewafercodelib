@@ -27,6 +27,7 @@ public class DBDriver implements Component {
 	private static final String SQL_PREFIX_INSERT = "INSERT INTO ";
 	private static final String SQL_PREFIX_SELECT = "SELECT ";
 	private static final String SQL_PREFIX_UPDATE = "UPDATE ";
+	private static final String SQL_PREFIX_DELETE = "DELETE FROM ";
 
 	public int insert(String tblName, List<Map<String, Object>> lines) {
 
@@ -226,6 +227,58 @@ public class DBDriver implements Component {
 		}
 		w.add(where);
 		return update(tblName, s, w);
+	}
+
+	public int delete(String tblName, List<Map<String, Object>> whereList) {
+		engine.connect();
+
+		// prepare SQL prefix
+		StringBuilder sqlPrefix = new StringBuilder(SQL_PREFIX_DELETE);
+		sqlPrefix.append(escapeQuote(tblName));
+
+		int resultCount = 0;
+
+		// go with each line
+		for (Map<String, Object> entry : whereList) {
+			// prepare sql
+			StringBuilder sql = new StringBuilder(sqlPrefix.toString());
+			// key list
+			List<String> keyList = new ArrayList<String>();
+			if (entry.size() > 0) {
+				sql.append(" WHERE ");
+				Iterator<String> iterator = entry.keySet().iterator();
+				while (iterator.hasNext()) {
+					String key = escapeQuote(iterator.next());
+					keyList.add(key);
+					sql.append(key);
+					sql.append(" = ?");
+					if (iterator.hasNext()) {
+						sql.append(" AND ");
+					}
+				}
+			}
+			// set handler
+			DBDriverHandler handler = new DBDriverHandler();
+			handler.entryList.add(entry);
+			handler.allKeyList.add(keyList);
+			engine.setHandler(handler);
+			// go sql
+			engine.executeSQL(sql.toString());
+			// count
+			resultCount += handler.result.getRowsCount();
+		}
+
+		engine.close();
+		return resultCount;
+	}
+
+	public int delete(String tblName, Map<String, Object> where) {
+		List<Map<String, Object>> w = new ArrayList<Map<String, Object>>(1);
+		if (where == null) {
+			where = new HashMap<String, Object>();
+		}
+		w.add(where);
+		return delete(tblName, w);
 	}
 
 	private String escapeQuote(String key) {
