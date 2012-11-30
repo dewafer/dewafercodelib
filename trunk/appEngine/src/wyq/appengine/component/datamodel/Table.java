@@ -1,8 +1,8 @@
 package wyq.appengine.component.datamodel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +41,7 @@ public abstract class Table extends AbstractTable<TableDataSource> implements
 
 			@Override
 			public Map<String, Object> next() {
-				Map<String, Object> row = new HashMap<String, Object>();
+				Map<String, Object> row = new LinkedHashMap<String, Object>();
 				if (Table.this.next()) {
 					for (int i = 0; i < Table.this.getColumnCount(); i++) {
 						String key = Table.this.getColumnName(i);
@@ -57,5 +57,25 @@ public abstract class Table extends AbstractTable<TableDataSource> implements
 				return !Table.this.isLast();
 			}
 		};
+	}
+
+	@Override
+	public String toString() {
+		String newLine = System.getProperty("line.separator");
+		StringBuilder sb = new StringBuilder(super.toString() + "\\DATA=["
+				+ newLine);
+		Iterator<Map<String, Object>> iterator = this.iterator();
+		while (iterator.hasNext()) {
+			Map<String, Object> entry = iterator.next();
+			Iterator<String> iterator2 = entry.keySet().iterator();
+			while (iterator2.hasNext()) {
+				String key = iterator2.next();
+				Object objValue = entry.get(key);
+				sb.append("[" + key + "=" + objValue + "]");
+			}
+			sb.append(System.getProperty("line.separator"));
+		}
+		sb.append("]");
+		return sb.toString();
 	}
 }
