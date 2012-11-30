@@ -357,7 +357,7 @@ public class DBDriver implements Component {
 
 		@Override
 		public String getColumnName() throws Exception {
-			return metaData.getCatalogName(currentColDef);
+			return metaData.getColumnLabel(currentColDef);
 		}
 
 		@Override
