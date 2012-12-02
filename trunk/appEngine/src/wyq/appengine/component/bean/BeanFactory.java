@@ -1,8 +1,11 @@
 package wyq.appengine.component.bean;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import wyq.appengine.Convertor;
 import wyq.appengine.FactoryParameter;
@@ -32,19 +35,6 @@ public class BeanFactory extends AbstractFactory<Object, BeanFactoryParameter> {
 			throw new RuntimeException(new IllegalArgumentException());
 		}
 
-		// get bean fields
-		Map<String, Field> beanFields = new HashMap<String, Field>();
-		for (Field f : beanClass.getDeclaredFields()) {
-			if (f.isAnnotationPresent(BeanField.class)) {
-				BeanField fieldMeta = f.getAnnotation(BeanField.class);
-				String fieldName = fieldMeta.name();
-				if (fieldName == null || fieldName.length() == 0) {
-					fieldName = f.getName();
-				}
-				beanFields.put(fieldName, f);
-			}
-		}
-
 		// create bean object
 		Object bean = null;
 		try {
@@ -53,20 +43,68 @@ public class BeanFactory extends AbstractFactory<Object, BeanFactoryParameter> {
 			exceptionHandler.handle(e);
 		}
 
+		// set values
 		if (bean != null) {
-			// set values
-			for (Map.Entry<String, Field> entity : beanFields.entrySet()) {
-				try {
-					String fieldName = entity.getKey();
-					Object value = dataSource.getValue(fieldName);
-					Field f = entity.getValue();
-					if (convertor != null) {
-						value = convertor.convert(value, f.getType());
+			// set Setters first
+			for (Method m : beanClass.getMethods()) {
+				String methodName = m.getName();
+				Class<?>[] paramClassTypes = m.getParameterTypes();
+				int paramLength = paramClassTypes.length;
+
+				if (methodName.startsWith("set") && paramLength > 0) {
+					BeanField beanField = m.getAnnotation(BeanField.class);
+					List<String> beanFieldNames = new ArrayList<String>(
+							paramLength);
+					if (beanField == null) {
+						beanFieldNames.add(methodName.substring(3));
+					} else {
+						Collections.addAll(beanFieldNames, beanField.value());
 					}
-					f.setAccessible(true);
-					f.set(bean, value);
-				} catch (Exception e) {
-					exceptionHandler.handle(e);
+
+					// prepare arguments
+					Object[] values = new Object[paramLength];
+					for (int i = 0; i < paramLength; i++) {
+						String key = beanFieldNames.get(i);
+						Object value = null;
+						if (key != null && key.length() > 0) {
+							value = dataSource.getValue(key);
+							if (convertor != null) {
+								value = convertor.convert(value,
+										paramClassTypes[i]);
+							}
+						}
+						values[i] = value;
+					}
+
+					try {
+						m.invoke(bean, values);
+					} catch (IllegalAccessException e) {
+						exceptionHandler.handle(e);
+					} catch (IllegalArgumentException e) {
+						exceptionHandler.handle(e);
+					} catch (InvocationTargetException e) {
+						exceptionHandler.handle(e);
+					}
+				}
+			}
+
+			// then set fields after
+			for (Field f : beanClass.getDeclaredFields()) {
+				if (f.isAnnotationPresent(BeanField.class)) {
+					BeanField fieldMeta = f.getAnnotation(BeanField.class);
+					String fieldName = fieldMeta.value()[0];
+					if (fieldName != null && fieldName.length() != 0) {
+						try {
+							Object value = dataSource.getValue(fieldName);
+							if (convertor != null) {
+								value = convertor.convert(value, f.getType());
+							}
+							f.setAccessible(true);
+							f.set(bean, value);
+						} catch (Exception e) {
+							exceptionHandler.handle(e);
+						}
+					}
 				}
 			}
 		}
