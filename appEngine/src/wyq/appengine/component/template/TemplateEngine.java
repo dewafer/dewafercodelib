@@ -6,6 +6,12 @@ import wyq.appengine.FactoryParameter;
 import wyq.appengine.component.ProxyFactory;
 import wyq.appengine.component.Repository;
 
+/**
+ * This class handles templates through interfaces.
+ * 
+ * @author dewafer
+ * 
+ */
 public class TemplateEngine implements Component {
 
 	/**

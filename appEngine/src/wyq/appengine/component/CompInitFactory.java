@@ -8,6 +8,12 @@ import wyq.appengine.ComponentField;
 import wyq.appengine.FactoryParameter;
 import wyq.appengine.component.CompInitFactory.CompInitFactoryParam;
 
+/**
+ * This factory initialize the components in the Repository.
+ * 
+ * @author dewafer
+ * 
+ */
 public class CompInitFactory extends
 		AbstractFactory<Object, CompInitFactoryParam> {
 

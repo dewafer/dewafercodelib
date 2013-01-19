@@ -8,6 +8,12 @@ import wyq.appengine.FactoryParameter;
 import wyq.appengine.PropertyField;
 import wyq.appengine.component.PropertyInitFactory.PropertyInitFactoryParam;
 
+/**
+ * This class initialize the property of the component.
+ * 
+ * @author dewafer
+ * 
+ */
 public class PropertyInitFactory extends
 		AbstractFactory<Object, PropertyInitFactoryParam> {
 

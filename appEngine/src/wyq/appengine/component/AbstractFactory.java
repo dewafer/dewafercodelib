@@ -9,6 +9,14 @@ import wyq.appengine.ExceptionHandler;
 import wyq.appengine.Factory;
 import wyq.appengine.FactoryParameter;
 
+/**
+ * This is the base abstract factory class of all the factories.
+ * 
+ * @author dewafer
+ * 
+ * @param <T>
+ * @param <R>
+ */
 public abstract class AbstractFactory<T, R extends FactoryParameter> implements
 		Factory<T> {
 

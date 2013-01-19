@@ -15,6 +15,14 @@ import java.net.URL;
 import wyq.appengine.Component;
 import wyq.appengine.ExceptionHandler;
 
+/**
+ * This class is extends the java.io.File which embedded the read/write methods
+ * through which you can read or write all the content of a text file at once or
+ * just line by line.
+ * 
+ * @author dewafer
+ * @version 1
+ */
 public class TextFile extends File implements Component {
 
 	/**

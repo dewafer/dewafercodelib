@@ -11,6 +11,12 @@ import java.util.regex.Pattern;
 
 import wyq.appengine.Component;
 
+/**
+ * This class reads the property of the configuration.
+ * 
+ * @author dewafer
+ * 
+ */
 public class Property extends Properties implements Component {
 
 	/**

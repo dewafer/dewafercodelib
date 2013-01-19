@@ -5,6 +5,12 @@ import wyq.appengine.Factory;
 import wyq.appengine.FactoryParameter;
 import wyq.appengine.component.RepositoryInitFactory.CompInitFactoryParam;
 
+/**
+ * This is the very first initialization of the repository.
+ * 
+ * @author dewafer
+ * 
+ */
 public class RepositoryInitFactory extends
 		AbstractFactory<Object, CompInitFactoryParam> {
 

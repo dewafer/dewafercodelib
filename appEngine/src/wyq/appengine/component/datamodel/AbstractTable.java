@@ -5,6 +5,14 @@ import java.util.List;
 
 import wyq.appengine.Component;
 
+/**
+ * This abstract class provided a Table-like interface of data, similar to
+ * java.sql.ResultSet.
+ * 
+ * @author dewafer
+ * @version 1
+ * @param <T>
+ */
 public abstract class AbstractTable<T> implements Component {
 
 	/**
@@ -15,6 +23,7 @@ public abstract class AbstractTable<T> implements Component {
 	protected List<String> columnNames = new ArrayList<String>();
 	protected List<Class<?>> columnTypes = new ArrayList<Class<?>>();
 	private int current = -1;
+
 	protected abstract void loadData(T dataSource) throws Exception;
 
 	public Object getValue(String columnName) {

@@ -6,6 +6,14 @@ import wyq.appengine.FactoryParameter;
 import wyq.appengine.component.ProxyFactory;
 import wyq.appengine.component.Repository;
 
+/**
+ * This Engine provides an easy DAO object which can access the DB through the
+ * JDBC Drivers. Simply use the DaoEngine.get() to get the DaoEngine with the
+ * default configuration of the Repository.
+ * 
+ * @author dewafer
+ * @version 1
+ */
 public class DaoEngine implements Component {
 
 	/**

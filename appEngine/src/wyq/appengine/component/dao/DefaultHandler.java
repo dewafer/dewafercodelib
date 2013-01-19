@@ -11,6 +11,12 @@ import wyq.appengine.component.db.DBEngineHandler;
 import wyq.appengine.component.db.Types;
 import wyq.appengine.component.file.TextFile;
 
+/**
+ * Default handler of the DaoEngine.
+ * 
+ * @author dewafer
+ * @version 1
+ */
 public class DefaultHandler implements DaoEngineHandler, DBEngineHandler {
 
 	/**

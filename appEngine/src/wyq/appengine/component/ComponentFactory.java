@@ -8,6 +8,13 @@ import wyq.appengine.Factory;
 import wyq.appengine.FactoryParameter;
 import wyq.appengine.component.ComponentFactory.ComponentFactoryParameter;
 
+/**
+ * 
+ * This factory produces the component in the Repository.
+ * 
+ * @author dewafer
+ * 
+ */
 public class ComponentFactory extends
 		AbstractFactory<Object, ComponentFactoryParameter> {
 

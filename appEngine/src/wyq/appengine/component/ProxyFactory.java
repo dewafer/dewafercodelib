@@ -12,6 +12,12 @@ import wyq.appengine.Component;
 import wyq.appengine.FactoryParameter;
 import wyq.appengine.component.ProxyFactory.ProxyFactoryParam;
 
+/**
+ * This factory produces the Proxy.
+ * 
+ * @author dewafer
+ * 
+ */
 public class ProxyFactory extends AbstractFactory<Object, ProxyFactoryParam> {
 
 	/**
