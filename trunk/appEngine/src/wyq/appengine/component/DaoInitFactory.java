@@ -9,6 +9,12 @@ import wyq.appengine.FactoryParameter;
 import wyq.appengine.component.DaoInitFactory.DaoInitFactoryParam;
 import wyq.appengine.component.dao.DaoEngine;
 
+/**
+ * This initialize the DAO part of the component in the Repository.
+ * 
+ * @author dewafer
+ * 
+ */
 public class DaoInitFactory extends
 		AbstractFactory<Object, DaoInitFactoryParam> {
 

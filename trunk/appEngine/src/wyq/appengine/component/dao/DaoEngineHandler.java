@@ -5,6 +5,13 @@ import java.lang.reflect.Method;
 
 import wyq.appengine.Component;
 
+/**
+ * Use this interface to implement the Proxy-invoke handler for the DaoEngine.
+ * 
+ * @author dewafer
+ * @version 1
+ * 
+ */
 public interface DaoEngineHandler extends InvocationHandler, Component {
 
 	@Override

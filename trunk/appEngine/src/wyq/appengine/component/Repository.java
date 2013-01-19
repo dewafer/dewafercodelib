@@ -12,6 +12,12 @@ import wyq.appengine.ExceptionHandler;
 import wyq.appengine.Factory;
 import wyq.appengine.FactoryParameter;
 
+/**
+ * This is the Repository.
+ * 
+ * @author dewafer
+ * 
+ */
 public class Repository implements Component {
 
 	/**

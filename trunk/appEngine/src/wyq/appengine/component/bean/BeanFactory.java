@@ -12,6 +12,15 @@ import wyq.appengine.FactoryParameter;
 import wyq.appengine.component.AbstractFactory;
 import wyq.appengine.component.bean.BeanFactory.BeanFactoryParameter;
 
+/**
+ * Set the bean's values from BeanDataSource by using setter methods
+ * automatically. This factory will set the values by using the bean's setters
+ * first, and then by using the fields of the bean only when then BeanField
+ * annotation is presented.
+ * 
+ * @author dewafer
+ * @version 1
+ */
 public class BeanFactory extends AbstractFactory<Object, BeanFactoryParameter> {
 
 	/**

@@ -12,6 +12,14 @@ import wyq.appengine.ComponentField;
 import wyq.appengine.ExceptionHandler;
 import wyq.appengine.component.Repository;
 
+/**
+ * This class provides the fundamental access to the DB using the JDBC Driver
+ * way. The access process is implemented through the DBEngineHandler and the
+ * result is wrapped by the DBResult class.
+ * 
+ * @author dewafer
+ * 
+ */
 public class DBEngine implements Component {
 
 	/**

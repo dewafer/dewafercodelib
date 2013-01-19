@@ -2,6 +2,12 @@ package wyq.appengine.component;
 
 import wyq.appengine.ExceptionHandler;
 
+/**
+ * This class handles the exception in the repository.
+ * 
+ * @author dewafer
+ * 
+ */
 public class RepositoryExceptionHandler implements ExceptionHandler {
 
 	/**

@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * This class reads the XML files instead of properties file.
+ * 
+ * @author dewafer
+ * 
+ */
 public class XMLProperty extends Property {
 
 	/**

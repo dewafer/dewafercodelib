@@ -8,6 +8,12 @@ import wyq.appengine.component.datamodel.Table;
 import wyq.appengine.component.datamodel.TableDataSource;
 import wyq.appengine.component.db.DBEngine.DBResult;
 
+/**
+ * This Object wrapped the DBResult of DBEngine.
+ * 
+ * @author dewafer
+ * @version 1
+ */
 public class DaoResult extends Table {
 
 	/**

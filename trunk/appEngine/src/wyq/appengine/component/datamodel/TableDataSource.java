@@ -1,5 +1,11 @@
 package wyq.appengine.component.datamodel;
 
+/**
+ * Implement this interface to provide the data for the Table class.
+ * 
+ * @author dewafer
+ * 
+ */
 public interface TableDataSource {
 
 	boolean nextColumn() throws Exception;

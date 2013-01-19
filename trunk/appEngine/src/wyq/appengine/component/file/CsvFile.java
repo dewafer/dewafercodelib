@@ -2,12 +2,22 @@ package wyq.appengine.component.file;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import wyq.appengine.component.datamodel.Table;
 import wyq.appengine.component.datamodel.TableDataSource;
 
+/**
+ * This class extends from the TextFile class can read the CSV files through the
+ * readAllCsv method and the result is wrapped into a Table object which can be
+ * accessed like ResultSet style. *CSV writing may be added here.
+ * 
+ * @author dewafer
+ * @version 1
+ */
 public class CsvFile extends TextFile {
 
 	/**
@@ -49,11 +59,11 @@ public class CsvFile extends TextFile {
 
 	static class CsvTable extends Table implements TableDataSource {
 
-		private static final String SPLITER_REPLACEMENT = "\nÅC\n";
+		private static final char SPLITER_REPLACEMENT = '#';
 
 		private static final String SPLITER = ",";
 
-		private static final String REPLACE_PATTERN = "\"[^\"]*,+[^\"]*\"";
+		private static final String REPLACE_PATTERN = "(^|,)(\"[^\"]*,+[^\"]*\")(,|$)";
 
 		/**
 		 * 
@@ -78,24 +88,35 @@ public class CsvFile extends TextFile {
 		private String[] lineSpliter(String line) {
 			if (line == null || line.length() == 0)
 				return new String[0];
+			line = line.replaceAll("\"\"", "");
 			Pattern pattern = Pattern.compile(REPLACE_PATTERN);
 			Matcher matcher = pattern.matcher(line);
-			int diff = 0;
+			List<Integer> spliterRepPosList = new ArrayList<Integer>();
+			StringBuilder sb = new StringBuilder(line);
 			while (matcher.find()) {
-				String tmp = matcher.group();
-				String replaceStr = tmp.replaceAll(SPLITER, SPLITER_REPLACEMENT);
-				line = line.substring(0, matcher.start() + diff) + replaceStr
-						+ line.substring(matcher.end() + diff, line.length());
-				diff += replaceStr.length() - tmp.length();
+				String tmp = matcher.group(2);
+				for (int i = 0; i < tmp.length(); i++) {
+					if (SPLITER.charAt(0) == tmp.charAt(i)) {
+						int pos = matcher.start(2) + i;
+						spliterRepPosList.add(pos);
+						sb.setCharAt(pos, SPLITER_REPLACEMENT);
+					}
+				}
 			}
-			String[] split = line.split(SPLITER);
+			String[] split = sb.toString().split(SPLITER);
+			int linepos = 0;
 			for (int i = 0; i < split.length; i++) {
 				String value = split[i];
-				if (value.indexOf(SPLITER_REPLACEMENT) >= 0) {
-					value = value.replaceAll(SPLITER_REPLACEMENT, SPLITER);
-					value = value.substring(1, value.length() - 1);
+				if (value.contains(String.valueOf(SPLITER_REPLACEMENT))) {
+					StringBuilder valueSb = new StringBuilder(value);
+					for (int j = 0; j < value.length(); j++) {
+						if (spliterRepPosList.contains(linepos + j)) {
+							valueSb.setCharAt(j, SPLITER.charAt(0));
+						}
+					}
+					split[i] = valueSb.toString();
 				}
-				split[i] = value;
+				linepos += value.length() + 1;
 			}
 			return split;
 		}

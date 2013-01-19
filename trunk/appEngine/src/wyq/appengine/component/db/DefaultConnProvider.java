@@ -3,8 +3,14 @@ package wyq.appengine.component.db;
 import wyq.appengine.Component;
 import wyq.appengine.component.Property;
 
-public class DefaultConnProvider implements ConnectionProvider,
-		Component {
+/**
+ * This class provides the information which is need by the Connection using the
+ * default configuration in the Repository.
+ * 
+ * @author dewafer
+ * 
+ */
+public class DefaultConnProvider implements ConnectionProvider, Component {
 	/**
 	 * 
 	 */

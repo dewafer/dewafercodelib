@@ -15,6 +15,15 @@ import wyq.appengine.component.datamodel.Table;
 import wyq.appengine.component.datamodel.TableDataSource;
 import wyq.appengine.component.db.DBEngine.DBResult;
 
+/**
+ * This class provides a simple yet elegant way to access the DB. Access the DB
+ * using select/insert/update/delete methods without any SQLs. This class is
+ * implemented based on the DBEngine. The quote characters in the parameters
+ * which may harm the DB is already escaped.
+ * 
+ * @author dewafer
+ * 
+ */
 public class DBDriver implements Component {
 
 	/**

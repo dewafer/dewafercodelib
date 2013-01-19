@@ -8,8 +8,14 @@ import wyq.appengine.ExceptionHandler;
 import wyq.appengine.Factory;
 import wyq.appengine.FactoryParameter;
 
-public class ComponentProxyHandler implements InvocationHandler,
-		Component {
+/**
+ * The component in the Repository may be a Proxy class, and if true, the
+ * invocation of the Proxy class is handled here.
+ * 
+ * @author dewafer
+ * 
+ */
+public class ComponentProxyHandler implements InvocationHandler, Component {
 
 	/**
 	 * *
