@@ -10,10 +10,10 @@ import wyq.appengine.component.bean.BeanField;
 @Bean
 public class BeanFactoryTest implements BeanDataSource {
 
-	@BeanField
+	@BeanField(value = "beanfield1")
 	private String beanfield1;
 
-	@BeanField
+	@BeanField(value = "beanfield1")
 	private String beanfield2;
 
 	@Override
