@@ -5,6 +5,8 @@ import java.io.FileFilter;
 import java.util.concurrent.TimeUnit;
 
 import wyq.appengine.tool.MuliThreadFileFinder;
+import wyq.appengine.tool.MuliThreadFileFinder.FileHandler;
+import wyq.appengine.tool.MuliThreadFileFinder.Result;
 import wyq.appengine.tool.MuliThreadFileFinder.SearchResult;
 
 public class MulitThreadTester {
@@ -21,15 +23,12 @@ public class MulitThreadTester {
 					@Override
 					public boolean accept(File pathname) {
 						return pathname.isFile()
-								&& pathname
-										.getName()
-										.contains(
-												"org.eclipse.jdt.annotation_1.0.0.v20120728-095341.jar");
+								&& pathname.getName().contains(".exe");
 					}
 				});
 
-		// sleep for 5 seconds
-		TimeUnit.SECONDS.sleep(5);
+		// sleep for 1 seconds
+		TimeUnit.SECONDS.sleep(1);
 
 		search.stop();
 		// while (!search.isFinished()) {
@@ -51,6 +50,21 @@ public class MulitThreadTester {
 		for (File f : search.getResultAwait()) {
 			System.out.println(f);
 		}
+
+		Result s2 = MuliThreadFileFinder.search(new File("C:\\"), null,
+				new FileHandler() {
+
+					@Override
+					public void handle(File f) {
+						System.out.println("\t" + f);
+					}
+				});
+
+		TimeUnit.SECONDS.sleep(2);
+		s2.stop();
+
+		s2.await();
+		System.out.println("done...");
 	}
 
 }

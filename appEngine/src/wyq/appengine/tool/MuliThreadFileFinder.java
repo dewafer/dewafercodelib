@@ -7,26 +7,44 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class MuliThreadFileFinder {
 
+	public static final long WAIT_TIME_OUT = 800;
 	private ExecutorService exec = Executors.newCachedThreadPool();
 	private File baseDir;
 	private FileFilter condition;
+	private FileHandler fileHandler;
 	private TerminationMonitor monitor;
-	private List<SearchThread> threadPool = Collections
-			.synchronizedList(new ArrayList<SearchThread>());
+	private List<Future<?>> threadPool = Collections
+			.synchronizedList(new ArrayList<Future<?>>());
 
-	protected MuliThreadFileFinder(File baseDir, FileFilter condition) {
+	protected MuliThreadFileFinder(File baseDir, FileFilter condition,
+			FileHandler fileHandler) {
 		this.baseDir = baseDir;
 		this.condition = condition;
+		this.fileHandler = fileHandler;
 	}
 
-	protected SearchResult search() {
-		final SearchResult result = new SearchResult();
+	protected Result search() {
+		final Result result;
+		if (fileHandler == null) {
+			result = new SearchResult();
+			fileHandler = new FileHandler() {
+
+				@Override
+				public void handle(File f) {
+					((SearchResult) result).add(f);
+				}
+
+			};
+		} else {
+			result = new Result();
+		}
 		SearchThread t = new SearchThread(baseDir, result, condition);
-		threadPool.add(t);
-		exec.execute(t);
+		Future<?> f = exec.submit(t);
+		threadPool.add(f);
 		monitor = new TerminationMonitor(result);
 		exec.execute(monitor);
 		synchronized (monitor) {
@@ -36,61 +54,61 @@ public class MuliThreadFileFinder {
 	}
 
 	public static SearchResult search(File baseDir, FileFilter condition) {
-		return new MuliThreadFileFinder(baseDir, condition).search();
+		return (SearchResult) new MuliThreadFileFinder(baseDir, condition, null)
+				.search();
 	}
 
-	public static SearchResult search(String baseDir, final String fileNameRegex) {
-		return search(new File(baseDir), new FileFilter() {
-
-			@Override
-			public boolean accept(File arg0) {
-				return arg0.getName().matches(fileNameRegex);
-			}
-		});
-
+	public static Result search(File baseDir, FileFilter condition,
+			FileHandler handler) {
+		return new MuliThreadFileFinder(baseDir, condition, handler).search();
 	}
 
 	class SearchThread implements Runnable {
 
 		private File baseDir;
-		private SearchResult result;
+		private Result result;
 		private FileFilter condition;
 
 		@Override
 		public void run() {
-			File[] listFiles = baseDir.listFiles(condition);
-			if (listFiles != null) {
-				result.addResult(listFiles);
-			}
-
-			File[] dirs = baseDir.listFiles(new FileFilter() {
-
-				@Override
-				public boolean accept(File arg0) {
-					return arg0.isDirectory();
-				}
-			});
-
-			if (dirs != null) {
-				for (File dir : dirs) {
-					SearchThread t = new SearchThread(dir, result, condition);
-					threadPool.add(t);
-					if (!exec.isShutdown()) {
-						exec.execute(t);
-					} else {
-						threadPool.remove(t);
-						break;
+			try {
+				File[] listFiles = baseDir.listFiles(condition);
+				if (listFiles != null && fileHandler != null) {
+					for (File f : listFiles) {
+						synchronized (fileHandler) {
+							fileHandler.handle(f);
+						}
 					}
 				}
-			}
-			threadPool.remove(this);
-			synchronized (monitor) {
-				monitor.notifyAll();
+
+				File[] dirs = baseDir.listFiles(new FileFilter() {
+
+					@Override
+					public boolean accept(File arg0) {
+						return arg0.isDirectory();
+					}
+				});
+
+				if (dirs != null) {
+					for (File dir : dirs) {
+						SearchThread t = new SearchThread(dir, result,
+								condition);
+						if (!exec.isShutdown()) {
+							Future<?> f = exec.submit(t);
+							threadPool.add(f);
+						} else {
+							break;
+						}
+					}
+				}
+			} finally {
+				synchronized (monitor) {
+					monitor.notifyAll();
+				}
 			}
 		}
 
-		public SearchThread(File baseDir, SearchResult result,
-				FileFilter condition) {
+		public SearchThread(File baseDir, Result result, FileFilter condition) {
 			this.baseDir = baseDir;
 			this.result = result;
 			this.condition = condition;
@@ -100,20 +118,29 @@ public class MuliThreadFileFinder {
 
 	class TerminationMonitor implements Runnable {
 
-		private SearchResult result;
+		private Result result;
 
-		public TerminationMonitor(SearchResult result) {
+		public TerminationMonitor(Result result) {
 			this.result = result;
 		}
 
 		@Override
 		public void run() {
 			try {
-				while (!threadPool.isEmpty()) {
+				do {
 					synchronized (this) {
-						wait();
+						wait(WAIT_TIME_OUT);
 					}
-				}
+					synchronized (threadPool) {
+						List<Future<?>> deadThreads = new ArrayList<Future<?>>();
+						for (Future<?> f : threadPool) {
+							if (f.isDone()) {
+								deadThreads.add(f);
+							}
+						}
+						threadPool.removeAll(deadThreads);
+					}
+				} while (!threadPool.isEmpty());
 				result.finished();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -123,47 +150,60 @@ public class MuliThreadFileFinder {
 		}
 	}
 
-	public class SearchResult {
-		private boolean isFinished = false;
-		private List<File> result = new ArrayList<File>();
+	public class Result {
+
+		protected boolean isFinished = false;
 
 		public synchronized boolean isFinished() {
 			return isFinished;
-		}
-
-		public List<File> getResult() {
-			return getResultCopy();
 		}
 
 		protected synchronized void finished() {
 			this.isFinished = true;
 		}
 
-		protected synchronized void addResult(File[] files) {
-			Collections.addAll(result, files);
+		public void await() {
+			try {
+				while (!isFinished) {
+					synchronized (monitor) {
+						monitor.wait(WAIT_TIME_OUT);
+					}
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 
 		public void stop() {
 			exec.shutdown();
 		}
 
-		public List<File> getResultAwait() {
-			try {
-				while (!isFinished) {
-					synchronized (monitor) {
-						monitor.wait();
-					}
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+	}
+
+	public class SearchResult extends Result {
+		private List<File> result = new ArrayList<File>();
+
+		public List<File> getResult() {
 			return getResultCopy();
 		}
 
-		private synchronized List<File> getResultCopy() {
+		protected void add(File files) {
+			result.add(files);
+		}
+
+		public List<File> getResultAwait() {
+			await();
+			return getResultCopy();
+		}
+
+		private List<File> getResultCopy() {
 			List<File> copy = new ArrayList<File>(result.size());
 			copy.addAll(result);
 			return copy;
 		}
+	}
+
+	public interface FileHandler {
+		public void handle(File f);
 	}
 }
