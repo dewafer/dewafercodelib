@@ -8,7 +8,14 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 
+/**
+ * This class demonstrated the mulit-threads style of file searching.
+ * 
+ * @author dewafer
+ * 
+ */
 public class MuliThreadFileFinder {
 
 	public static final long WAIT_TIME_OUT = 800;
@@ -53,16 +60,40 @@ public class MuliThreadFileFinder {
 		return result;
 	}
 
+	/**
+	 * This method returns a SearchResult which contains a List of java.io.File
+	 * objects match the condition of FileFilter.
+	 * 
+	 * @param baseDir
+	 * @param condition
+	 * @return
+	 */
 	public static SearchResult search(File baseDir, FileFilter condition) {
 		return (SearchResult) new MuliThreadFileFinder(baseDir, condition, null)
 				.search();
 	}
 
+	/**
+	 * This method returns a Result which does not contain List but can operate
+	 * the java.io.File through the handler whom implemented the FileHandler
+	 * interface
+	 * 
+	 * @param baseDir
+	 * @param condition
+	 * @param handler
+	 * @return
+	 */
 	public static Result search(File baseDir, FileFilter condition,
 			FileHandler handler) {
 		return new MuliThreadFileFinder(baseDir, condition, handler).search();
 	}
 
+	/**
+	 * This class represented the searching Thread.
+	 * 
+	 * @author dewafer
+	 * 
+	 */
 	class SearchThread implements Runnable {
 
 		private File baseDir;
@@ -70,11 +101,26 @@ public class MuliThreadFileFinder {
 		@Override
 		public void run() {
 			try {
-				File[] listFiles = baseDir.listFiles(condition);
+				final File[] listFiles = baseDir.listFiles(condition);
 				if (listFiles != null && fileHandler != null) {
-					for (File f : listFiles) {
-						synchronized (fileHandler) {
-							fileHandler.handle(f);
+					if (fileHandler instanceof AsynchronizedFileHandler) {
+						exec.execute(new Runnable() {
+
+							@Override
+							public void run() {
+								for (File f : listFiles) {
+									synchronized (fileHandler) {
+										fileHandler.handle(f);
+									}
+								}
+
+							}
+						});
+					} else {
+						for (File f : listFiles) {
+							synchronized (fileHandler) {
+								fileHandler.handle(f);
+							}
 						}
 					}
 				}
@@ -90,13 +136,13 @@ public class MuliThreadFileFinder {
 				if (dirs != null) {
 					for (File dir : dirs) {
 						SearchThread t = new SearchThread(dir);
-						if (!exec.isShutdown()) {
-							Future<?> f = exec.submit(t);
-							threadPool.add(f);
-						} else {
-							break;
-						}
+						Future<?> f = exec.submit(t);
+						threadPool.add(f);
 					}
+				}
+			} catch (RejectedExecutionException e) {
+				if (!exec.isShutdown()) {
+					throw e;
 				}
 			} finally {
 				synchronized (monitor) {
@@ -111,6 +157,12 @@ public class MuliThreadFileFinder {
 
 	}
 
+	/**
+	 * The duty of this class is to monitor the status of the Threads.
+	 * 
+	 * @author dewafer
+	 * 
+	 */
 	class TerminationMonitor implements Runnable {
 
 		private Result result;
@@ -139,15 +191,21 @@ public class MuliThreadFileFinder {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} finally {
+				exec.shutdown();
 				result.finished();
 				synchronized (this) {
 					notifyAll();
 				}
-				exec.shutdown();
 			}
 		}
 	}
 
+	/**
+	 * This search Result does not contains List¡£
+	 * 
+	 * @author dewafer
+	 * 
+	 */
 	public class Result {
 
 		protected boolean isFinished = false;
@@ -160,7 +218,11 @@ public class MuliThreadFileFinder {
 			this.isFinished = true;
 		}
 
-		public void await() {
+		/**
+		 * Blocks until all the search threads is finished. This method will not
+		 * wait for AsynchronizedFileHandler threads.
+		 */
+		public void waitFinish() {
 			try {
 				boolean isDone = isFinished();
 				while (!isDone) {
@@ -174,15 +236,47 @@ public class MuliThreadFileFinder {
 			}
 		}
 
+		/**
+		 * Blocks until all the threads is finished including the
+		 * AsynchronizedFileHandler execution threads.
+		 */
+		public void waitTermination() {
+			try {
+				while (!exec.isTerminated()) {
+					synchronized (monitor) {
+						monitor.wait(WAIT_TIME_OUT);
+					}
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		/**
+		 * Stop the searching.
+		 */
 		public void stop() {
 			exec.shutdown();
 		}
 
 	}
 
+	/**
+	 * This SearchResult contains a List of all the files match the condition.
+	 * 
+	 * @author dewafer
+	 * 
+	 */
 	public class SearchResult extends Result {
 		private List<File> result = new ArrayList<File>();
 
+		/**
+		 * Get a copy of the real result. While the search is still in progress,
+		 * this method will not block and will return a copy of the result which
+		 * does not represent the exact result of the searching progress.
+		 * 
+		 * @return
+		 */
 		public List<File> getResult() {
 			return getResultCopy();
 		}
@@ -191,8 +285,13 @@ public class MuliThreadFileFinder {
 			result.add(files);
 		}
 
+		/**
+		 * This method blocks until the search progress is finished.
+		 * 
+		 * @return
+		 */
 		public List<File> getResultAwait() {
-			await();
+			waitFinish();
 			return getResultCopy();
 		}
 
@@ -203,7 +302,27 @@ public class MuliThreadFileFinder {
 		}
 	}
 
+	/**
+	 * Implement this interface to handle the file matches the condition. This
+	 * handler is executed within the search threads and is synchronized between
+	 * the search threads.
+	 * 
+	 * @author dewafer
+	 * 
+	 */
 	public interface FileHandler {
 		public void handle(File f);
+	}
+
+	/**
+	 * Implement this interface to handle the file. This handler is executed
+	 * using a new thread rather than the search threads. And is synchronized
+	 * between the execution threads.
+	 * 
+	 * @author dewafer
+	 * 
+	 */
+	public interface AsynchronizedFileHandler extends FileHandler {
+
 	}
 }
