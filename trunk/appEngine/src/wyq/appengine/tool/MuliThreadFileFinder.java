@@ -42,7 +42,7 @@ public class MuliThreadFileFinder {
 		} else {
 			result = new Result();
 		}
-		SearchThread t = new SearchThread(baseDir, result, condition);
+		SearchThread t = new SearchThread(baseDir);
 		Future<?> f = exec.submit(t);
 		threadPool.add(f);
 		monitor = new TerminationMonitor(result);
@@ -66,8 +66,6 @@ public class MuliThreadFileFinder {
 	class SearchThread implements Runnable {
 
 		private File baseDir;
-		private Result result;
-		private FileFilter condition;
 
 		@Override
 		public void run() {
@@ -91,8 +89,7 @@ public class MuliThreadFileFinder {
 
 				if (dirs != null) {
 					for (File dir : dirs) {
-						SearchThread t = new SearchThread(dir, result,
-								condition);
+						SearchThread t = new SearchThread(dir);
 						if (!exec.isShutdown()) {
 							Future<?> f = exec.submit(t);
 							threadPool.add(f);
@@ -108,10 +105,8 @@ public class MuliThreadFileFinder {
 			}
 		}
 
-		public SearchThread(File baseDir, Result result, FileFilter condition) {
+		public SearchThread(File baseDir) {
 			this.baseDir = baseDir;
-			this.result = result;
-			this.condition = condition;
 		}
 
 	}
