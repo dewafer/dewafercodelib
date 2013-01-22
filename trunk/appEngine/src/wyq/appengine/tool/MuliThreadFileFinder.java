@@ -136,10 +136,13 @@ public class MuliThreadFileFinder {
 						threadPool.removeAll(deadThreads);
 					}
 				} while (!threadPool.isEmpty());
-				result.finished();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} finally {
+				result.finished();
+				synchronized (this) {
+					notifyAll();
+				}
 				exec.shutdown();
 			}
 		}
@@ -159,10 +162,12 @@ public class MuliThreadFileFinder {
 
 		public void await() {
 			try {
-				while (!isFinished) {
+				boolean isDone = isFinished();
+				while (!isDone) {
 					synchronized (monitor) {
 						monitor.wait(WAIT_TIME_OUT);
 					}
+					isDone = isFinished();
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
