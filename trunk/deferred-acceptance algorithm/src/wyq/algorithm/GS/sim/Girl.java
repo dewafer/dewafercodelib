@@ -22,7 +22,7 @@ public class Girl extends Participator {
 				println(this + ": received mail from " + boy);
 				if (isBetter(boy, getMyLove())) {
 					if (mail != null) {
-						println(this + ": " + boy + " is better then my ex:"
+						println(this + ": " + boy + " is better than my ex:"
 								+ getMyLove());
 						mail.reject();
 					} else {
@@ -31,7 +31,7 @@ public class Girl extends Participator {
 					mail = newMail;
 					setMyLove(boy);
 				} else {
-					println(this + ": " + boy + " is NO better then my ex:"
+					println(this + ": " + boy + " is NO better than my ex:"
 							+ getMyLove());
 					newMail.reject();
 					blackname(boy);
