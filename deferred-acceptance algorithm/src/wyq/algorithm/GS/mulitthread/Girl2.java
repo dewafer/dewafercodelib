@@ -28,7 +28,7 @@ public class Girl2 extends Participator implements Runnable {
 					if (isBetter(mail, maxpreferred)) {
 						Boy2 ex = (Boy2) maxpreferred.getWriter();
 						Boy2 boy = (Boy2) mail.getWriter();
-						logln(this + ": boy:" + boy + " is better then my ex:"
+						logln(this + ": boy:" + boy + " is better than my ex:"
 								+ ex + " reject ex and accept him.");
 						maxpreferred.reject();
 						maxpreferred = mail;
@@ -37,7 +37,7 @@ public class Girl2 extends Participator implements Runnable {
 					} else {
 						Boy2 boy = (Boy2) mail.getWriter();
 						logln(this + ": boy:" + boy
-								+ " is NO better then my bf:" + getMyLove()
+								+ " is NO better than my bf:" + getMyLove()
 								+ ", reject.");
 						mail.reject();
 						this.getBlacknameList().add(boy);

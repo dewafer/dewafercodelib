@@ -13,14 +13,14 @@ public class Girl extends Participator {
 			int newLoveIndex = this.preferenceList.indexOf(boy);
 
 			if (newLoveIndex >= 0 && newLoveIndex < myLoveIndex) {
-				logln(" is better then my ex:" + myLove + ", breakup with ex.");
+				logln(" is better than my ex:" + myLove + ", breakup with ex.");
 				Boy ex = (Boy) myLove;
 				blacknameList.add(ex);
 				myLove = boy;
 				ex.breakup();
 				return true;
 			} else {
-				logln(" is NO better then my bf:" + myLove + ", reject.");
+				logln(" is NO better than my bf:" + myLove + ", reject.");
 				return false;
 			}
 		}

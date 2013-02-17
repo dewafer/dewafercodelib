@@ -13,7 +13,7 @@ public class Girl extends Participator {
 			int newLoveIndex = this.preferenceList.indexOf(boy);
 
 			if (newLoveIndex >= 0 && newLoveIndex < myLoveIndex) {
-				println(" is better then my ex:" + myLove
+				println(" is better than my ex:" + myLove
 						+ ", breakup with ex.");
 				Boy ex = (Boy) myLove;
 				blacknameList.add(ex);
@@ -21,7 +21,7 @@ public class Girl extends Participator {
 				ex.breakup();
 				return true;
 			} else {
-				println(" is NO better then my bf:" + myLove + ", reject.");
+				println(" is NO better than my bf:" + myLove + ", reject.");
 				return false;
 			}
 		}
