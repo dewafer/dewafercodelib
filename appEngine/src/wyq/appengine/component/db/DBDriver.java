@@ -74,8 +74,8 @@ public class DBDriver implements Component {
 			sql.append(" ) ");
 			// set handler
 			DBDriverHandler handler = new DBDriverHandler();
-			handler.entryList.add(entry);
-			handler.allKeyList.add(keyList);
+			handler.entry = entry;
+			handler.keyList = keyList;
 			engine.setHandler(handler);
 			// go sql
 			engine.executeSQL(sql.toString());
@@ -143,8 +143,8 @@ public class DBDriver implements Component {
 
 		// set handler
 		DBDriverHandler handler = new DBDriverHandler();
-		handler.entryList.add(where);
-		handler.allKeyList.add(keyList);
+		handler.entry = where;
+		handler.keyList = keyList;
 		engine.setHandler(handler);
 		// go sql
 		engine.executeSQL(sql.toString());
@@ -182,38 +182,38 @@ public class DBDriver implements Component {
 				StringBuilder sql = new StringBuilder(sqlPrefix.toString());
 				DBDriverHandler handler = new DBDriverHandler();
 
-				List<String> setKeyList = new ArrayList<String>();
+				List<String> keyList = new ArrayList<String>();
+				Map<String, Object> mergedEntry = new HashMap<String, Object>();
 				Map<String, Object> setEntry = setList.get(i);
 				Iterator<String> itr = setEntry.keySet().iterator();
 				while (itr.hasNext()) {
 					String key = escapeQuote(itr.next());
-					setKeyList.add(key);
+					keyList.add(key);
 					sql.append(key);
 					sql.append(" = ?");
 					if (itr.hasNext()) {
 						sql.append(" , ");
 					}
 				}
-				handler.allKeyList.add(setKeyList);
-				handler.entryList.add(setEntry);
+				mergedEntry.putAll(setEntry);
 
 				Map<String, Object> whereEntry = whereList.get(i);
 				if (whereEntry.size() > 0) {
 					sql.append(" WHERE ");
-					List<String> whereKeyList = new ArrayList<String>();
 					itr = whereEntry.keySet().iterator();
 					while (itr.hasNext()) {
 						String key = escapeQuote(itr.next());
-						whereKeyList.add(key);
+						keyList.add(key);
 						sql.append(key);
 						sql.append(" = ?");
 						if (itr.hasNext()) {
 							sql.append(" AND ");
 						}
 					}
-					handler.allKeyList.add(whereKeyList);
-					handler.entryList.add(whereEntry);
+					mergedEntry.putAll(whereEntry);
 				}
+				handler.keyList = keyList;
+				handler.entry = mergedEntry;
 
 				engine.setHandler(handler);
 				engine.executeSQL(sql.toString());
@@ -268,8 +268,8 @@ public class DBDriver implements Component {
 			}
 			// set handler
 			DBDriverHandler handler = new DBDriverHandler();
-			handler.entryList.add(entry);
-			handler.allKeyList.add(keyList);
+			handler.entry = entry;
+			handler.keyList = keyList;
 			engine.setHandler(handler);
 			// go sql
 			engine.executeSQL(sql.toString());
@@ -313,8 +313,8 @@ public class DBDriver implements Component {
 		 */
 		private static final long serialVersionUID = -4246612962971563779L;
 
-		List<List<String>> allKeyList = new ArrayList<List<String>>();
-		List<Map<String, Object>> entryList = new ArrayList<Map<String, Object>>();
+		List<String> keyList;
+		Map<String, Object> entry;
 		DBResult result;
 
 		@Override
@@ -324,25 +324,21 @@ public class DBDriver implements Component {
 
 		@Override
 		public void prepareParameter(PreparedStatement stmt) {
-			for (int j = 0; j < allKeyList.size(); j++) {
-				if (j < entryList.size()) {
-					List<String> keyList = allKeyList.get(j);
-					Map<String, Object> entry = entryList.get(j);
-					if (keyList != null && entry != null) {
-						// set values
-						for (int i = 0; i < keyList.size(); i++) {
-							String key = keyList.get(i);
-							Object value = entry.get(key);
-							int jdbcType = Types.getJDBCType(value);
-							try {
-								stmt.setObject(i + 1, value, jdbcType);
-							} catch (SQLException e) {
-								engine.getExceptionHandler().handle(e);
-							}
-						}
+
+			if (keyList != null && entry != null) {
+				// set values
+				for (int i = 0; i < keyList.size(); i++) {
+					String key = keyList.get(i);
+					Object value = entry.get(key);
+					int jdbcType = Types.getJDBCType(value);
+					try {
+						stmt.setObject(i + 1, value, jdbcType);
+					} catch (SQLException e) {
+						engine.getExceptionHandler().handle(e);
 					}
 				}
 			}
+
 		}
 	}
 
