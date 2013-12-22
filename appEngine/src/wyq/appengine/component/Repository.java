@@ -4,17 +4,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import wyq.appengine.Component;
 import wyq.appengine.ExceptionHandler;
 import wyq.appengine.Factory;
-import wyq.appengine.FactoryParameter;
 
 /**
- * This is the Repository.
+ * This is the Repository. Get components from this Repository.
  * 
+ * @version 1
  * @author dewafer
  * 
  */
@@ -36,14 +34,35 @@ public class Repository implements Component {
 
 	private ExceptionHandler exceptionHandler;
 
+	/**
+	 * Same as {@code get(name, null)}.
+	 * 
+	 * @see wyq.appengine.component.Repository#get(String, Class)
+	 * @param name
+	 * @return
+	 */
 	public static Component get(String name) {
 		return get(name, null);
 	}
 
+	/**
+	 * Same as {@code get(null, class}.
+	 * 
+	 * @see wyq.appengine.component.Repository#get(String, Class)
+	 * @param cls
+	 * @return
+	 */
 	public static <T extends Component> T get(Class<T> cls) {
 		return get(null, cls);
 	}
 
+	/**
+	 * Get a component. If the component doesn't exist, load it first.
+	 * 
+	 * @param name
+	 * @param cls
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Component> T get(String name, Class<T> cls) {
 		Component c = res.findComponent(name, cls);
@@ -53,42 +72,93 @@ public class Repository implements Component {
 		return (T) c;
 	}
 
+	/**
+	 * Put a component into the Repository. Can NOT put null into it.
+	 * 
+	 * @param name
+	 * @param cls
+	 * @param c
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Component> T put(String name, Class<T> cls,
 			Component c) {
-		if (c == null) {
-			throw new RuntimeException("Can NOT put null component!");
-		}
 		return (T) res.register(c, name, cls);
 	}
 
+	/**
+	 * Same as {@code find(name, null)}
+	 * 
+	 * @see wyq.appengine.component.Repository#find(String, Class)
+	 * @param name
+	 * @return
+	 */
 	public static Component find(String name) {
 		return find(name, null);
 	}
 
+	/**
+	 * Same as {@code find(null, class)}
+	 * 
+	 * @see wyq.appengine.component.Repository#find(String, Class)
+	 * @param cls
+	 * @return
+	 */
 	public static <T extends Component> T find(Class<T> cls) {
 		return find(null, cls);
 	}
 
+	/**
+	 * Get a component. Won't load it if does not exist.
+	 * 
+	 * @see wyq.appengine.component.Repository#findComponent(String, Class)
+	 * @param name
+	 * @param cls
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Component> T find(String name, Class<T> cls) {
 		return (T) res.findComponent(name, cls);
 	}
 
+	/**
+	 * See
+	 * {@link wyq.appengine.component.Repository#hasComponent(String, Class)}
+	 * 
+	 * @param name
+	 * @param cls
+	 * @return
+	 */
 	public static <T extends Component> boolean contains(String name,
 			Class<T> cls) {
-		return res.containsKey(name, cls);
+		return res.hasComponent(name, cls);
 	}
 
+	/**
+	 * See {@link wyq.appengine.component.Repository#hasComponent(Component)}
+	 * 
+	 * @param c
+	 * @return
+	 */
 	public static boolean contains(Component c) {
-		return res.containsValue(c);
+		return res.hasComponent(c);
 	}
 
+	/**
+	 * see {@link wyq.appengine.component.Repository#unregister(String, Class)}
+	 * 
+	 * @param name
+	 * @param cls
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Component> T release(String name, Class<T> cls) {
-		return (T) res.remove(name, cls);
+		return (T) res.unregister(name, cls);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static void save() {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(
@@ -101,6 +171,9 @@ public class Repository implements Component {
 		}
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static void load() {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
@@ -130,36 +203,9 @@ public class Repository implements Component {
 		register(exceptionHandler, "ExceptionHandler", ExceptionHandler.class);
 		register(p, "Property", Property.class);
 		register(this, "Repository", Repository.class);
-	}
 
-	protected Component findComponent(String name,
-			Class<? extends Component> cls) {
-		RepositoryKeyEntry key = new RepositoryKeyEntry(name, cls);
-		return compPool.get(key);
-	}
-
-	protected Component loadComponent(String name,
-			Class<? extends Component> cls) {
-		Component component = null;
-		if (factory == null) {
-			loadFactory();
-			Component theFactory = findComponent(name, cls);
-			if (theFactory != null) {
-				return theFactory;
-			}
-		}
-		FactoryParameter param = factory.prepare(name, cls);
-		component = (Component) factory.factory(param);
-
-		if (component != null) {
-			register(component, name, cls);
-			initComponent(component);
-		}
-		return component;
-	}
-
-	protected void initComponent(Component component) {
-		component = initFactory.manufacture(component);
+		// Can't load factory at instance initialization
+		// loadFactory();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -177,117 +223,84 @@ public class Repository implements Component {
 		}
 	}
 
+	protected Component loadComponent(String name,
+			Class<? extends Component> cls) {
+
+		// lazy factory load
+		if (factory == null) {
+			loadFactory();
+			// if the user is finding factory
+			Component theFactory = findComponent(name, cls);
+			if (theFactory != null) {
+				return theFactory;
+			}
+		}
+
+		Component component = factory.manufacture(name, cls);
+		if (component != null) {
+			register(component, name, cls);
+			component = initFactory.manufacture(component);
+		}
+
+		return component;
+	}
+
+	/**
+	 * See
+	 * {@link wyq.appengine.component.ComponentPool#register(Component, String, Class)}
+	 * 
+	 * @param name
+	 * @param cls
+	 * @return
+	 */
 	protected Component register(Component c, String name,
 			Class<? extends Component> cls) {
-		if (c == null) {
-			throw new RuntimeException("Register null component!");
-		}
-		if (name == null && cls == null) {
-			throw new RuntimeException("Wrong arguments! NullPointException!");
-		}
-		RepositoryKeyEntry keyEntry = new RepositoryKeyEntry(name, cls);
-		return compPool.put(keyEntry, c);
+		return compPool.register(c, name, cls);
 	}
 
-	protected boolean containsKey(String name, Class<? extends Component> cls) {
-		return containsKey(new RepositoryKeyEntry(name, cls));
+	/**
+	 * See {@link wyq.appengine.component.ComponentPool#retrieve(String, Class)}
+	 * 
+	 * @param name
+	 * @param cls
+	 * @return
+	 */
+	protected Component findComponent(String name,
+			Class<? extends Component> cls) {
+		return compPool.retrieve(name, cls);
 	}
 
-	protected boolean containsKey(RepositoryKeyEntry key) {
-		return compPool.containsKey(key);
+	/**
+	 * See {@link wyq.appengine.component.ComponentPool#contains(String, Class)}
+	 * 
+	 * @param name
+	 * @param cls
+	 * @return
+	 */
+	protected boolean hasComponent(String name, Class<? extends Component> cls) {
+		return compPool.contains(name, cls);
 	}
 
-	protected boolean containsValue(Component value) {
-		return compPool.containsValue(value);
+	/**
+	 * See {@link wyq.appengine.component.ComponentPool#contains(Component)}
+	 * 
+	 * @param c
+	 * @return
+	 */
+	protected boolean hasComponent(Component c) {
+		return compPool.contains(c);
 	}
 
-	protected Component remove(String name, Class<? extends Component> cls) {
-		RepositoryKeyEntry key = new RepositoryKeyEntry(name, cls);
-		return remove(key);
+	/**
+	 * See
+	 * {@link wyq.appengine.component.ComponentPool#unregister(String, Class)}
+	 * 
+	 * @param name
+	 * @param cls
+	 * @return
+	 */
+	protected Component unregister(String name, Class<? extends Component> cls) {
+		return compPool.unregister(name, cls);
 	}
 
-	protected Component remove(RepositoryKeyEntry key) {
-		return compPool.remove(key);
-	}
-
-	private class RepositoryKeyEntry implements Component {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 2494953274083461053L;
-
-		public RepositoryKeyEntry(String name, Class<?> entryClass) {
-			super();
-			this.name = name;
-			this.entryClass = entryClass;
-		}
-
-		private String name;
-		private Class<?> entryClass;
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result
-					+ ((entryClass == null) ? 0 : entryClass.hashCode());
-			result = prime * result + ((name == null) ? 0 : name.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			RepositoryKeyEntry other = (RepositoryKeyEntry) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
-			if (entryClass == null) {
-				if (other.entryClass != null)
-					return false;
-			} else if (!entryClass.equals(other.entryClass))
-				return false;
-			if (name == null) {
-				if (other.name != null)
-					return false;
-			} else if (!name.equals(other.name))
-				return false;
-			return true;
-		}
-
-		private Repository getOuterType() {
-			return Repository.this;
-		}
-
-	}
-
-	private class ComponentPool {
-		private Map<RepositoryKeyEntry, Component> compPool = new HashMap<RepositoryKeyEntry, Component>();
-
-		public boolean containsKey(Object arg0) {
-			return compPool.containsKey(arg0);
-		}
-
-		public boolean containsValue(Object arg0) {
-			return compPool.containsValue(arg0);
-		}
-
-		public Component get(Object arg0) {
-			return compPool.get(arg0);
-		}
-
-		public Component put(RepositoryKeyEntry arg0, Component arg1) {
-			return compPool.put(arg0, arg1);
-		}
-
-		public Component remove(Object arg0) {
-			return compPool.remove(arg0);
-		}
-	}
 }
