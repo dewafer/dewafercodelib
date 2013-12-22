@@ -9,8 +9,12 @@ import wyq.appengine.FactoryParameter;
 import wyq.appengine.component.CompInitFactory.CompInitFactoryParam;
 
 /**
- * This factory initialize the components in the Repository.
+ * This factory initialize the components in the Repository. This factory do the
+ * DI jobs. Inject objects from Repository to the Component being initializing
+ * using methods start with 'set'. Use {@link wyq.appengine.ComponentField}
+ * annotation to change the DI behavior.
  * 
+ * @version 1
  * @author dewafer
  * 
  */
