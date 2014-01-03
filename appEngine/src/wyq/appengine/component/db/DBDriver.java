@@ -388,7 +388,8 @@ public class DBDriver implements Component {
 
 		@Override
 		public Object getRowValue() throws Exception {
-			return resultSet.getObject(currentCol);
+			return resultSet.getObject(currentCol,
+					Types.getJavaType(metaData.getColumnType(currentCol)));
 		}
 
 	}
