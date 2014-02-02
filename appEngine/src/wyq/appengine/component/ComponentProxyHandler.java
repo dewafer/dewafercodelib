@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import wyq.appengine.Component;
 import wyq.appengine.ExceptionHandler;
 import wyq.appengine.Factory;
-import wyq.appengine.FactoryParameter;
 
 /**
  * The component in the Repository may be a Proxy class, and if true, the
@@ -25,32 +24,38 @@ public class ComponentProxyHandler implements InvocationHandler, Component {
 	private ExceptionHandler exceptionHandler;
 
 	@Override
-	public Object invoke(Object arg0, Method arg1, Object[] arg2)
+	public Object invoke(Object proxyInstance, Method method, Object[] params)
 			throws Throwable {
-		Class<?> clazz = arg1.getDeclaringClass();
-		String methodName = arg1.getName();
+		Class<?> clazz = method.getDeclaringClass();
+		String methodName = method.getName();
 		String keyName = clazz.getName() + "." + methodName + ".impl";
+		// Search for class.name.method.name.impl in default configure file.
 		String implClazzName = Property.get().getProperty(keyName);
 		if (implClazzName == null) {
+			// Search for class.name.impl in default configure file.
 			keyName = clazz.getName() + ".impl";
 			implClazzName = Property.get().getProperty(keyName);
 		}
 		if (implClazzName == null) {
+			// Search for method.impl in class's configure file.
 			implClazzName = new Property(clazz).getProperty(methodName
 					+ ".impl");
 		}
 		if (implClazzName == null) {
+			// Search for impl in class's configure file.
 			implClazzName = new Property(clazz).getProperty("impl");
 		}
 		if (implClazzName == null) {
 			// throw new RuntimeException("No implements configuration!");
-			exceptionHandler.handle(new UnsupportedOperationException(arg1
+			exceptionHandler.handle(new UnsupportedOperationException(method
 					.toString()));
-		} else if (implClazzName.length() == 0) {
+		}
+		if (implClazzName.length() == 0) {
+			// impl key existed but no definition
 			// do nothing just return the argument
-			Class<?> returnType = arg1.getReturnType();
-			if (arg2 != null) {
-				for (Object o : arg2) {
+			Class<?> returnType = method.getReturnType();
+			if (params != null) {
+				for (Object o : params) {
 					if (returnType.isAssignableFrom(o.getClass())) {
 						return returnType.cast(o);
 					}
@@ -81,8 +86,7 @@ public class ComponentProxyHandler implements InvocationHandler, Component {
 		} catch (ClassNotFoundException e) {
 			@SuppressWarnings("unchecked")
 			Factory<Component> f = Repository.get("Factory", Factory.class);
-			FactoryParameter param = f.prepare(implClazzName, implClazz);
-			implObj = f.factory(param);
+			implObj = f.manufacture(implClazzName, implClazz);
 		}
 
 		Object result = null;
@@ -92,13 +96,13 @@ public class ComponentProxyHandler implements InvocationHandler, Component {
 			}
 
 			// find same method in implObj
-			Class<?>[] paramTypes = arg1.getParameterTypes();
+			Class<?>[] paramTypes = method.getParameterTypes();
 			Method realMethod;
 			try {
 				realMethod = implClazz
 						.getDeclaredMethod(methodName, paramTypes);
 				realMethod.setAccessible(true);
-				result = realMethod.invoke(implObj, arg2);
+				result = realMethod.invoke(implObj, params);
 			} catch (Exception e) {
 				exceptionHandler.handle(e);
 			}

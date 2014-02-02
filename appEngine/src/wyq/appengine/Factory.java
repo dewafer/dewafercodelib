@@ -16,4 +16,6 @@ public interface Factory<T> extends Component {
 
 	public abstract T manufacture(Object... values);
 
+	public abstract String getName();
+
 }

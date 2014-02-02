@@ -32,14 +32,8 @@ public class RepositoryInitFactory extends
 				+ "\\.(\\w+Factory)$";
 		for (String initFactoryName : Property.get().getProperties(
 				factoryRegKey)) {
-			Factory<Component> initFactory = (Factory<Component>) Repository
-					.find(initFactoryName, Factory.class);
-			if (initFactory == null) {
-				Factory<Component> f = Repository.get("Factory", Factory.class);
-				initFactory = (Factory<Component>) f
-						.manufacture(initFactoryName);
-				Repository.put(initFactoryName, Factory.class, initFactory);
-			}
+			Factory<Component> initFactory = Repository.get(initFactoryName,
+					Factory.class);
 			component = initFactory.manufacture(component);
 		}
 

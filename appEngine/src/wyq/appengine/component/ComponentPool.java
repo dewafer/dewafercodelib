@@ -1,5 +1,6 @@
 package wyq.appengine.component;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -115,7 +116,12 @@ public class ComponentPool implements Component {
 	 * @author wangyq
 	 * 
 	 */
-	private class RepositoryKeyEntry {
+	private class RepositoryKeyEntry implements Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7651130285670214606L;
 
 		public RepositoryKeyEntry(String name, Class<?> entryClass) {
 			this.name = name;

@@ -1,9 +1,8 @@
 package wyq.appengine.component.dao;
 
-import wyq.appengine.Component;
-import wyq.appengine.Factory;
-import wyq.appengine.FactoryParameter;
-import wyq.appengine.component.ProxyFactory;
+import java.lang.reflect.InvocationHandler;
+
+import wyq.appengine.component.AbstractProxyEngine;
 import wyq.appengine.component.Repository;
 
 /**
@@ -14,30 +13,25 @@ import wyq.appengine.component.Repository;
  * @author dewafer
  * @version 1
  */
-public class DaoEngine implements Component {
+public class DaoEngine extends AbstractProxyEngine {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -8705962428277588108L;
 
-	private DaoEngineHandler handler;
+	protected DaoEngineHandler handler;
 
-	@SuppressWarnings("unchecked")
 	public <T> T getDao(Class<? extends T> daoInterface) {
-
-		Factory<Object> proxyFactory = Repository.get("ProxyFactory",
-				ProxyFactory.class);
-		FactoryParameter parameter = proxyFactory.prepare(
-				new Class<?>[] { daoInterface }, handler);
-		return (T) proxyFactory.factory(parameter);
+		return getProxyInstance(daoInterface);
 	}
 
 	public static DaoEngine get() {
 		return Repository.get("DaoEngine", DaoEngine.class);
 	}
 
-	public DaoEngineHandler getHandler() {
+	@Override
+	public InvocationHandler getHandler() {
 		return handler;
 	}
 

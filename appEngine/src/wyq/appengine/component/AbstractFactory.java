@@ -151,4 +151,9 @@ public abstract class AbstractFactory<T, R extends FactoryParameter> implements
 	public void setExceptionHandler(ExceptionHandler exceptionHandler) {
 		this.exceptionHandler = exceptionHandler;
 	}
+
+	@Override
+	public String getName() {
+		return getClass().getName();
+	}
 }

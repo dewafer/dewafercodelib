@@ -1,9 +1,8 @@
 package wyq.appengine.component.template;
 
-import wyq.appengine.Component;
-import wyq.appengine.Factory;
-import wyq.appengine.FactoryParameter;
-import wyq.appengine.component.ProxyFactory;
+import java.lang.reflect.InvocationHandler;
+
+import wyq.appengine.component.AbstractProxyEngine;
 import wyq.appengine.component.Repository;
 
 /**
@@ -12,7 +11,7 @@ import wyq.appengine.component.Repository;
  * @author dewafer
  * 
  */
-public class TemplateEngine implements Component {
+public class TemplateEngine extends AbstractProxyEngine {
 
 	/**
 	 * 
@@ -21,21 +20,16 @@ public class TemplateEngine implements Component {
 
 	private TemplateEngineHandler handler;
 
-	@SuppressWarnings("unchecked")
 	public <T> T getTemplate(Class<? extends T> templateInterface) {
-
-		Factory<Object> proxyFactory = Repository.get("ProxyFactory",
-				ProxyFactory.class);
-		FactoryParameter parameter = proxyFactory.prepare(
-				new Class<?>[] { templateInterface }, handler);
-		return (T) proxyFactory.factory(parameter);
+		return getProxyInstance(templateInterface);
 	}
 
 	public static TemplateEngine get() {
 		return Repository.get("TemplateEngine", TemplateEngine.class);
 	}
 
-	public TemplateEngineHandler getHandler() {
+	@Override
+	public InvocationHandler getHandler() {
 		return handler;
 	}
 
