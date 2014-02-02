@@ -25,15 +25,21 @@ public class ComponentFactory extends
 
 	private String defaultPackageName;
 	private String invocationHandlerName;
+	private boolean interfaceMustDefined;
+	private boolean interfaceUsingService;
 
 	private InvocationHandler invocationHandler;
 
-	protected ComponentFactory() {
+	public ComponentFactory() {
 		Property p = Property.get();
 		defaultPackageName = p
 				.getProperty("ComponentFactory.defaultPackageName");
 		invocationHandlerName = p
 				.getProperty("ComponentFactory.invocationHandlerName");
+		interfaceMustDefined = Boolean.parseBoolean(p
+				.getProperty("ComponentFactory.interfaceMustDefined"));
+		interfaceUsingService = Boolean.parseBoolean(p
+				.getProperty("ComponentFactory.interfaceUsingService"));
 		exceptionHandler = Repository.get("ExceptionHandler",
 				ExceptionHandler.class);
 	}
@@ -57,7 +63,7 @@ public class ComponentFactory extends
 		try {
 			Class<?> keyCls = null;
 
-			if (param.componentClass != null) {
+			if (isUsingComponentClassParam(param)) {
 				keyCls = param.componentClass;
 			} else {
 				String fullName = param.componentName;
@@ -88,9 +94,19 @@ public class ComponentFactory extends
 								Component.class };
 						Factory<Object> factory = Repository.get(
 								"ProxyFactory", ProxyFactory.class);
-						FactoryParameter para = factory.prepare(ifaces,
-								invocationHandler);
-						comp = factory.factory(para);
+						comp = factory.manufacture(ifaces, invocationHandler);
+					} else {
+						if (interfaceUsingService) {
+							Factory<Object> factory = Repository.get(
+									"ServiceLoaderFactory",
+									ServiceLoaderFactory.class);
+							comp = factory.manufacture(keyCls);
+						}
+						if (interfaceMustDefined) {
+							throw new RuntimeException(
+									"Implementation of the interface[" + keyCls
+											+ "] not defined.");
+						}
 					}
 				} else {
 					comp = keyCls.newInstance();
@@ -100,6 +116,14 @@ public class ComponentFactory extends
 			exceptionHandler.handle(e);
 		}
 		return comp;
+	}
+
+	private boolean isUsingComponentClassParam(ComponentFactoryParameter param) {
+		if (param.componentClass != null
+				&& Factory.class != param.componentClass) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -113,7 +137,7 @@ public class ComponentFactory extends
 				+ "(\\.\\w+)?\\.impl$";
 		if (!p.isKeyDefined(key)) {
 			p = new Property(icls);
-			String simpleKey = "^(\\w+\\.)impl$";
+			String simpleKey = "^(\\w+\\.)?impl$";
 			return p.isKeyDefined(simpleKey);
 		} else {
 			return true;
